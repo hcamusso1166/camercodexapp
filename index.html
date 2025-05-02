@@ -99,24 +99,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     bleStatus.parentElement.appendChild(locPerm);
   
-  if (navigator.permissions) {
-    navigator.permissions.query({ name: 'bluetooth' }).then(function(result) {
-      const btPerm = document.createElement("p");
-      if (result.state === 'granted') {
-        btPerm.innerText = "✅ Permiso Bluetooth otorgado.";
-        btPerm.style.color = "green";
-      } else if (result.state === 'prompt') {
-        btPerm.innerText = "⚠️ Se pedirá permiso Bluetooth al intentar conectar.";
-        btPerm.style.color = "orange";
-      } else {
-        btPerm.innerText = "❌ Permiso Bluetooth denegado. Revisá configuración del navegador.";
-        btPerm.style.color = "red";
-      }
-      bleStatus.parentElement.appendChild(btPerm);
-    }).catch(err => {
-      console.log("No se pudo verificar permisos Bluetooth:", err);
-    });
-  }
 
   }).catch(err => {
     console.log("No se pudo verificar permisos de ubicación:", err);
