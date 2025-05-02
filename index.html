@@ -62,7 +62,7 @@
 
 
     <div class="footer">
-      <p>V3.2</p>
+      <p>v 1.0 Vainilla</p>
     </div>
     <audio id="tagAudio" src="" preload="auto"></audio>
 
@@ -140,6 +140,33 @@ document.addEventListener("DOMContentLoaded", function () {
 <button onclick="document.getElementById('ble-panel').style.display='block'">
   🔍 Revisar estado Bluetooth
 </button>
+<button id="install-btn" style="display: none;">📲 Instalar Ars Camer</button>
+<script>
+  let deferredPrompt;
+  const installBtn = document.getElementById('install-btn');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // Evitar que el navegador muestre automáticamente el diálogo
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.style.display = 'inline-block'; // Mostrar el botón
+
+    installBtn.addEventListener('click', () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt(); // Lanzar diálogo de instalación
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('PWA instalada');
+          } else {
+            console.log('Instalación cancelada');
+          }
+          deferredPrompt = null;
+        });
+      }
+    });
+  });
+</script>
+
 
 </body>
 <script>
