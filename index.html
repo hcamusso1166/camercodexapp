@@ -140,12 +140,18 @@ document.addEventListener("DOMContentLoaded", function () {
 <button onclick="document.getElementById('ble-panel').style.display='block'">
   🔍 Revisar estado Bluetooth
 </button>
+
+// Para instalar la app en principal del movil 
 <button id="install-btn" style="display: none;">📲 Instalar Ars Camer</button>
 <script>
   let deferredPrompt;
   const installBtn = document.getElementById('install-btn');
 
   window.addEventListener('beforeinstallprompt', (e) => {
+
+  console.log("Evento beforeinstallprompt capturado"); // 👈 Agregá esto
+
+
     // Evitar que el navegador muestre automáticamente el diálogo
     e.preventDefault();
     deferredPrompt = e;
