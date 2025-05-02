@@ -9,8 +9,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#000000">
     <title>Ars Camer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="favicon.ico">
@@ -69,13 +67,74 @@
     </div>
     <audio id="tagAudio" src="" preload="auto"></audio>
 
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('Service Worker registrado correctamente'))
-        .catch(error => console.error('Error al registrar el Service Worker:', error));
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const bleStatus = document.getElementById("ble-status");
+  if (!navigator.bluetooth) {
+    bleStatus.innerText = "❌ Web Bluetooth NO disponible en este navegador.";
+    bleStatus.style.color = "red";
+  } else {
+    bleStatus.innerText = "✅ Web Bluetooth disponible.";
+    bleStatus.style.color = "green";
+  }
+
+  if (!navigator.geolocation) {
+    const locStatus = document.createElement("p");
+    locStatus.innerText = "⚠️ API de geolocalización no disponible. Activá ubicación.";
+    locStatus.style.color = "orange";
+    bleStatus.parentElement.appendChild(locStatus);
+  }
+
+  navigator.permissions.query({ name: 'geolocation' }).then(function(result) {
+    const locPerm = document.createElement("p");
+    if (result.state === 'granted') {
+      locPerm.innerText = "✅ Permiso de ubicación otorgado.";
+      locPerm.style.color = "green";
+    } else if (result.state === 'prompt') {
+      locPerm.innerText = "⚠️ Se pedirá permiso de ubicación al usar BLE.";
+      locPerm.style.color = "orange";
+    } else {
+      locPerm.innerText = "❌ Permiso de ubicación denegado. Activalo en Configuración.";
+      locPerm.style.color = "red";
     }
-  </script>
+    bleStatus.parentElement.appendChild(locPerm);
+  
+  if (navigator.permissions) {
+    navigator.permissions.query({ name: 'bluetooth' }).then(function(result) {
+      const btPerm = document.createElement("p");
+      if (result.state === 'granted') {
+        btPerm.innerText = "✅ Permiso Bluetooth otorgado.";
+        btPerm.style.color = "green";
+      } else if (result.state === 'prompt') {
+        btPerm.innerText = "⚠️ Se pedirá permiso Bluetooth al intentar conectar.";
+        btPerm.style.color = "orange";
+      } else {
+        btPerm.innerText = "❌ Permiso Bluetooth denegado. Revisá configuración del navegador.";
+        btPerm.style.color = "red";
+      }
+      bleStatus.parentElement.appendChild(btPerm);
+    }).catch(err => {
+      console.log("No se pudo verificar permisos Bluetooth:", err);
+    });
+  }
+
+  }).catch(err => {
+    console.log("No se pudo verificar permisos de ubicación:", err);
+  });
+});
+
+  // Ocultar automáticamente el panel de diagnóstico luego de 8 segundos
+  setTimeout(() => {
+    const blePanel = document.getElementById("ble-panel");
+    if (blePanel) {
+      blePanel.style.display = "none";
+    }
+  }, 8000);
+
+</script>
+<div id="ble-panel" style="padding: 10px; border: 1px solid #ccc; background: #f5f5f5; border-radius: 5px; margin-bottom: 10px;"><div id="ble-status" style="font-weight:bold; margin-bottom:10px;">Revisando estado de Bluetooth...</div>
+
 </body>
 <script>
     // DOM Elements
@@ -202,7 +261,27 @@
         audio.src = `audios/${archivo}`;
         audio.play().then(() => {
             console.log(`Reproduciendo: ${archivo}`);
-        }).catch(err => {
+        
+  if (navigator.permissions) {
+    navigator.permissions.query({ name: 'bluetooth' }).then(function(result) {
+      const btPerm = document.createElement("p");
+      if (result.state === 'granted') {
+        btPerm.innerText = "✅ Permiso Bluetooth otorgado.";
+        btPerm.style.color = "green";
+      } else if (result.state === 'prompt') {
+        btPerm.innerText = "⚠️ Se pedirá permiso Bluetooth al intentar conectar.";
+        btPerm.style.color = "orange";
+      } else {
+        btPerm.innerText = "❌ Permiso Bluetooth denegado. Revisá configuración del navegador.";
+        btPerm.style.color = "red";
+      }
+      bleStatus.parentElement.appendChild(btPerm);
+    }).catch(err => {
+      console.log("No se pudo verificar permisos Bluetooth:", err);
+    });
+  }
+
+  }).catch(err => {
             console.error("No se pudo reproducir el audio:", err);
             console.log("Tag:", tag, "→ Archivo:", archivo);
         });
@@ -293,6 +372,15 @@
         return datetime;
     }
 
+
+
+  // Ocultar automáticamente el panel de diagnóstico luego de 8 segundos
+  setTimeout(() => {
+    const blePanel = document.getElementById("ble-panel");
+    if (blePanel) {
+      blePanel.style.display = "none";
+    }
+  }, 8000);
 
 </script>
 
