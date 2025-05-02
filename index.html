@@ -135,6 +135,15 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 <div id="ble-panel" style="padding: 10px; border: 1px solid #ccc; background: #f5f5f5; border-radius: 5px; margin-bottom: 10px;"><div id="ble-status" style="font-weight:bold; margin-bottom:10px;">Revisando estado de Bluetooth...</div>
 
+
+<script>
+  function mostrarDiagnosticoBLE() {
+    const panel = document.getElementById('ble-panel');
+    if (panel) panel.style.display = 'block';
+  }
+</script>
+<button onclick="mostrarDiagnosticoBLE()">🔍 Revisar estado Bluetooth</button>
+
 </body>
 <script>
     // DOM Elements
