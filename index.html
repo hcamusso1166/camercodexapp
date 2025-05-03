@@ -120,34 +120,32 @@ document.addEventListener("DOMContentLoaded", function () {
 <button id="install-btn" style="display: none;">📲 Instalar Ars Camer</button>
 <script>
   let deferredPrompt;
-  const installBtn = document.getElementById('install-btn');
 
   window.addEventListener('beforeinstallprompt', (e) => {
-
-  console.log("Evento beforeinstallprompt capturado"); // 👈 Agregá esto
-
-
-    // Evitar que el navegador muestre automáticamente el diálogo
     e.preventDefault();
     deferredPrompt = e;
-    installBtn.style.display = 'inline-block'; // Mostrar el botón
 
-    installBtn.addEventListener('click', () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt(); // Lanzar diálogo de instalación
+    // Asegurarse que el botón ya exista en el DOM
+    const installBtn = document.getElementById('install-btn');
+    if (installBtn) {
+      installBtn.style.display = 'inline-block';
+
+      installBtn.addEventListener('click', () => {
+        installBtn.style.display = 'none'; // Ocultar tras clic
+        deferredPrompt.prompt();
+
         deferredPrompt.userChoice.then((choiceResult) => {
           if (choiceResult.outcome === 'accepted') {
-            console.log('PWA instalada');
+            console.log('👍 Instalación aceptada');
           } else {
-            console.log('Instalación cancelada');
+            console.log('👎 Instalación cancelada');
           }
           deferredPrompt = null;
         });
-      }
-    });
+      });
+    }
   });
 </script>
-
 
 </body>
 <script>
@@ -160,6 +158,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const latestValueSent = document.getElementById('valueSent');
     const bleStateContainer = document.getElementById('bleState');
     const timestampContainer = document.getElementById('timestamp');
+    const installButton = document.getElementById('install-btn'); 
 
     //Define BLE Device Specs
     var deviceName ='MrCamerDev1.0';
