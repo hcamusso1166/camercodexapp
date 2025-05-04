@@ -117,22 +117,31 @@ document.addEventListener("DOMContentLoaded", function () {
   🔍 Revisar estado Bluetooth
 </button>
 
-<!--  Para instalar la app en principal del movil -->
+<!-- Botón para instalar en principal (solo en móviles) -->
 <button id="install-btn" style="display: none;">📲 Instalar Camer Codex</button>
 <script>
   let deferredPrompt;
 
+  // Detectar si el usuario está en un dispositivo móvil
+  function esDispositivoMovil() {
+    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  }
+
   window.addEventListener('beforeinstallprompt', (e) => {
+    if (!esDispositivoMovil()) {
+      console.warn('🖥️ Entorno de escritorio detectado: el botón de instalación no se mostrará.');
+      return;
+    }
+
     e.preventDefault();
     deferredPrompt = e;
 
-    // Asegurarse que el botón ya exista en el DOM
     const installBtn = document.getElementById('install-btn');
     if (installBtn) {
       installBtn.style.display = 'inline-block';
 
       installBtn.addEventListener('click', () => {
-        installBtn.style.display = 'none'; // Ocultar tras clic
+        installBtn.style.display = 'none';
         deferredPrompt.prompt();
 
         deferredPrompt.userChoice.then((choiceResult) => {
@@ -147,6 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 </script>
+
 <script>
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js')
