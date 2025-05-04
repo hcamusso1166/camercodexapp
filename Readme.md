@@ -13,7 +13,7 @@
 
 ## 📦 Versión
 
-**v1.0 - Línea base estable**
+**v1.0 - Vainilla**
 
 ---
 
