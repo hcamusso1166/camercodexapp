@@ -17,6 +17,22 @@ body {
 .content {
     padding: 50px;
 }
+#cartaDisplay {
+    display: none;
+    position: fixed;
+    bottom: 10%;
+    right: 10%;
+    background-color: black;
+    color: lime;
+    padding: 10px 20px;
+    font-size: 2rem;
+    font-family: monospace;
+    border-radius: 8px;
+    opacity: 0;
+    z-index: 9999;
+    transition: opacity 0.3s ease;
+}
+
 .card-grid {
     max-width: 800px;
     margin: 0 auto;
@@ -62,3 +78,33 @@ button {
 .reading {
     font-size: 1.8rem;
 }
+.ble-diagnostic {
+    margin: 20px 0;
+    font-family: monospace;
+  }
+  
+  #ble-messages {
+    padding: 12px;
+    background-color: #f6f6f6;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  
+  .ble-ok {
+    color: green;
+  }
+  
+  .ble-warning {
+    color: orange;
+  }
+  
+  #checkBluetoothBtn {
+    background-color: #eee;
+    color: #666;
+    border-radius: 4px;
+    padding: 5px 10px;
+    border: 1px solid #aaa;
+    cursor: not-allowed;
+  }
+  

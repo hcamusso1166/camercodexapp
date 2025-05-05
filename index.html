@@ -1,409 +1,68 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Camer Codex</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/png" href="favicon.ico">
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <meta charset="UTF-8">
-    <link rel="manifest" href="manifest.json">
-</head>
+<html lang="es">
+    <head>
+        <title>Camer Codex</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" type="image/png" href="favicon.ico">
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <meta charset="UTF-8">
+        <link rel="manifest" href="manifest.json">
+      </head>
 <body>
-    <div class="topnav">
-        <h1>Camer Codex</h1>
-    </div>
-    <div class="content">
-        <div class="card-grid">
-            <div class="card">
-              <h2>Dispositivo Bluetooth (BLE)</h2>
-              <p>
-                <button id="connectBleButton" class="connectButton">
-                  <img src="icons/bluetooth.svg" alt="Bluetooth Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
-                  Conectar    
-                </button>
-                <button id="disconnectBleButton" class="disconnectButton">
-                  <img src="icons/bluetooth_disabled.svg" alt="Bluetooth Off Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
-                  Desconectar
-                </button>
-              </p>
-              
-               
-                <p class="gray-label">BLE state: <strong><span id="bleState" style="color:#d13a30;">Disconnected</span></strong></p>
-            </div>
-        </div>
-        <div class="card-grid">
-            <div class="card">
-                <h2>Carta</h2>
-                <p class="reading"><span id="valueContainer">NaN</span></p>
-                <p class="gray-label">Last reading: <span id="timestamp"></span></p>
-            </div>
+  <div class="topnav">
+    <h1>Camer Codex</h1>
+  </div>
 
-            <div class="card">
-                <h2>LED Control dispositivo</h2>
-                <button id="onButton" class="onButton">ON</button>
-                <button id="offButton" class="offButton">OFF</button>
-                <p class="gray-label">Last value sent: <span id="valueSent"></span></p>
-            </div>
-        </div>
-    </div>
-    <!-- 
-    <div id="cartaDisplay" style="
-        display: none;
-        position: fixed;
-        bottom: 10%;
-        right: 10%;
-        background-color: black;
-        color: lime;
-        padding: 10px 20px;
-        font-size: 2rem;
-        font-family: monospace;
-        border-radius: 8px;
-        opacity: 0;
-        z-index: 9999;
-        transition: opacity 0.3s ease;">
-    </div>
--->
+  <div class="content">
+    <p>Seleccioná una rutina:</p>
+    <ul class="rutina-lista">
+      <li><a href="rutinas/fuera-de-este-mundo.html">🧠 Fuera de Este Mundo</a></li>
+      <li><a href="rutinas/juego-pegriloso.html">🃏 Un Juego "Pegriloso"</a></li>
+      <!-- Más rutinas aquí -->
+    </ul>
+  </div>
 
-    <div class="footer">
-      <p>v 1.0 Vainilla</p>
-    </div>
-    <audio id="tagAudio" src="" preload="auto"></audio>
+  <!-- Botón de instalación PWA -->
+  <button id="install-btn" style="display: none;">📲 Instalar Camer Codex</button>
 
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  const bleStatus = document.getElementById("ble-status");
-  if (!navigator.bluetooth) {
-    bleStatus.innerText = "❌ Web Bluetooth NO disponible en este navegador.";
-    bleStatus.style.color = "red";
-  } else {
-    bleStatus.innerText = "✅ Web Bluetooth disponible.";
-    bleStatus.style.color = "green";
-  }
-
-  if (!navigator.geolocation) {
-    const locStatus = document.createElement("p");
-    locStatus.innerText = "⚠️ API de geolocalización no disponible. Activá ubicación.";
-    locStatus.style.color = "orange";
-    bleStatus.parentElement.appendChild(locStatus);
-  }
-
-  navigator.permissions.query({ name: 'geolocation' }).then(function(result) {
-    const locPerm = document.createElement("p");
-    if (result.state === 'granted') {
-      locPerm.innerText = "✅ Permiso de ubicación otorgado.";
-      locPerm.style.color = "green";
-    } else if (result.state === 'prompt') {
-      locPerm.innerText = "⚠️ Se pedirá permiso de ubicación al usar BLE.";
-      locPerm.style.color = "orange";
-    } else {
-      locPerm.innerText = "❌ Permiso de ubicación denegado. Activalo en Configuración.";
-      locPerm.style.color = "red";
+  <!-- Registro Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log("✅ Service Worker registrado:", reg))
+        .catch(err => console.error("❌ Error al registrar SW:", err));
     }
-    bleStatus.parentElement.appendChild(locPerm);
-  
+  </script>
 
-  }).catch(err => {
-    console.log("No se pudo verificar permisos de ubicación:", err);
-  });
-});
-
-  // Ocultar automáticamente el panel de diagnóstico luego de 8 segundos
-  setTimeout(() => {
-    const blePanel = document.getElementById("ble-panel");
-    if (blePanel) {
-      blePanel.style.display = "none";
-    }
-  }, 8000);
-
-</script>
-
-<div id="ble-panel" style="padding: 10px; border: 1px solid #ccc; background: #f5f5f5; border-radius: 5px; margin-bottom: 10px;">
-  <div id="ble-status" style="font-weight:bold; margin-bottom:10px;">Revisando estado de Bluetooth...</div>
-</div>
-
-<button onclick="document.getElementById('ble-panel').style.display='block'">
-  🔍 Revisar estado Bluetooth
-</button>
-
-<!-- Botón para instalar en principal (solo en móviles) -->
-<button id="install-btn" style="display: none;">📲 Instalar Camer Codex</button>
-<script>
-  let deferredPrompt;
-
-  // Detectar si el usuario está en un dispositivo móvil
-  function esDispositivoMovil() {
-    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  }
-
-  window.addEventListener('beforeinstallprompt', (e) => {
-    if (!esDispositivoMovil()) {
-      console.warn('🖥️ Entorno de escritorio detectado: el botón de instalación no se mostrará.');
-      return;
+  <!-- Instalación PWA -->
+  <script>
+    let deferredPrompt;
+    function esDispositivoMovil() {
+      return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     }
 
-    e.preventDefault();
-    deferredPrompt = e;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      if (!esDispositivoMovil()) return;
 
-    const installBtn = document.getElementById('install-btn');
-    if (installBtn) {
-      installBtn.style.display = 'inline-block';
-
-      installBtn.addEventListener('click', () => {
-        installBtn.style.display = 'none';
-        deferredPrompt.prompt();
-
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('👍 Instalación aceptada');
-          } else {
-            console.log('👎 Instalación cancelada');
-          }
-          deferredPrompt = null;
+      e.preventDefault();
+      deferredPrompt = e;
+      const installBtn = document.getElementById('install-btn');
+      if (installBtn) {
+        installBtn.style.display = 'inline-block';
+        installBtn.addEventListener('click', () => {
+          installBtn.style.display = 'none';
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then(choiceResult => {
+            console.log('Resultado instalación:', choiceResult.outcome);
+            deferredPrompt = null;
+          });
         });
-      });
-    }
-  });
-</script>
-
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(reg => console.log("✅ Service Worker registrado:", reg))
-      .catch(err => console.error("❌ Error al registrar SW:", err));
-  }
-</script>
-
-</body>
-<script>
-    // DOM Elements
-    const connectButton = document.getElementById('connectBleButton');
-    const disconnectButton = document.getElementById('disconnectBleButton');
-    const onButton = document.getElementById('onButton');
-    const offButton = document.getElementById('offButton');
-    const retrievedValue = document.getElementById('valueContainer');
-    const latestValueSent = document.getElementById('valueSent');
-    const bleStateContainer = document.getElementById('bleState');
-    const timestampContainer = document.getElementById('timestamp');
-    const installButton = document.getElementById('install-btn'); 
-
-    //Define BLE Device Specs
-    var deviceName ='MrCamerDev1.0';
-    var bleService = '19b10000-e8f2-537e-4f6c-d104768a1214';
-    var ledCharacteristic = '19b10002-e8f2-537e-4f6c-d104768a1214';
-    var sensorCharacteristic= '19b10001-e8f2-537e-4f6c-d104768a1214';
-
-    //Global Variables to Handle Bluetooth
-    var bleServer;
-    var bleServiceFound;
-    var sensorCharacteristicFound;
-    let mapaCartas = {};
-    //Cargar el json con el mapa de las cartas
-    fetch('audios/cartas.json')
-        .then(res => res.json())
-        .then(data => {
-                mapaCartas = data;
-                console.log("Mapa de cartas cargado correctamente");
-    })
-        .catch(err => console.error("Error cargando cartas.json", err));
-
-    // Connect Button (search for BLE Devices only if BLE is available)
-    connectButton.addEventListener('click', (event) => {
-        if (isWebBluetoothEnabled()){
-            connectToDevice();
-        }
+      }
     });
-
-    // Disconnect Button
-    disconnectButton.addEventListener('click', disconnectDevice);
-
-    // Write to the ESP32 LED Characteristic
-    onButton.addEventListener('click', () => writeOnCharacteristic(1));
-    offButton.addEventListener('click', () => writeOnCharacteristic(0));
-
-    // Check if BLE is available in your Browser
-    function isWebBluetoothEnabled() {
-        if (!navigator.bluetooth) {
-            console.log('Web Bluetooth API is not available in this browser!');
-            bleStateContainer.innerHTML = "Web Bluetooth API is not available in this browser/device!";
-            return false
-        }
-        console.log('Web Bluetooth API supported in this browser.');
-        return true
-    }
-
-    // Connect to BLE Device and Enable Notifications
-    function connectToDevice(){
-        console.log('Initializing Bluetooth...');
-        navigator.bluetooth.requestDevice({
-            filters: [{name: deviceName}],
-            optionalServices: [bleService]
-        })
-        .then(device => {
-            console.log('Device Selected:', device.name);
-            bleStateContainer.innerHTML = 'Connected to device ' + device.name;
-            bleStateContainer.style.color = "#24af37";
-            device.addEventListener('gattservicedisconnected', onDisconnected);
-            return device.gatt.connect();
-        })
-        .then(gattServer =>{
-            bleServer = gattServer;
-            console.log("Connected to GATT Server");
-            return bleServer.getPrimaryService(bleService);
-        })
-        .then(service => {
-            bleServiceFound = service;
-            console.log("Service discovered:", service.uuid);
-            return service.getCharacteristic(sensorCharacteristic);
-        })
-        .then(characteristic => {
-            console.log("Characteristic discovered:", characteristic.uuid);
-            sensorCharacteristicFound = characteristic;
-            characteristic.addEventListener('characteristicvaluechanged', handleCharacteristicChange);
-            characteristic.startNotifications();
-            console.log("Notifications Started.");
-            return characteristic.readValue();
-        })
-        .then(value => {
-            console.log("Read value: ", value);
-            const decodedValue = new TextDecoder().decode(value);
-            console.log("Decoded value: ", decodedValue);
-            retrievedValue.innerHTML = decodedValue;
-        })
-        .catch(error => {
-            console.log('Error: ', error);
-        })
-    }
-
-    function onDisconnected(event){
-        console.log('Device Disconnected:', event.target.device.name);
-        bleStateContainer.innerHTML = "Device disconnected";
-        bleStateContainer.style.color = "#d13a30";
-        connectToDevice();
-    }
-
-    function handleCharacteristicChange(event){
-        const valor = new TextDecoder().decode(event.target.value).trim();
-        console.log("Characteristic value changed: ", valor);
-        //Mostrar el valor en pantalla
-        retrievedValue.innerHTML = valor[0] + valor[1];
-        timestampContainer.innerHTML = getDateTime();
-        //Reproducir el audio correspondiente usando el mapa de cartas
-        const mvalor = valor[0] + valor[1];
-        reproducirAudioParaTag(mvalor);
-    }
-    function reproducirAudioParaTag(tag) {
-        const audio = document.getElementById("tagAudio");
-        const archivo = mapaCartas[tag];
-
-    if (archivo && archivo.trim() !== "") {
-        console.log("Tag:", tag, "→ Archivo:", archivo);
-        audio.src = `audios/${archivo}`;
-        audio.play().then(() => {
-            console.log(`Reproduciendo: ${archivo}`);
-
-
-  }).catch(err => {
-            console.error("No se pudo reproducir el audio:", err);
-            console.log("Tag:", tag, "→ Archivo:", archivo);
-        });
-
-        mostrarCartaVisual(tag); // 👈 muestra en pantalla la carta también
-    } else {
-        console.warn(`No se encontró archivo de audio para: ${tag}`);
-        console.log("Tag:", tag, "→ Archivo:", archivo);
-        audio.removeAttribute('src'); // 🔒 importante para evitar reproducción vacía
-        audio.load(); // Resetea el elemento <audio>
-    }
-    }
- 
-    function mostrarCartaVisual(tag) {
-        const display = document.getElementById('cartaDisplay');
-        display.innerText = tag;
-        display.style.display = 'block';
-        display.style.opacity = 1;
-
-        setTimeout(() => {
-            display.style.opacity = 0;
-            setTimeout(() => {
-                display.style.display = 'none';
-            }, 300);
-        }, 2000);
-    }
-
-
-    function writeOnCharacteristic(value){
-        if (bleServer && bleServer.connected) {
-            bleServiceFound.getCharacteristic(ledCharacteristic)
-            .then(characteristic => {
-                console.log("Found the LED characteristic: ", characteristic.uuid);
-                const data = new Uint8Array([value]);
-                return characteristic.writeValue(data);
-            })
-            .then(() => {
-                latestValueSent.innerHTML = value;
-                console.log("Value written to LEDcharacteristic:", value);
-            })
-            .catch(error => {
-                console.error("Error writing to the LED characteristic: ", error);
-            });
-        } else {
-            console.error ("Bluetooth is not connected. Cannot write to characteristic.")
-            window.alert("Bluetooth is not connected. Cannot write to characteristic. \n Connect to BLE first!")
-        }
-    }
-
-    function disconnectDevice() {
-        console.log("Disconnect Device.");
-        if (bleServer && bleServer.connected) {
-            if (sensorCharacteristicFound) {
-                sensorCharacteristicFound.stopNotifications()
-                    .then(() => {
-                        console.log("Notifications Stopped");
-                        return bleServer.disconnect();
-                    })
-                    .then(() => {
-                        console.log("Device Disconnected");
-                        bleStateContainer.innerHTML = "Device Disconnected";
-                        bleStateContainer.style.color = "#d13a30";
-
-                    })
-                    .catch(error => {
-                        console.log("An error occurred:", error);
-                    });
-            } else {
-                console.log("No characteristic found to disconnect.");
-            }
-        } else {
-            // Throw an error if Bluetooth is not connected
-            console.error("Bluetooth is not connected.");
-            window.alert("Bluetooth is not connected.")
-        }
-    }
-
-    function getDateTime() {
-        var currentdate = new Date();
-        var day = ("00" + currentdate.getDate()).slice(-2); // Convert day to string and slice
-        var month = ("00" + (currentdate.getMonth() + 1)).slice(-2);
-        var year = currentdate.getFullYear();
-        var hours = ("00" + currentdate.getHours()).slice(-2);
-        var minutes = ("00" + currentdate.getMinutes()).slice(-2);
-        var seconds = ("00" + currentdate.getSeconds()).slice(-2);
-
-        var datetime = day + "/" + month + "/" + year + " at " + hours + ":" + minutes + ":" + seconds;
-        return datetime;
-    }
-
-
-
-  // Ocultar automáticamente el panel de diagnóstico luego de 8 segundos
-  setTimeout(() => {
-    const blePanel = document.getElementById("ble-panel");
-    if (blePanel) {
-      blePanel.style.display = "none";
-    }
-  }, 8000);
-
-</script>
-
+  </script>
+  <div class="footer">
+    <p>v 1.0 Vainilla</p>
+  </div>
+</body>
 </html>
