@@ -2,11 +2,11 @@ const CACHE_NAME = 'camer-codex-cache-v1';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/style.css',
+  '/css/style.css',
   '/manifest.json',
   '/favicon.ico',
-  '/icon-192.png',
-  '/icon-512.png',
+  '/icon/icon-192.png',
+  '/icon/icon-512.png',
   // Agregá aquí cualquier carpeta o archivo extra que uses:
   '/audios/cartas.json',
   '/css/',
