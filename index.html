@@ -8,23 +8,22 @@
         <link rel="stylesheet" type="text/css" href="css/style.css">
         <meta charset="UTF-8">
         <link rel="manifest" href="manifest.json">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
       </head>
 <body>
-  <div class="topnav">
-    <h1>Camer Codex</h1>
-  </div>
-
-  <div class="content">
-    <p>Seleccioná una rutina:</p>
-    <ul class="rutina-lista">
-      <li><a href="rutinas/fuera-de-este-mundo.html">🧠 Fuera de Este Mundo</a></li>
-      <li><a href="rutinas/juego-pegriloso.html">🃏 Un Juego "Pegriloso"</a></li>
-      <!-- Más rutinas aquí -->
-    </ul>
+  <header>Camer Codex</header>
+  <div class="slogan">Tecnología Secreta para Ilusionistas</div>
+  <div class="menu">
+    <button onclick="location.href='rutinas/fuera-de-este-mundo.html'">🧠 Fuera de Este Mundo</button>
+    <button onclick="location.href='rutinas/juego-pegriloso.html'">🃏 Un Juego "Pegriloso"</button>
+<!-- Más rutinas aquí -->
   </div>
 
   <!-- Botón de instalación PWA -->
-  <button id="install-btn" style="display: none;">📲 Instalar Camer Codex</button>
+    <div class="install-container">
+    <button id="install-btn" disabled>📲 Instalar Camer Codex</button>
+  </div>
+  <footer>v 1.0 Vainilla</footer>
 
   <!-- Registro Service Worker -->
   <script>
@@ -61,8 +60,5 @@
       }
     });
   </script>
-  <div class="footer">
-    <p>v 1.0 Vainilla</p>
-  </div>
 </body>
 </html>

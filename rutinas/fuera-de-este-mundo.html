@@ -4,64 +4,49 @@
   <meta charset="UTF-8">
   <title>Fuera de Este Mundo - Camer Codex</title>
   <link rel="stylesheet" type="text/css" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-  <div class="topnav">
-    <h1>Fuera de Este Mundo</h1>
-  </div>
+  <header>Camer Codex</header>
+  <div class="slogan">Fuera de Este Mundo</div>
 
   <div class="content">
-      
-  
-    <div class="card-grid">
-        <div class="card">
-          <h2>Dispositivo Bluetooth (BLE)</h2>
-          <p>
-            <button id="connectBleButton" class="connectButton">
-              <img src="../icons/bluetooth.svg" alt="Bluetooth Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
-              Conectar    
-            </button>
-            <button id="disconnectBleButton" class="disconnectButton">
-              <img src="../icons/bluetooth_disabled.svg" alt="Bluetooth Off Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
-              Desconectar
-            </button>
-          </p>
-          <p class="gray-label">BLE state: <strong><span id="bleState" style="color:#d13a30;">Disconnected</span></strong></p>
-        <!-- Estado BLE-->
-          <div id="ble-messages" class="ble-diagnostic">
-            <p class="ble-ok">✅ Web Bluetooth disponible.</p>
-            <p class="ble-warning">⚠️ Se pedirá permiso de ubicación al usar BLE.</p>
-          </div>
-          <button id="checkBluetoothBtn">🔍 Revisar estado Bluetooth</button>
-  
+    <div class="card-grid single-column">
+      <div class="card dark-card">
+        <h2>Dispositivo Bluetooth (BLE)</h2>
+        <p>
+          <button id="connectBleButton" class="button-primary connectButton">🔗 Conectar</button>
+          <button id="disconnectBleButton" class="button-primary disconnectButton">❌ Desconectar</button>
+        </p>
+        <p class="gray-label">BLE state: <strong><span id="bleState" style="color:#d13a30;">Disconnected</span></strong></p>
+        <div id="ble-messages" class="ble-diagnostic inicialmente-oculto">
+          <p class="ble-ok">✅ Web Bluetooth disponible.</p>
+          <p class="ble-warning">⚠️ Se pedirá permiso de ubicación al usar BLE.</p>
         </div>
-    </div>
-    <div class="card-grid">
-      <div class="card">
+        <button id="checkBluetoothBtn" class="button-primary">🔍 Estado Bluetooth</button>
+      </div>
+
+      <div class="card dark-card highlighted-card">
         <h2>Carta</h2>
         <p class="reading"><span id="valueContainer">NaN</span></p>
         <p class="gray-label">Last reading: <span id="timestamp"></span></p>
       </div>
-      <div class="card">
+
+      <div class="card dark-card">
         <h2>LED Control dispositivo</h2>
-        <button id="onButton" class="onButton">ON</button>
-        <button id="offButton" class="offButton">OFF</button>
-        <p class="gray-label">Last value sent: <span id="valueSent"></span></p>        </div>
+        <button id="onButton" class="button-primary connectButton">ON</button>
+        <button id="offButton" class="button-primary disconnectButton">OFF</button>
+        <p class="gray-label">Last value sent: <span id="valueSent"></span></p>
+      </div>
+
+      <button onclick="window.location.href='../index.html'" class="button-secondary">← Volver al Menú</button>
     </div>
-</div>
-
-    <!-- Audio -->
-    <audio id="tagAudio" src="" preload="auto"></audio>
-
-    <!-- Botón volver -->
-    <button onclick="window.location.href='../index.html'">← Volver al Menú</button>
   </div>
 
-  
-  <div class="footer">
-    <p>v 1.0 Vainilla</p>
-  </div>
+  <footer>v 1.0 Vainilla</footer>
+
+  <audio id="tagAudio" src="" preload="auto"></audio>
   <script src="../js/main.js"></script>
 </body>
 </html>
-

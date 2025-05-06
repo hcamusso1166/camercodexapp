@@ -48,16 +48,6 @@ document.addEventListener("DOMContentLoaded", function () {
       
     const bleMessages = document.getElementById("ble-messages");
     const checkBtn = document.getElementById("checkBluetoothBtn");
-
-    // Mostrar automáticamente al cargar
-    if (bleMessages) {
-      bleMessages.classList.add("visible");
-      setTimeout(() => {
-        bleMessages.classList.remove("visible");
-      }, 5000);
-    }
-
-
     
     if (bleMessages && checkBtn) {
         // Al hacer clic, mostrar el mensaje BLE con animación

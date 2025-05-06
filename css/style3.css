@@ -322,6 +322,8 @@ text-align: center;
   opacity: 1;
   visibility: visible;
 }
+
+
 /* 1. Mostrar/ocultar BLE Messages sin ocupar espacio */
 #ble-messages {
   background-color: #1c1c2a;
