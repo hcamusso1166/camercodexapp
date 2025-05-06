@@ -5,12 +5,13 @@ const urlsToCache = [
   '/css/style.css',
   '/manifest.json',
   '/favicon.ico',
-  '/icon/icon-192.png',
-  '/icon/icon-512.png',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
   '/audios/cartas.json'
 ];
 
 // Instalación del Service Worker y cacheo inicial
+
 self.addEventListener('install', (event) => {
   console.log('[ServiceWorker] Installing...');
   event.waitUntil(
@@ -24,6 +25,8 @@ self.addEventListener('install', (event) => {
       })
   );
 });
+
+
 
 // Activación y limpieza de cachés viejas
 self.addEventListener('activate', (event) => {
