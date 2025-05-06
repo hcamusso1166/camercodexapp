@@ -45,14 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("No se pudo verificar permisos de ubicación:", err);
       });
     }
-    
-    // Verificamos si el servidor BLE está conectado
-
-  if (!bleServer || !bleServer.connected) {
-    console.warn("🔁 Bluetooth no conectado. Esperando que el usuario haga clic para conectar...");
-    // Podés opcionalmente habilitar un botón aquí si querés forzar reconexión manual
-  }
-  
+      
   const bleMessages = document.getElementById("ble-messages");
   const checkBtn = document.getElementById("checkBluetoothBtn");
   
