@@ -10,21 +10,49 @@ const urlsToCache = [
   '/audios/cartas.json'
 ];
 
-// Instalación del Service Worker y cacheo inicial
-
+//luego reemplazar
 self.addEventListener('install', (event) => {
   console.log('[ServiceWorker] Installing...');
+
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('[ServiceWorker] Caching app shell');
-        return cache.addAll(urlsToCache);
+      .then(async (cache) => {
+        console.log('[ServiceWorker] Caching files one by one...');
+        for (const url of urlsToCache) {
+          try {
+            const response = await fetch(url);
+            if (!response.ok) {
+              throw new Error(`Request for ${url} failed with status ${response.status}`);
+            }
+            await cache.put(url, response);
+            console.log(`[ServiceWorker] Cached: ${url}`);
+          } catch (err) {
+            console.error(`[ServiceWorker] Failed to cache: ${url}`, err);
+          }
+        }
       })
       .catch((err) => {
-        console.error('[ServiceWorker] Error caching app shell:', err);
+        console.error('[ServiceWorker] General cache error:', err);
       })
   );
 });
+//
+
+// Instalación del Service Worker y cacheo inicial
+
+//self.addEventListener('install', (event) => {
+//  console.log('[ServiceWorker] Installing...');
+//  event.waitUntil(
+//    caches.open(CACHE_NAME)
+//      .then((cache) => {
+//        console.log('[ServiceWorker] Caching app shell');
+//        return cache.addAll(urlsToCache);
+//      })
+//      .catch((err) => {
+//        console.error('[ServiceWorker] Error caching app shell:', err);
+//      })
+//  );
+//});
 
 
 
