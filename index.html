@@ -36,25 +36,30 @@
 
   <!-- Instalación PWA -->
   <script>
-    let deferredPrompt;
-    const installBtn = document.getElementById('installBtn');
+  let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installBtn.disabled = false;
-    });
+// Mostrar el botón solo si es en un dispositivo móvil
+if ('beforeinstallprompt' in window) {
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.disabled = false;
+  });
 
-    installBtn.addEventListener('click', async () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-          console.log('App instalada');
-        }
-        deferredPrompt = null;
+  installBtn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log('App instalada');
       }
-    });
+      deferredPrompt = null;
+    }
+  });
+}
+
+
   </script>
 </body>
 </html>

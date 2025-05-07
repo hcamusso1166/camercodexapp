@@ -72,6 +72,17 @@ header {
   width: 90%;
   max-width: 300px;
   padding: 12px;
+  display: none; /* Ocultar por defecto */
+}
+
+@media (max-width: 768px) {
+  /* Mostrar solo en dispositivos móviles */
+  #installBtn {
+    display: block;
+  }
+}
+#installBtn:hover {
+  background-color: #d99c36;
 }
 #installBtn:disabled {
   opacity: 0.5;
