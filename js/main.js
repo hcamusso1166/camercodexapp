@@ -21,7 +21,7 @@ function esDispositivoMovil() {
 
 if (esAppInstalada()) {
   console.log("La PWA ya está instalada. No se muestra el botón.");
-  installBtn.style.display = 'none'; // Ocultar el botón si la PWA ya está instalada
+  if (installBtn) installBtn.style.display = 'none'; // Ocultar el botón si la PWA ya está instalada
 } else {
   window.addEventListener('beforeinstallprompt', (e) => {
     try {
@@ -46,6 +46,7 @@ if (esAppInstalada()) {
           deferredPrompt.userChoice.then((choiceResult) => {
             if (choiceResult.outcome === 'accepted') {
               console.log('👍 Instalación aceptada');
+              installBtn.style.display = 'none';
             } else {
               console.log('👎 Instalación cancelada');
             }
