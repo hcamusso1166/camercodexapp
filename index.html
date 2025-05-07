@@ -23,7 +23,7 @@
     <div class="install-container">
     <button id="installBtn" disabled>📲 Instalar Camer Codex</button>
   </div>
-  <footer>v 1.1 Vainilla</footer>
+  <footer>v 1.2 Vainilla</footer>
 
   <!-- Registro Service Worker -->
   <script>
@@ -36,12 +36,13 @@
 
   <!-- Instalación PWA -->
   <script>
-  let deferredPrompt;
+let deferredPrompt;
 const installBtn = document.getElementById('installBtn');
 
 // Mostrar el botón solo si es en un dispositivo móvil
 if ('beforeinstallprompt' in window) {
   window.addEventListener('beforeinstallprompt', (e) => {
+    // Previene la instalación automática
     e.preventDefault();
     deferredPrompt = e;
     installBtn.disabled = false;
@@ -49,6 +50,7 @@ if ('beforeinstallprompt' in window) {
 
   installBtn.addEventListener('click', async () => {
     if (deferredPrompt) {
+      // Muestra el prompt de instalación
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === 'accepted') {
