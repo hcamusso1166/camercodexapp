@@ -23,7 +23,7 @@
     <div class="install-container">
     <button id="installBtn" disabled>📲 Instalar Camer Codex</button>
   </div>
-  <footer>v 1.2 Vainilla</footer>
+  <footer>v 1.3 Vainilla</footer>
 
   <!-- Registro Service Worker -->
   <script>
@@ -36,32 +36,41 @@
 
   <!-- Instalación PWA -->
   <script>
-let deferredPrompt;
-const installBtn = document.getElementById('installBtn');
+  let deferredPrompt;
+  const installBtn = document.getElementById('installBtn');
+  // Detectar si el usuario está en un dispositivo móvil
+  function esDispositivoMovil() {
+    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  }
 
-// Mostrar el botón solo si es en un dispositivo móvil
-if ('beforeinstallprompt' in window) {
   window.addEventListener('beforeinstallprompt', (e) => {
-    // Previene la instalación automática
+    if (!esDispositivoMovil()) {
+      console.warn('🖥️ Entorno de escritorio detectado: el botón de instalación no se mostrará.');
+      return;
+    }
+
     e.preventDefault();
     deferredPrompt = e;
-    installBtn.disabled = false;
-  });
 
-  installBtn.addEventListener('click', async () => {
-    if (deferredPrompt) {
-      // Muestra el prompt de instalación
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        console.log('App instalada');
-      }
-      deferredPrompt = null;
+    const installBtn = document.getElementById('installBtn');
+    if (installBtn) {
+      installBtn.style.display = 'inline-block';
+
+      installBtn.addEventListener('click', () => {
+        installBtn.style.display = 'none';
+        deferredPrompt.prompt();
+
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('👍 Instalación aceptada');
+          } else {
+            console.log('👎 Instalación cancelada');
+          }
+          deferredPrompt = null;
+        });
+      });
     }
   });
-}
-
-
   </script>
 </body>
 </html>
