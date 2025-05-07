@@ -36,42 +36,41 @@
 
   <!-- Instalación PWA -->
   <script>
-  let deferredPrompt;
-  const installBtn = document.getElementById('installBtn');
-  // Detectar si el usuario está en un dispositivo móvil
-  function esDispositivoMovil() {
-    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  }
+let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
 
+// Verificamos si el evento `beforeinstallprompt` está disponible
+if ('beforeinstallprompt' in window) {
   window.addEventListener('beforeinstallprompt', (e) => {
-    if (!esDispositivoMovil()) {
-      console.warn('🖥️ Entorno de escritorio detectado: el botón de instalación no se mostrará.');
-      return;
-    }
-
-    e.preventDefault();
+    console.log("beforeinstallprompt disparado");
+    e.preventDefault();  // Prevent the mini-infobar from appearing on mobile
     deferredPrompt = e;
 
-    const installBtn = document.getElementById('installBtn');
-    if (installBtn) {
-      installBtn.style.display = 'inline-block';
+    // Hacer visible el botón de instalación
+    installBtn.disabled = false;
+    installBtn.style.display = 'inline-block';
 
-      installBtn.addEventListener('click', async () => {
-  console.log("Botón de instalación presionado");
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      console.log('App instalada');
-    } else {
-      console.log('Instalación cancelada');
-    }
-    deferredPrompt = null;
-  }
-});
+    // Al hacer clic en el botón de instalación
+    installBtn.addEventListener('click', async () => {
+      console.log("Botón de instalación presionado");
+      if (deferredPrompt) {
+        deferredPrompt.prompt();  // Muestra el banner de instalación
+        const { outcome } = await deferredPrompt.userChoice;
 
-    }
+        // Log para verificar si la instalación fue aceptada o no
+        if (outcome === 'accepted') {
+          console.log('👍 Instalación aceptada');
+        } else {
+          console.log('👎 Instalación cancelada');
+        }
+        deferredPrompt = null;  // Resetea la variable
+      }
+    });
   });
+} else {
+  console.log("Este navegador no soporta instalación de PWA.");
+}
+
   </script>
 </body>
 </html>
