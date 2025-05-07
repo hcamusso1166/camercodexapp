@@ -23,7 +23,7 @@
     <div class="install-container">
     <button id="installBtn" disabled>📲 Instalar Camer Codex</button>
   </div>
-  <footer>v 1.2  Vainilla</footer>
+  <footer>v 2.0  Vainilla</footer>
 
   <!-- Registro Service Worker -->
   <script>
@@ -55,6 +55,7 @@ if (esAppInstalada()) {
   installBtn.style.display = 'none'; // Ocultar el botón si la PWA ya está instalada
 } else {
   window.addEventListener('beforeinstallprompt', (e) => {
+    try { 
     if (!esDispositivoMovil()) {
       console.warn('🖥️ Entorno de escritorio detectado: el botón de instalación no se mostrará.');
       console.log("no es dispositivo movil");
@@ -82,9 +83,39 @@ if (esAppInstalada()) {
           }
           deferredPrompt = null;
         });
-      });
+        });
+      }
+    } catch (error) {
+      console.error("Error en la instalación o configuración de PWA:", error);
     }
   });
+}
+// Manejo de errores para la geolocalización y Bluetooth (si no se usa)
+try {
+  // Intento de registrar o usar servicios de localización (no necesarios para tu caso)
+  if ('geolocation' in navigator) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        console.log("Localización obtenida:", position);
+      },
+      (error) => {
+        console.warn("Error al obtener localización:", error);
+      }
+    );
+  }
+} catch (error) {
+  console.error("Error relacionado con la geolocalización:", error);
+}
+
+try {
+  // Intento de usar BLE, asegurándonos de que la API esté disponible
+  if (!navigator.bluetooth) {
+    console.warn("Web Bluetooth no disponible en este navegador.");
+  } else {
+    console.log("Web Bluetooth disponible.");
+  }
+} catch (error) {
+  console.error("Error relacionado con la conexión Bluetooth:", error);
 }
 
 </script>
