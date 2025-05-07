@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const latestValueSent = document.getElementById('valueSent');
   const bleStateContainer = document.getElementById('bleState');
   const timestampContainer = document.getElementById('timestamp');
-  const installButton = document.getElementById('install-btn'); 
+  const installButton = document.getElementById('installBtn'); 
 
   //Define BLE Device Specs
   var deviceName ='MrCamerDev1.0';

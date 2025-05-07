@@ -21,7 +21,7 @@
 
   <!-- Botón de instalación PWA -->
     <div class="install-container">
-    <button id="install-btn" disabled>📲 Instalar Camer Codex</button>
+    <button id="installBtn" disabled>📲 Instalar Camer Codex</button>
   </div>
   <footer>v 1.0 Vainilla</footer>
 
@@ -37,26 +37,22 @@
   <!-- Instalación PWA -->
   <script>
     let deferredPrompt;
-    function esDispositivoMovil() {
-      return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    }
+    const installBtn = document.getElementById('installBtn');
 
     window.addEventListener('beforeinstallprompt', (e) => {
-      if (!esDispositivoMovil()) return;
-
       e.preventDefault();
       deferredPrompt = e;
-      const installBtn = document.getElementById('install-btn');
-      if (installBtn) {
-        installBtn.style.display = 'inline-block';
-        installBtn.addEventListener('click', () => {
-          installBtn.style.display = 'none';
-          deferredPrompt.prompt();
-          deferredPrompt.userChoice.then(choiceResult => {
-            console.log('Resultado instalación:', choiceResult.outcome);
-            deferredPrompt = null;
-          });
-        });
+      installBtn.disabled = false;
+    });
+
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          console.log('App instalada');
+        }
+        deferredPrompt = null;
       }
     });
   </script>

@@ -64,7 +64,7 @@ header {
   margin-top: auto;
   padding: 20px 0 0;
 }
-#install-btn {
+#installBtn {
   background-color: #0c0c0c;
   color: #f3b13f;
   border: 1px solid #f3b13f;
@@ -73,7 +73,7 @@ header {
   max-width: 300px;
   padding: 12px;
 }
-#install-btn:disabled {
+#installBtn:disabled {
   opacity: 0.5;
   cursor: default;
 }
