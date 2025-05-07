@@ -23,7 +23,7 @@
     <div class="install-container">
     <button id="installBtn" disabled>📲 Instalar Camer Codex</button>
   </div>
-  <footer>v 1.1  Vainilla</footer>
+  <footer>v 1.2  Vainilla</footer>
 
   <!-- Registro Service Worker -->
   <script>
@@ -36,23 +36,25 @@
 
 <!--Instalacion PWA-->
 <script>
-  let deferredPrompt;
-  const installBtn = document.getElementById('installBtn');
-  console.log("luego del let deferredPrompt");
-  // Detectar si la app está instalada (modo standalone)
+let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
+
+// Detectar si la app está instalada (modo standalone)
 function esAppInstalada() {
   return window.matchMedia('(display-mode: standalone)').matches;
 }
-  // Detectar si el usuario está en un dispositivo móvil
-  function esDispositivoMovil() {
-    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  }
 
+// Detectar si el usuario está en un dispositivo móvil
+function esDispositivoMovil() {
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+// Verificar si la PWA ya está instalada y bloquear la aparición del botón
+if (esAppInstalada()) {
+  console.log("La PWA ya está instalada. No se muestra el botón.");
+  installBtn.style.display = 'none'; // Ocultar el botón si la PWA ya está instalada
+} else {
   window.addEventListener('beforeinstallprompt', (e) => {
-    if (esAppInstalada()) {
-    console.log("La PWA ya está instalada. No se muestra el botón.");
-    return;  // No hacer nada si ya está instalada
-  }
     if (!esDispositivoMovil()) {
       console.warn('🖥️ Entorno de escritorio detectado: el botón de instalación no se mostrará.');
       console.log("no es dispositivo movil");
@@ -62,11 +64,11 @@ function esAppInstalada() {
     e.preventDefault();
     deferredPrompt = e;
 
-   
     if (installBtn) {
       installBtn.style.display = 'inline-block';
       installBtn.disabled = false;
-      console.log("es installBtn");
+      console.log("Botón de instalación visible");
+
       installBtn.addEventListener('click', () => {
         console.log("Botón de instalación presionado");
         installBtn.style.display = 'none';
@@ -83,6 +85,8 @@ function esAppInstalada() {
       });
     }
   });
+}
+
 </script>
   <!-- Instalación PWA 
   <script>
