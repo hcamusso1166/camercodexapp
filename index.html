@@ -56,19 +56,20 @@
     if (installBtn) {
       installBtn.style.display = 'inline-block';
 
-      installBtn.addEventListener('click', () => {
-        installBtn.style.display = 'none';
-        deferredPrompt.prompt();
+      installBtn.addEventListener('click', async () => {
+  console.log("Botón de instalación presionado");
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      console.log('App instalada');
+    } else {
+      console.log('Instalación cancelada');
+    }
+    deferredPrompt = null;
+  }
+});
 
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('👍 Instalación aceptada');
-          } else {
-            console.log('👎 Instalación cancelada');
-          }
-          deferredPrompt = null;
-        });
-      });
     }
   });
   </script>
