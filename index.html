@@ -23,7 +23,7 @@
     <div class="install-container">
     <button id="installBtn" disabled>📲 Instalar Camer Codex</button>
   </div>
-  <footer>v 1.4 Vainilla</footer>
+  <footer>v 1.0 Vainilla</footer>
 
   <!-- Registro Service Worker -->
   <script>
@@ -37,7 +37,7 @@
 <!--Instalacion PWA-->
 <script>
   let deferredPrompt;
-
+  console.log("luego del let deferredPrompt");
   // Detectar si el usuario está en un dispositivo móvil
   function esDispositivoMovil() {
     return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -46,6 +46,7 @@
   window.addEventListener('beforeinstallprompt', (e) => {
     if (!esDispositivoMovil()) {
       console.warn('🖥️ Entorno de escritorio detectado: el botón de instalación no se mostrará.');
+      console.log("no es dispositivo movil");
       return;
     }
 
@@ -55,8 +56,10 @@
     const installBtn = document.getElementById('installBtn');
     if (installBtn) {
       installBtn.style.display = 'inline-block';
-
+      installBtn.disabled = false;
+      console.log("es installBtn");
       installBtn.addEventListener('click', () => {
+        console.log("Botón de instalación presionado");
         installBtn.style.display = 'none';
         deferredPrompt.prompt();
 
