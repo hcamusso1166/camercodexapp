@@ -209,7 +209,6 @@ document.addEventListener("DOMContentLoaded", function () {
           console.log("Tag:", tag, "→ Archivo:", archivo);
       });
 
-      mostrarCartaVisual(tag); // 👈 muestra en pantalla la carta también
   } else {
       console.warn(`No se encontró archivo de audio para: ${tag}`);
       console.log("Tag:", tag, "→ Archivo:", archivo);
@@ -217,22 +216,7 @@ document.addEventListener("DOMContentLoaded", function () {
       audio.load(); // Resetea el elemento <audio>
   }
   }
-
-  function mostrarCartaVisual(tag) {
-      const display = document.getElementById('cartaDisplay');
-      display.innerText = tag;
-      display.style.display = 'block';
-      display.style.opacity = 1;
-
-      setTimeout(() => {
-          display.style.opacity = 0;
-          setTimeout(() => {
-              display.style.display = 'none';
-          }, 300);
-      }, 2000);
-  }
-
-
+// Write to the LED characteristic
   function writeOnCharacteristic(value){
       if (bleServer && bleServer.connected) {
           bleServiceFound.getCharacteristic(ledCharacteristic)
