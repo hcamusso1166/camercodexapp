@@ -1,69 +1,5 @@
 // main.js - lógica BLE y funciones compartidas
-
-// Registro del Service Worker
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('service-worker.js')
-    .then(reg => {
-      console.log("✅ Service Worker registrado:", reg);
-    })
-    .catch(err => console.error("❌ Error al registrar SW:", err));
-}
-
-// Instalación de la PWA
-let deferredPrompt;
-const installBtn = document.getElementById('installBtn');
-
-// Detectar si la app está instalada (modo standalone)
-function esAppInstalada() {
-  return window.matchMedia('(display-mode: standalone)').matches;
-}
-
-// Detectar si el usuario está en un dispositivo móvil
-function esDispositivoMovil() {
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
-
-// Verificar si la PWA ya está instalada y bloquear la aparición del botón
-if (esAppInstalada()) {
-  console.log("La PWA ya está instalada. No se muestra el botón.");
-  installBtn.style.display = 'none'; // Ocultar el botón si la PWA ya está instalada
-} else {
-  window.addEventListener('beforeinstallprompt', (e) => {
-    try {
-      if (!esDispositivoMovil()) {
-        console.warn('🖥️ Entorno de escritorio detectado: el botón de instalación no se mostrará.');
-        return;
-      }
-
-      e.preventDefault();
-      deferredPrompt = e;
-
-      if (installBtn) {
-        installBtn.style.display = 'inline-block';
-        installBtn.disabled = false;
-        console.log("Botón de instalación visible");
-
-        installBtn.addEventListener('click', () => {
-          console.log("Botón de instalación presionado");
-          installBtn.style.display = 'none';
-          deferredPrompt.prompt();
-
-          deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-              console.log('👍 Instalación aceptada');
-            } else {
-              console.log('👎 Instalación cancelada');
-            }
-            deferredPrompt = null;
-          });
-        });
-      }
-    } catch (error) {
-      console.error("Error en la instalación o configuración de PWA:", error);
-    }
-  });
-}
-// Manejo de eventos de instalación
+console.log("Camer Codex - main.js cargado");
 
 function logOutput(message) {
     const output = document.getElementById("output");
@@ -343,5 +279,4 @@ document.addEventListener("DOMContentLoaded", function () {
       return datetime;
   }
 
-  console.log("Camer Codex - main.js cargado");
 
