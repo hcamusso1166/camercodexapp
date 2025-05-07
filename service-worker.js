@@ -55,3 +55,11 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'requestData') {
+    console.log("[Service Worker] Datos solicitados recibidos");
+
+    // Responder al mensaje
+    event.ports[0].postMessage({ status: 'success', data: 'Aquí están los datos solicitados' });
+  }
+});
