@@ -55,16 +55,4 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'requestData') {
-    console.log("[Service Worker] Datos solicitados recibidos");
-
-    // Verifica que el puerto esté disponible
-    if (event.ports && event.ports.length > 0) {
-      event.ports[0].postMessage({ status: 'success', data: 'Aquí están los datos solicitados' });
-    } else {
-      console.error("[Service Worker] No se pudo enviar el mensaje de vuelta: no se recibió el puerto de comunicación.");
-    }
-  }
-});
 
