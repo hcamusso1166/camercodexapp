@@ -23,7 +23,7 @@
     <div class="install-container">
     <button id="installBtn" disabled>📲 Instalar Camer Codex</button>
   </div>
-  <footer>v 1.0 Vainilla</footer>
+  <footer>v 1.1  Vainilla</footer>
 
   <!-- Registro Service Worker -->
   <script>
@@ -37,13 +37,22 @@
 <!--Instalacion PWA-->
 <script>
   let deferredPrompt;
+  const installBtn = document.getElementById('installBtn');
   console.log("luego del let deferredPrompt");
+  // Detectar si la app está instalada (modo standalone)
+function esAppInstalada() {
+  return window.matchMedia('(display-mode: standalone)').matches;
+}
   // Detectar si el usuario está en un dispositivo móvil
   function esDispositivoMovil() {
     return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   }
 
   window.addEventListener('beforeinstallprompt', (e) => {
+    if (esAppInstalada()) {
+    console.log("La PWA ya está instalada. No se muestra el botón.");
+    return;  // No hacer nada si ya está instalada
+  }
     if (!esDispositivoMovil()) {
       console.warn('🖥️ Entorno de escritorio detectado: el botón de instalación no se mostrará.');
       console.log("no es dispositivo movil");
@@ -53,7 +62,7 @@
     e.preventDefault();
     deferredPrompt = e;
 
-    const installBtn = document.getElementById('installBtn');
+   
     if (installBtn) {
       installBtn.style.display = 'inline-block';
       installBtn.disabled = false;
