@@ -41,13 +41,11 @@ if ('serviceWorker' in navigator) {
         console.log("Respuesta del Service Worker:", event.data);
       };
 
-      // Enviar mensaje al Service Worker
+      // Enviar mensaje al Service Worker con el puerto de comunicación
       reg.active.postMessage({ type: 'requestData' }, [channel.port2]);
     })
     .catch(err => console.error("❌ Error al registrar SW:", err));
 }
-
-
   </script>
 
 <!--Instalacion PWA-->
