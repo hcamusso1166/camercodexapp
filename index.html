@@ -33,22 +33,20 @@ if ('serviceWorker' in navigator) {
     .then(reg => {
       console.log("✅ Service Worker registrado:", reg);
 
-      // Envía un mensaje al Service Worker después de que se registre
-      reg.active.postMessage({ type: 'requestData' });
+      // Crear un canal para la comunicación
+      const channel = new MessageChannel();
 
-      // Escucha los mensajes del Service Worker
-      navigator.serviceWorker.addEventListener('message', (event) => {
-        try {
-          if (event.data) {
-            console.log("Mensaje del Service Worker:", event.data);
-          }
-        } catch (error) {
-          console.error("Error al procesar el mensaje del Service Worker:", error);
-        }
-      });
+      // Escuchar la respuesta del Service Worker
+      channel.port1.onmessage = (event) => {
+        console.log("Respuesta del Service Worker:", event.data);
+      };
+
+      // Enviar mensaje al Service Worker
+      reg.active.postMessage({ type: 'requestData' }, [channel.port2]);
     })
     .catch(err => console.error("❌ Error al registrar SW:", err));
 }
+
 
   </script>
 
