@@ -39,37 +39,39 @@
 let deferredPrompt;
 const installBtn = document.getElementById('installBtn');
 
-// Verificamos si el evento `beforeinstallprompt` está disponible
+// Verificamos si el evento 'beforeinstallprompt' está disponible
 if ('beforeinstallprompt' in window) {
   window.addEventListener('beforeinstallprompt', (e) => {
     console.log("beforeinstallprompt disparado");
-    e.preventDefault();  // Prevent the mini-infobar from appearing on mobile
+    e.preventDefault();
     deferredPrompt = e;
 
-    // Hacer visible el botón de instalación
+    const installBtn = document.getElementById('installBtn');
     installBtn.disabled = false;
     installBtn.style.display = 'inline-block';
 
-    // Al hacer clic en el botón de instalación
+    // Log para verificar que el botón se hizo visible y habilitable
+    console.log("Botón de instalación habilitado");
+
     installBtn.addEventListener('click', async () => {
       console.log("Botón de instalación presionado");
       if (deferredPrompt) {
-        deferredPrompt.prompt();  // Muestra el banner de instalación
+        deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
 
-        // Log para verificar si la instalación fue aceptada o no
         if (outcome === 'accepted') {
           console.log('👍 Instalación aceptada');
         } else {
           console.log('👎 Instalación cancelada');
         }
-        deferredPrompt = null;  // Resetea la variable
+        deferredPrompt = null;
       }
     });
   });
 } else {
   console.log("Este navegador no soporta instalación de PWA.");
 }
+
 
   </script>
 </body>
