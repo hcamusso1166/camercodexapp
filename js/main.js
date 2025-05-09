@@ -1,4 +1,9 @@
 console.log("Camer Codex - main.js cargado");
+// main.js
+window.addEventListener('DOMContentLoaded', (event) => {
+  // Asignar la versión al footer
+  document.getElementById('appVersion').textContent = appVersion;
+});
 
 // Registro del Service Worker
 if ('serviceWorker' in navigator) {
@@ -181,7 +186,15 @@ function isWebBluetoothEnabled() {
   console.log('Web Bluetooth API supported in this browser.');
   return true;
 }
-
+// Función que limpia los TAGs y valores anteriores
+function limpiarDatos() {
+  // Limpiar valores visuales
+  retrievedValue.innerHTML = '';  // Limpia el valor visual del TAG
+  latestValueSent.innerHTML = ''; // Limpia el valor enviado
+  timestampContainer.innerHTML = ''; // Limpia la fecha y hora
+ 
+  console.log("Datos limpiados");
+}
 // Connect to BLE Device
 function connectToDevice() {
   console.log('Initializing Bluetooth...');
@@ -191,8 +204,10 @@ function connectToDevice() {
   })
     .then(device => {
       console.log('Device Selected:', device.name);
-      bleStateContainer.innerHTML = 'Connected to device ' + device.name;
+      bleStateContainer.innerHTML = device.name;
       bleStateContainer.style.color = "#24af37";
+      // Limpiar datos antes de la nueva conexión
+      limpiarDatos();  // Limpiar TAGs y arrays previos
       device.addEventListener('gattservicedisconnected', onDisconnected);
       return device.gatt.connect();
     })
@@ -209,17 +224,15 @@ function connectToDevice() {
     .then(characteristic => {
       console.log("Characteristic discovered:", characteristic.uuid);
       sensorCharacteristicFound = characteristic;
+      // Limpiar cualquier valor persistente en la característica antes de empezar
+      characteristic.writeValue(new Uint8Array([0])).then(() => {
+        console.log("Característica BLE reiniciada.");
       characteristic.addEventListener('characteristicvaluechanged', handleCharacteristicChange);
       characteristic.startNotifications();
       console.log("Notifications Started.");
-      return characteristic.readValue();
+    });
     })
-    .then(value => {
-      console.log("Read value: ", value);
-      const decodedValue = new TextDecoder().decode(value);
-      console.log("Decoded value: ", decodedValue);
-      retrievedValue.innerHTML = decodedValue;
-    })
+
     .catch(error => {
       console.log('Error: ', error);
     });
@@ -232,6 +245,7 @@ function onDisconnected(event) {
   connectToDevice();
 }
 
+// Handle characteristic value changes
 function handleCharacteristicChange(event) {
   const valor = new TextDecoder().decode(event.target.value).trim();
   console.log("Characteristic value changed: ", valor);
@@ -239,7 +253,13 @@ function handleCharacteristicChange(event) {
   timestampContainer.innerHTML = getDateTime();
   const mvalor = valor[0] + valor[1];
   reproducirAudioParaTag(mvalor);
+
+  // Validar si estamos en elefantes.html antes de llamar a la función de guardar el TAG
+  if (window.location.pathname.includes("elefantes.html")) {
+    guardarTagEnRutinaElefante(mvalor);
+  }
 }
+
 
 function reproducirAudioParaTag(tag) {
   const audio = document.getElementById("tagAudio");
@@ -261,7 +281,14 @@ function reproducirAudioParaTag(tag) {
     audio.load();
   }
 }
-
+// Función para comunicar el TAG a elefante.js
+function guardarTagEnRutinaElefante(tag) {
+  if (typeof guardarTag === 'function') {
+    guardarTag(tag);  // Llamamos a la función definida en elefante.js
+  }
+}
+// Función para escribir en la característica del LED
+// Esta función se llama desde los botones de encendido y apagado
 function writeOnCharacteristic(value) {
   if (bleServer && bleServer.connected) {
     bleServiceFound.getCharacteristic(ledCharacteristic)
