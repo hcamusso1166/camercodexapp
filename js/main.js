@@ -205,7 +205,7 @@ function connectToDevice() {
     .then(device => {
       console.log('Device Selected:', device.name);
       bleStateContainer.innerHTML = device.name;
-      bleStateContainer.style.color = "#24af37";
+      //bleStateContainer.style.color = "#24af37";
       // Limpiar datos antes de la nueva conexión
       limpiarDatos();  // Limpiar TAGs y arrays previos
       device.addEventListener('gattservicedisconnected', onDisconnected);
@@ -230,6 +230,7 @@ function connectToDevice() {
       characteristic.addEventListener('characteristicvaluechanged', handleCharacteristicChange);
       characteristic.startNotifications();
       console.log("Notifications Started.");
+      bleStateContainer.style.color = "#24af37";
     });
     })
 
@@ -247,16 +248,29 @@ function onDisconnected(event) {
 
 // Handle characteristic value changes
 function handleCharacteristicChange(event) {
+  
   const valor = new TextDecoder().decode(event.target.value).trim();
   console.log("Characteristic value changed: ", valor);
   retrievedValue.innerHTML = valor[0] + valor[1];
   timestampContainer.innerHTML = getDateTime();
   const mvalor = valor[0] + valor[1];
-  reproducirAudioParaTag(mvalor);
+  // reproducirAudioParaTag(mvalor);
+  //Validar si estamos en fuera-de-este-mundo.html antes de llamar a la función de reproducir el TAG
+  if (window.location.pathname.includes("fuera-de-este-mundo.html")) {
+    console.log("Estamos en fuera-de-este-mundo.html");
+    console.log("Tag:", mvalor);
+    reproducirAudioParaTag(mvalor);
+  }
 
   // Validar si estamos en elefantes.html antes de llamar a la función de guardar el TAG
   if (window.location.pathname.includes("elefantes.html")) {
     guardarTagEnRutinaElefante(mvalor);
+  }
+  // Validar si estamos en momias.html antes de llamar a la función de reproducir  el TAG
+  if (window.location.pathname.includes("momias.html")) {
+    console.log("Estamos en momias.html");
+    console.log("Tag:", mvalor);
+    reproducirAudioTagEnRutinaMomias(mvalor);
   }
 }
 
@@ -281,10 +295,19 @@ function reproducirAudioParaTag(tag) {
     audio.load();
   }
 }
+
 // Función para comunicar el TAG a elefante.js
 function guardarTagEnRutinaElefante(tag) {
   if (typeof guardarTag === 'function') {
     guardarTag(tag);  // Llamamos a la función definida en elefante.js
+  }
+}
+// Función para comunicar el TAG a elefante.js
+function reproducirAudioTagEnRutinaMomias(tag) {
+  console.log("Tag recibido en momias.js:", tag);
+  if (typeof reproducirColor === 'function') {
+    console.log("Llamando a la función reproducircolores en momias.js");
+    reproducirColor(tag);  // Llamamos a la función definida en momias.js
   }
 }
 // Función para escribir en la característica del LED

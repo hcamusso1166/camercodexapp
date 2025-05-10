@@ -6,6 +6,7 @@ let cadencia = 2000;  // Cadencia de audio en ms (puedes configurarlo)
 
 // Esta función será llamada desde main.js para almacenar el TAG y realizar la lógica de la dada
 function guardarTag(tag) {
+  reproducirAudioParaTag(tag);// Reproducir el audio de la carta
   if (!finDada) {
     if (pila.includes(tag)) {
       // Se detectó que una carta fue pasada dos veces, fin de la dada
