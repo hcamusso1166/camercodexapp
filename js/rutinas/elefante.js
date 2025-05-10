@@ -13,7 +13,7 @@ function guardarTag(tag) {
       finDada = true;
       // enviar audio 'STOP' despues de 2 segundos
       setTimeout(function() {
-        reproducirAudio("STOP");
+        reproducirAudio("stop"); // Reproducir el audio de "STOP"
       },2000);
       
       console.log("Se reprodujo audio Stop");
