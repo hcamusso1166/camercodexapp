@@ -10,22 +10,26 @@
 </head>
 <body>
   <header>Camer Codex</header>
-  <div class="slogan">Memoria de Elefante</div>
+  <div class="rutina">Memoria de Elefante</div>
 
   <div class="content">
     <div class="card-grid single-column">
       <div class="card dark-card">
           <h2>Dispositivo Bluetooth (BLE)</h2>
           <p>
-            <button id="connectBleButton" class="button-primary connectButton">🔗 Conectar</button>
-            <button id="disconnectBleButton" class="button-primary disconnectButton">❌ Desconectar</button>
+            <button id="connectBleButton" class="button-primary connectButton"><img src="../icons/bluetooth.svg" alt="Bluetooth Icon" id="icon-left">
+               Conectar
+            </button>
+            <button id="disconnectBleButton" class="button-primary disconnectButton"><img src="../icons/bluetooth_disabled.svg" alt="Disconnect Bluetooth Icon" id="icon-left">
+               Desconectar
+            </button>
           </p>
           <p class="gray-label">BLE state: <strong><span id="bleState" style="color:#d13a30;">Disconnected</span></strong></p>
           <div id="ble-messages" class="ble-diagnostic inicialmente-oculto">
-            <p class="ble-ok">✅ Web Bluetooth disponible.</p>
-            <p class="ble-warning">⚠️ Se pedirá permiso.</p>
+            <p class="ble-ok"><img src="../icons/check_F3B13F.svg" alt="Check Bluetooth" id="icon-small"> Web Bluetooth disponible.</p>
+            <p class="ble-warning"><img src="../icons/warning_F3B13F.svg" alt="Warning Icon" id="icon-small"> Se pedirá permiso.</p>
         </div>
-        <button id="checkBluetoothBtn" class="button-primary">🔍 Estado Bluetooth</button>
+        <button id="checkBluetoothBtn" class="button-primary"><img src="../icons/search.svg" alt="Cheack Bluetooth" id="icon-left"> Estado Bluetooth</button>
       </div>
 
       <div class="card dark-card highlighted-card">
@@ -44,7 +48,7 @@
         <p class="gray-label">Last value sent: <span id="valueSent"></span></p>
       </div>
       <div class="card dark-card">
-        <button onclick="window.location.href='../index.html'" class="button-secondary">← Volver al Menú</button>
+        <button onclick="window.location.href='../index.html'" class="button-secondary"><img src="../icons/home_F3B13F.svg" alt="Home" id="icon-left"> Volver al Menú</button>
       </div>
     </div>
   </div>

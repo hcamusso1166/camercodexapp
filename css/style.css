@@ -35,6 +35,15 @@ header {
   font-size: 1em;
   color: #ccc;
   margin: 10px 0 20px 0;
+  font-weight: normal;
+  font-family: Georgia, serif;
+}
+.rutina {
+  font-size: 2em;
+  color: #ccc;
+  margin: 10px 0 20px 0;
+  font-weight:  normal;
+  font-family: Georgia, serif;
 }
 .menu {
   flex-grow: 1;
@@ -432,4 +441,21 @@ text-align: center;
 .button-secondary:hover {
   background-color: #d99c36 !important;
   color: #ffffff !important;
+}
+#icon-left {
+  width: 20px !important;
+  height: 20px !important;
+  vertical-align: middle;
+  margin-right: 8px;
+  display: inline-block;
+  text-align: center;
+}
+
+#icon-small {
+  width: 15px !important;
+  height: 15px !important;
+  vertical-align: middle;
+  margin-right: 8px;
+  display: inline-block;
+  text-align: center;
 }

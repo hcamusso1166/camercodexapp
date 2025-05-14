@@ -8,24 +8,42 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
+
+<!-- En esta rutina el espectador elegirá su propia Bala de Plata.
+  Primero se registrará, luego se mezclarán las cartas y finalmente se descubrirá mediante el Dispositivo MrCamerDev1.0.-->
+
 <body>
   <header>Camer Codex</header>
-  <div class="slogan">Un Juego "Pegriloso"</div>
+  <div class="rutina">Un Juego "Pegriloso"</div>
 
   <div class="content">
     <div class="card-grid single-column">
       <div class="card dark-card">
         <h2>Dispositivo Bluetooth (BLE)</h2>
         <p>
-          <button id="connectBleButton" class="button-primary connectButton">🔗 Conectar</button>
-          <button id="disconnectBleButton" class="button-primary disconnectButton">❌ Desconectar</button>
+          <button id="connectBleButton" class="button-primary connectButton">
+            <img src="../icons/bluetooth.svg" alt="Bluetooth Icon" id="icon-left">
+             Conectar
+          </button>
+          <button id="disconnectBleButton" class="button-primary disconnectButton">
+            <img src="../icons/bluetooth_disabled.svg" alt="Disconnect Bluetooth Icon" id="icon-left"> 
+            Desconectar
+          </button>
         </p>
         <p class="gray-label">BLE state: <strong><span id="bleState" style="color:#d13a30;">Disconnected</span></strong></p>
         <div id="ble-messages" class="ble-diagnostic inicialmente-oculto">
-          <p class="ble-ok">✅ Web Bluetooth disponible.</p>
-          <p class="ble-warning">⚠️ Se pedirá permiso.</p>
+          <p class="ble-ok">
+            <img src="../icons/check_F3B13F.svg" alt="Check Icon" id="icon-small">
+             Web Bluetooth disponible.
+          </p>
+          <p class="ble-warning">
+            <img src="../icons/warning_F3B13F.svg" alt="Warning Icon" id="icon-small">  
+            Se pedirá permiso.
+          </p>
         </div>
-        <button id="checkBluetoothBtn" class="button-primary ">🔍 Estado BLE</button>
+        <button id="checkBluetoothBtn" class="button-primary ">
+          <img src="../icons/search.svg" alt="Check Bluetooth Icon" id="icon-left"> 
+          Estado BLE</button>
       </div>
 
       <div class="card dark-card highlighted-card">
@@ -41,7 +59,10 @@
         <p class="gray-label">Last value sent: <span id="valueSent"></span></p>
       </div>
       <div class="card dark-card">
-        <button onclick="window.location.href='../index.html'" class="button-secondary">← Volver al Menú</button>
+        <button onclick="window.location.href='../index.html'" class="button-secondary">
+          <img src="../icons/home_F3B13F.svg" alt="Home" id="icon-left">  
+          Volver al Menú
+        </button>
       </div>
     </div>
   </div>
@@ -53,5 +74,6 @@
 <audio id="tagAudio" src="" preload="auto"></audio>
 <script src="../js/config.js"></script>
 <script src="../js/main.js"></script>
+<script src="../js/rutinas/pegriloso.js"></script>
 </body>
 </html>

@@ -272,6 +272,12 @@ function handleCharacteristicChange(event) {
     console.log("Tag:", mvalor);
     reproducirAudioTagEnRutinaMomias(mvalor);
   }
+  // Validar si estamos en pegriloso.html antes de llamar a la función de guardar el TAG
+  if (window.location.pathname.includes("pegriloso.html")) {
+    console.log("Estamos en pegriloso.html");
+    console.log("Tag:", mvalor);
+    guardarTag(mvalor);
+  }
 }
 
 
