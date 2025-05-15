@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>The Boss - Camer Codex</title>
+  <link rel="stylesheet" type="text/css" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <header>Camer Codex</header>
+  <div class="rutina">The Boss</div>
+
+  <div class="content">
+    <div class="card-grid single-column">
+      <div class="card dark-card">
+        <h2>Dispositivo Bluetooth (BLE)</h2>
+        <p>
+          <button id="connectBleButton" class="button-primary connectButton">
+            <img src="../icons/bluetooth.svg" alt="Bluetooth Icon" id="icon-left">
+            Conectar
+          </button>
+          <button id="disconnectBleButton" class="button-primary disconnectButton">
+            <img src="../icons/bluetooth_disabled.svg" alt="Disconnect Bluetooth Icon" id="icon-left">
+            Desconectar
+          </button>
+        </p>
+        <p class="gray-label">BLE state: <strong><span id="bleState" style="color:#d13a30;">Disconnected</span></strong></p>
+        <div id="ble-messages" class="ble-diagnostic inicialmente-oculto">
+          <p class="ble-ok">
+            <img src="../icons/check_F3B13F.svg" alt="Check Icon" id="icon-small"> 
+            Web Bluetooth disponible.
+          </p>
+          <p class="ble-warning">
+            <img src="../icons/warning_F3B13F.svg" alt="Warning Icon" id="icon-small"> 
+            Se pedirá permiso.
+          </p>
+        </div>
+        <button id="checkBluetoothBtn" class="button-primary ">
+          <img src="../icons/search.svg" alt="Check Bluetooth Icon" id="icon-left">
+          Estado BLE
+        </button>
+      </div>
+      <div class="card dark-card" id="accionMagoCard">
+        <h2>Acción</h2>
+        <p class="gray-label" id="accionMagoMensaje">Conectar el dispositivo BLE</p>
+      </div>
+      <div class="card dark-card highlighted-card">
+        <h2>Carta</h2>
+        <p class="reading"><span id="valueContainer">NaN</span></p>
+        <p class="gray-label">Last reading: <span id="timestamp"></span></p>
+      </div>
+
+      <div class="card dark-card">
+        <h2>LED Control dispositivo</h2>
+        <button id="onButton" class="button-primary connectButton">ON</button>
+        <button id="offButton" class="button-primary disconnectButton">OFF</button>
+        <p class="gray-label">Last value sent: <span id="valueSent"></span></p>
+      </div>
+      <div class="card dark-card">
+        <button onclick="window.location.href='../index.html'" class="button-secondary">
+          <img src="../icons/home_F3B13F.svg" alt="Home" id="icon-left"> 
+          Volver al Menú
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer>v <span id="appVersion"></span></footer>
+
+  <audio id="tagAudio" src="" preload="auto"></audio>
+  <script src="../js/config.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/rutinas/theboss.js"></script>
+</body>
+</html>

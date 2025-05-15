@@ -301,6 +301,12 @@ function handleCharacteristicChange(event) {
     console.log("Tag:", mvalor);
     guardarTag(mvalor);
   }
+  // Validar si estamos en theboss.html antes de llamar a la función de guardar el TAG
+  if (window.location.pathname.includes("theboss.html")) {
+    console.log("Estamos en theboss.html");
+    console.log("Tag:", mvalor);
+    guardarTag(mvalor);
+  }
 }
 
 
