@@ -459,3 +459,18 @@ text-align: center;
   display: inline-block;
   text-align: center;
 }
+#accionMagoCard {
+  width: 100%;
+  max-width: 300px; /* Ancho máximo consistente con las otras tarjetas */
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+#accionMagoMensaje {
+  text-align: center;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+  max-width: 100%;
+  padding: 0 10px;
+}

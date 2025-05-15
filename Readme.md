@@ -17,7 +17,7 @@
 
 ---
 
-## ⚙️ Funcionalidades actuales
+## 🎭 Rutinas mágicas disponibles
 
 - **Rutina 1: Fuera de Este Mundo**
   - Conexión BLE autónoma.
@@ -26,15 +26,31 @@
   - Visualización de cartas en pantalla.
   - Consola de mensajes BLE con diagnóstico ocultable.
 
-- **Rutina 2: Memoria de Elefante**
+- **Rutina 2: Un Juego "Pegriloso"**  
+  - Lectura de tags para distinguir la "bala de plata"
+  - Mensajes guiados al mago
+  - Control total desde lector BLE
+
+- **Rutina 3: Memoria de Elefante**
   - Adivinación de cartas basadas en memoria con BLE.
   - Interacción con microcontroladores para rastrear el orden de las cartas.
+  - Apilado de cartas RFID con lógica LIFO
+  - Dictado de orden final por voz
+  - Uso de cartas repetidas como marcador
+
+- ** Rutina 4: Las Momias de Camer**
+  - Adivinacón del color de la momia que el espectador introdujo en el sarcòfago. 
+  - Se puede repetir bajo condiciones màs extremas.
+
+## 🌟 Características principales
 
 - Conexión Bluetooth BLE con lectores externos.
 - Lectura de tags RFID con disparo de efectos.
 - Reproducción de audios asociados a cada tag.
 - Diagnóstico de compatibilidad BLE y permisos.
-- Instalación como PWA (Progressive Web App).
+- Control de LED (ON / OFF) desde la app.
+- Funciona como PWA en móviles Android y escritorio.
+- Instalación directa como app desde navegador.
 - Funciona offline una vez instalada.
 - Íconos personalizados y diseño minimalista.
 
@@ -48,6 +64,16 @@
 - Vercel (hosting)
 
 ---
+## 🧩 Estructura del proyecto
+
+-/index.html ← Menú principal
+-/rutinas/ ← Rutinas separadas (1 archivo HTML + lógica)
+-/js/ ← main.js, config.js
+-/css/ ← Estilos globales
+-/icons/ ← SVGs usados en botones
+-/audios/ ← Archivos MP3 para cada carta
+-/manifest.json ← PWA metadata
+-/service-worker.js ← Cache para PWA offline
 
 ## 🖥️ Modo de uso en PC
 

@@ -3,6 +3,7 @@
 let balaDePlata = null;
 let etapaRegistro = true;
 
+
 // Esta función será llamada desde main.js para procesar los tags
 function guardarTag(tag) {
   console.log("Tag leído:", tag);
@@ -14,6 +15,9 @@ function guardarTag(tag) {
     reproducirAudio("plata");
     //alert("¡Bala de Plata registrada! Ahora mezcle las 6 cartas y forme una fila");
     retrievedValue.innerHTML = "¡Registrada!";
+     if (accionMagoMensaje) {
+      actualizarAccion("Descartar balas inofensivas hasta quedarte solo con la Bala de Plata");
+    }
     return;
   }
 
@@ -37,6 +41,9 @@ function reproducirAudio(nombreArchivo) {
 function reiniciarPegriloso() {
   balaDePlata = null;
   etapaRegistro = true;
+  if (accionMagoMensaje) {
+    actualizarAccion("Registrar Bala de Plata");
+  }
   console.log("Rutina 'Pegriloso' reiniciada");
   reproducirAudio("audios_especiales/rutina_reiniciada");
 }

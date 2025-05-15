@@ -14,6 +14,7 @@ function guardarTag(tag) {
       // enviar audio 'STOP' despues de 2 segundos
       setTimeout(function() {
         reproducirAudio("stop"); // Reproducir el audio de "STOP"
+        actualizarAccion("Nombrar las cartas en orden!");
       },2000);
       
       console.log("Se reprodujo audio Stop");

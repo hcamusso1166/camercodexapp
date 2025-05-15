@@ -8,6 +8,18 @@ Registro de versiones del sistema mágico-tecnológico desarrollado por Mr. Came
 
 **v1.0 - Vainilla**
 
+## [1.3.0] - 2025-05-14
+
+### Añadido
+- Rutina "Un juego 'Pegriloso'" (Ver rutina en README.md)
+- Tarjeta de acciones para el Mago. Le indican al mago las acciones que debe ejecutar.
+
+### Correcciones
+- Estilos inline eliminados y trasladados a `style.css`.
+- Organización del código modular y escalable para futuras 25 rutinas.
+- `index.html` reducido a menú puro de selección de rutinas.
+
+
 ## [1.3.0] - 2025-05-10
 
 ### Añadido

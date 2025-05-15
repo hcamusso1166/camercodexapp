@@ -138,6 +138,8 @@ const offButton = document.getElementById('offButton');
 const retrievedValue = document.getElementById('valueContainer');
 const latestValueSent = document.getElementById('valueSent');
 const bleStateContainer = document.getElementById('bleState');
+const accionMagoMensaje = document.getElementById('accionMagoMensaje');
+
 const timestampContainer = document.getElementById('timestamp');
 
 const deviceName = 'MrCamerDev1.0';
@@ -195,6 +197,13 @@ function limpiarDatos() {
  
   console.log("Datos limpiados");
 }
+// Manejo de las acciones que se deben realizar
+function actualizarAccion(accion) {
+  const accionMagoMensaje = document.getElementById('accionMagoMensaje');
+  if (accionMagoMensaje) {
+    accionMagoMensaje.textContent = accion;  // Actualiza el mensaje de la acción
+  }
+}
 // Connect to BLE Device
 function connectToDevice() {
   console.log('Initializing Bluetooth...');
@@ -205,6 +214,8 @@ function connectToDevice() {
     .then(device => {
       console.log('Device Selected:', device.name);
       bleStateContainer.innerHTML = device.name;
+
+
       //bleStateContainer.style.color = "#24af37";
       // Limpiar datos antes de la nueva conexión
       limpiarDatos();  // Limpiar TAGs y arrays previos
@@ -231,6 +242,18 @@ function connectToDevice() {
       characteristic.startNotifications();
       console.log("Notifications Started.");
       bleStateContainer.style.color = "#24af37";
+      // Actualizamos la acción a "Leer carta"
+      actualizarAccion("Leer carta");
+
+      if (window.location.pathname.includes("pegriloso.html")) {    
+          actualizarAccion("Registrar Bala de Plata");
+      }
+      if (window.location.pathname.includes("elefantes.html")) {    
+          actualizarAccion("Leer carta y REPETIR la lectura de la última carta");
+      }
+      if (window.location.pathname.includes("momias.html")) {    
+          actualizarAccion("Acercar Sarcófago para descubrir el color");
+      }
     });
     })
 
@@ -352,6 +375,10 @@ function disconnectDevice() {
           console.log("Device Disconnected");
           bleStateContainer.innerHTML = "Device Disconnected";
           bleStateContainer.style.color = "#d13a30";
+          if (accionMagoMensaje) {
+            accionMagoMensaje.textContent = "Conectar el dispositivo BLE";
+          }
+
         })
         .catch(error => {
           console.log("An error occurred:", error);
