@@ -5,7 +5,7 @@ let etapaRegistro = true;
 
 
 // Esta función será llamada desde main.js para procesar los tags
-function guardarTag(tag) {
+function guardarTagPegriloso(tag) {
   console.log("Tag leído:", tag);
 
   if (etapaRegistro) {

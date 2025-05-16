@@ -8,7 +8,7 @@ let ultimoTag = null; // Nuevo: para evitar repeticiones consecutivas
 const ordenNegro = ["N", "N", "N", "N", "N", "R", "R", "N", "N"];
 const ordenRojo =  ["R", "R", "R", "R", "R", "N", "N", "R", "R"];
 
-function guardarTag(tag) {
+function guardarTagTheBoss(tag) {
   console.log("Tag recibido en TheBoss:", tag);
   if (!tag || tag.length < 2) return;
     // Nuevo control para evitar doble lectura consecutiva

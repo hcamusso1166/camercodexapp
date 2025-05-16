@@ -25,7 +25,7 @@ function esDispositivoMovil() {
 }
 
 if (esAppInstalada()) {
-  console.log("La PWA ya está instalada. No se muestra el botón.");
+  //console.log("La PWA ya está instalada. No se muestra el botón.");
   if (installBtn) installBtn.style.display = 'none'; // Ocultar el botón si la PWA ya está instalada
 } else {
   window.addEventListener('beforeinstallprompt', (e) => {
@@ -41,19 +41,19 @@ if (esAppInstalada()) {
       if (installBtn) {
         installBtn.style.display = 'inline-block';
         installBtn.disabled = false;
-        console.log("Botón de instalación visible");
+        //console.log("Botón de instalación visible");
 
         installBtn.addEventListener('click', () => {
-          console.log("Botón de instalación presionado");
+          //console.log("Botón de instalación presionado");
           installBtn.style.display = 'none';
           deferredPrompt.prompt();
 
           deferredPrompt.userChoice.then((choiceResult) => {
             if (choiceResult.outcome === 'accepted') {
-              console.log('👍 Instalación aceptada');
+              //console.log('👍 Instalación aceptada');
               installBtn.style.display = 'none';
             } else {
-              console.log('👎 Instalación cancelada');
+              //console.log('👎 Instalación cancelada');
             }
             deferredPrompt = null;
           });
@@ -154,7 +154,7 @@ fetch('../audios/cartas.json')
   .then(res => res.json())
   .then(data => {
     mapaCartas = data;
-    console.log("Mapa de cartas cargado correctamente");
+    //console.log("Mapa de cartas cargado correctamente");
   })
   .catch(err => console.error("Error cargando cartas.json", err));
 
@@ -181,7 +181,7 @@ if (offButton) {
 // Check if BLE is available
 function isWebBluetoothEnabled() {
   if (!navigator.bluetooth) {
-    console.log('Web Bluetooth API is not available in this browser!');
+    //('Web Bluetooth API is not available in this browser!');
     bleStateContainer.innerHTML = "Web Bluetooth API is not available in this browser/device!";
     return false;
   }
@@ -206,13 +206,13 @@ function actualizarAccion(accion) {
 }
 // Connect to BLE Device
 function connectToDevice() {
-  console.log('Initializing Bluetooth...');
+  //console.log('Initializing Bluetooth...');
   navigator.bluetooth.requestDevice({
     filters: [{ name: deviceName }],
     optionalServices: [bleService]
   })
     .then(device => {
-      console.log('Device Selected:', device.name);
+      //console.log('Device Selected:', device.name);
       bleStateContainer.innerHTML = device.name;
 
 
@@ -224,23 +224,23 @@ function connectToDevice() {
     })
     .then(gattServer => {
       bleServer = gattServer;
-      console.log("Connected to GATT Server");
+      //console.log("Connected to GATT Server");
       return bleServer.getPrimaryService(bleService);
     })
     .then(service => {
       bleServiceFound = service;
-      console.log("Service discovered:", service.uuid);
+      //console.log("Service discovered:", service.uuid);
       return service.getCharacteristic(sensorCharacteristic);
     })
     .then(characteristic => {
-      console.log("Characteristic discovered:", characteristic.uuid);
+      //console.log("Characteristic discovered:", characteristic.uuid);
       sensorCharacteristicFound = characteristic;
       // Limpiar cualquier valor persistente en la característica antes de empezar
       characteristic.writeValue(new Uint8Array([0])).then(() => {
-        console.log("Característica BLE reiniciada.");
+      //console.log("Característica BLE reiniciada.");
       characteristic.addEventListener('characteristicvaluechanged', handleCharacteristicChange);
       characteristic.startNotifications();
-      console.log("Notifications Started.");
+      //console.log("Notifications Started.");
       bleStateContainer.style.color = "#24af37";
       // Actualizamos la acción a "Leer carta"
       actualizarAccion("Leer carta");
@@ -269,45 +269,31 @@ function onDisconnected(event) {
   connectToDevice();
 }
 
-// Handle characteristic value changes
 function handleCharacteristicChange(event) {
-  
   const valor = new TextDecoder().decode(event.target.value).trim();
-  console.log("Characteristic value changed: ", valor);
-  retrievedValue.innerHTML = valor[0] + valor[1];
-  timestampContainer.innerHTML = getDateTime();
   const mvalor = valor[0] + valor[1];
-  // reproducirAudioParaTag(mvalor);
-  //Validar si estamos en fuera-de-este-mundo.html antes de llamar a la función de reproducir el TAG
-  if (window.location.pathname.includes("fuera-de-este-mundo.html")) {
-    console.log("Estamos en fuera-de-este-mundo.html");
-    console.log("Tag:", mvalor);
-    reproducirAudioParaTag(mvalor);
+  const color = valor[2];
+  const path = window.location.pathname;
+
+  const accionesPorRuta = [
+    { match: "fuera-de-este-mundo.html", accion: () => reproducirAudioColor(color) },
+    { match: "elefantes.html",            accion: () => guardarTag(mvalor) },
+    { match: "momias.html",               accion: () => reproducirColor(mvalor) },
+    { match: "pegriloso.html",            accion: () => guardarTagPegriloso(mvalor) },
+    { match: "theboss.html",              accion: () => guardarTagTheBoss(mvalor) },
+  ];
+
+  for (const entrada of accionesPorRuta) {
+    if (path.includes(entrada.match)) {
+      entrada.accion();
+      break; // solo una acción por rutina
+    }
   }
 
-  // Validar si estamos en elefantes.html antes de llamar a la función de guardar el TAG
-  if (window.location.pathname.includes("elefantes.html")) {
-    guardarTagEnRutinaElefante(mvalor);
-  }
-  // Validar si estamos en momias.html antes de llamar a la función de reproducir  el TAG
-  if (window.location.pathname.includes("momias.html")) {
-    console.log("Estamos en momias.html");
-    console.log("Tag:", mvalor);
-    reproducirAudioTagEnRutinaMomias(mvalor);
-  }
-  // Validar si estamos en pegriloso.html antes de llamar a la función de guardar el TAG
-  if (window.location.pathname.includes("pegriloso.html")) {
-    console.log("Estamos en pegriloso.html");
-    console.log("Tag:", mvalor);
-    guardarTag(mvalor);
-  }
-  // Validar si estamos en theboss.html antes de llamar a la función de guardar el TAG
-  if (window.location.pathname.includes("theboss.html")) {
-    console.log("Estamos en theboss.html");
-    console.log("Tag:", mvalor);
-    guardarTag(mvalor);
-  }
+  retrievedValue.innerHTML = mvalor;
+  timestampContainer.innerHTML = getDateTime();
 }
+
 
 
 function reproducirAudioParaTag(tag) {
@@ -315,10 +301,10 @@ function reproducirAudioParaTag(tag) {
   const archivo = mapaCartas[tag];
 
   if (archivo && archivo.trim() !== "") {
-    console.log("Tag:", tag, "→ Archivo:", archivo);
+    //console.log("Tag:", tag, "→ Archivo:", archivo);
     audio.src = `../audios/${archivo}`;
     audio.play().then(() => {
-      console.log(`Reproduciendo: ${archivo}`);
+      //console.log(`Reproduciendo: ${archivo}`);
     }).catch(err => {
       console.error("No se pudo reproducir el audio:", err);
       console.log("Tag:", tag, "→ Archivo:", archivo);
@@ -331,54 +317,39 @@ function reproducirAudioParaTag(tag) {
   }
 }
 
-// Función para comunicar el TAG a elefante.js
-function guardarTagEnRutinaElefante(tag) {
-  if (typeof guardarTag === 'function') {
-    guardarTag(tag);  // Llamamos a la función definida en elefante.js
-  }
-}
-// Función para comunicar el TAG a elefante.js
-function reproducirAudioTagEnRutinaMomias(tag) {
-  console.log("Tag recibido en momias.js:", tag);
-  if (typeof reproducirColor === 'function') {
-    console.log("Llamando a la función reproducircolores en momias.js");
-    reproducirColor(tag);  // Llamamos a la función definida en momias.js
-  }
-}
-// Función para escribir en la característica del LED
-// Esta función se llama desde los botones de encendido y apagado
+// Función para escribir en la característica del LED. Esta función se llama desde los botones de encendido y apagado
 function writeOnCharacteristic(value) {
   if (bleServer && bleServer.connected) {
     bleServiceFound.getCharacteristic(ledCharacteristic)
       .then(characteristic => {
-        console.log("Found the LED characteristic: ", characteristic.uuid);
+        //console.log("Found the LED characteristic: ", characteristic.uuid);
         const data = new Uint8Array([value]);
         return characteristic.writeValue(data);
       })
       .then(() => {
         latestValueSent.innerHTML = value;
-        console.log("Value written to LEDcharacteristic:", value);
+        //console.log("Value written to LEDcharacteristic:", value);
       })
       .catch(error => {
         console.error("Error writing to the LED characteristic: ", error);
       });
   } else {
-    console.error("Bluetooth is not connected. Cannot write to characteristic.");
+    //console.error("Bluetooth is not connected. Cannot write to characteristic.");
     window.alert("Bluetooth is not connected. Cannot write to characteristic. \n Connect to BLE first!");
   }
 }
 
 function disconnectDevice() {
-  console.log("Disconnect Device.");
+  //console.log("Disconnect Device.");
   if (bleServer && bleServer.connected) {
     if (sensorCharacteristicFound) {
       sensorCharacteristicFound.stopNotifications()
         .then(() => {
-          console.log("Notifications Stopped");
+          //console.log("Notifications Stopped");
           return bleServer.disconnect();
         })
         .then(() => {
-          console.log("Device Disconnected");
+          //console.log("Device Disconnected");
           bleStateContainer.innerHTML = "Device Disconnected";
           bleStateContainer.style.color = "#d13a30";
           if (accionMagoMensaje) {
