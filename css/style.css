@@ -34,7 +34,7 @@ header {
 .slogan {
   font-size: 1em;
   color: #ccc;
-  margin: 10px 0 20px 0;
+  margin: 5px 0 10px 0;
   font-weight: normal;
   font-family: Georgia, serif;
 }
@@ -51,7 +51,7 @@ header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 5px;
 }
 .menu button {
   width: 90%;
@@ -71,7 +71,7 @@ header {
 }
 .install-container {
   margin-top: auto;
-  padding: 20px 0 0;
+  padding: 5px 0 0;
 }
 /* 4. Mostrar el botón solo en dispositivos móviles */
 #installBtn {
@@ -81,7 +81,7 @@ header {
   border-radius: 10px;
   width: 90%;
   max-width: 300px;
-  padding: 12px;
+  padding: 8px;
   display: none; /* Ocultar por defecto */
 }
 
@@ -105,7 +105,8 @@ footer {
   background-color: #0c0c0c;
   width: 100%;
   text-align: center;
-  padding: 10px 0;
+  padding: 5px 0;
+  margin-top: 5px;
   font-size: 0.9em;
   color: #666;
 }
@@ -145,7 +146,7 @@ footer {
 button {
   color: white;
   padding: 14px 20px;
-  margin: 8px 0;
+  margin: 0px 0;
   border: none;
   cursor: pointer;
   border-radius: 4px;
@@ -473,4 +474,90 @@ text-align: center;
   hyphens: auto;
   max-width: 100%;
   padding: 0 10px;
+}
+/* Contenedor de las rutinas */
+.rutinas-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columnas */
+  gap: 5px;
+  padding: 5px;
+  max-width: 100%;
+}
+
+/* Cada tarjeta de rutina */
+.rutina-card {
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  text-align: center;
+  transition: transform 0.3s ease;
+  height: 120px; /* Altura fija */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rutina-card:hover {
+  transform: translateY(-5px);
+}
+.rutina-card button {
+  width: 90%;
+  height: 80%; /* Ocupar buena parte del card */
+  font-size: 0.9em;
+  font-weight: 700;
+}
+/* Paginación */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
+}
+
+.page-btn {
+  background-color: #f3b13f;
+  border: 2px solid #f3b13f;
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  margin: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease;
+  padding: 0;
+}
+
+.page-btn:hover {
+  background-color: #d99c36;
+  border-color: #d99c36;
+}
+
+.page-btn img {
+  width: 24px;
+  height: 24px;
+  margin: 0; /* Evita separación accidental */
+  display: block; /* Asegura que la imagen ocupe el espacio completo del botón */
+  vertical-align: middle; /* Alinea la imagen verticalmente */
+  max-width: 100%; /* Asegura que la imagen no exceda el tamaño del botón */
+  max-height: 100%; /* Asegura que la imagen no exceda el tamaño del botón */
+  object-fit: contain; /* Mantiene la proporción de la imagen */
+  object-position: center; /* Centra la imagen dentro del botón */
+  border-radius: 8px; /* Bordes redondeados */
+  padding: 0; /* Elimina el padding */
+  box-sizing: border-box; /* Asegura que el padding y el border se incluyan en el tamaño total */
+}
+
+/* Opcional: ajuste para pantallas intermedias */
+@media (max-width: 768px) {
+  .rutina-card {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Solo en pantallas muy pequeñas (por ejemplo, ≤ 360px) pasamos a 1 columna */
+@media (max-width: 360px) {
+  .rutinas-container {
+    grid-template-columns: 1fr;
+  }
 }

@@ -282,6 +282,7 @@ function handleCharacteristicChange(event) {
     { match: "pegriloso.html",            accion: () => guardarTagPegriloso(mvalor) },
     { match: "theboss.html",              accion: () => guardarTagTheBoss(mvalor) },
     { match: "pruebaDeFuego.html",        accion: () => guardarTagPruebaDeFuego(mvalor) },
+    { match: "imposibleDeVer.html",        accion: () => reproducirAudioParaTag(mvalor) },
     
   ];
 
@@ -414,5 +415,36 @@ function mostrarBotonReinicioGlobal(nombreFuncionReinicio) {
 
   contenedor.appendChild(boton);
 }
+
+let currentPage = 1;
+const routinesPerPage = 10; // Limitar a 10 rutinas por página
+const totalRoutines = 20; // Aquí debes colocar el número total de rutinas
+
+// Mostrar rutinas según la página actual
+function displayRoutines() {
+  // Aquí deberías implementar la lógica para cargar las rutinas correspondientes a la página actual.
+  // Esta es solo una demostración de cómo podrías manejar la paginación.
+  console.log(`Mostrando rutinas de la página ${currentPage}`);
+}
+
+// Navegar a la página anterior
+function previousPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    displayRoutines();
+  }
+}
+
+// Navegar a la siguiente página
+function nextPage() {
+  const totalPages = Math.ceil(totalRoutines / routinesPerPage);
+  if (currentPage < totalPages) {
+    currentPage++;
+    displayRoutines();
+  }
+}
+
+// Inicializar la vista
+displayRoutines();
 
 // Fin del script
