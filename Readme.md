@@ -42,6 +42,16 @@
   - Adivinacón del color de la momia que el espectador introdujo en el sarcòfago. 
   - Se puede repetir bajo condiciones màs extremas.
 
+  ** Rutina 5: The Boss **
+  - Rutina basada en Siguiendo al Jefe con 20 cartas.
+  - La mejora es que el espectador elije las 20 cartas, las mezcla reiteradas veces.
+  - Bajo estas condiciones totalmente al azar, las cartas siempre siguen a su jefe.
+
+  ** Rutina 6: Prueba de Fuego **
+  - El espetador elije libremente una carta.
+  - Se le plantea un desafìo, una Prueba de Fuego: que vuelva a elegir la misma carta!
+  - No lo logra, pero logra llegar a su carta de una manera sorprendente!
+
 ## 🌟 Características principales
 
 - Conexión Bluetooth BLE con lectores externos.
@@ -69,9 +79,11 @@
 -/index.html ← Menú principal
 -/rutinas/ ← Rutinas separadas (1 archivo HTML + lógica)
 -/js/ ← main.js, config.js
+-/js/rutinas/*.js <- Por cada rutina un js con logica especìfica>
 -/css/ ← Estilos globales
 -/icons/ ← SVGs usados en botones
 -/audios/ ← Archivos MP3 para cada carta
+-/audios/audios_especiales <- audios para el resto de la app, especiales, tales con Colores, acciones, etc.>
 -/manifest.json ← PWA metadata
 -/service-worker.js ← Cache para PWA offline
 

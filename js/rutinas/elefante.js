@@ -45,11 +45,7 @@ function mostrarPosiciones() {
   document.getElementById("resultado").innerHTML = resultadoHTML;
   reproducirAudioPosiciones();
 }
-//Reproducir audios especiales
-function reproducirAudio(nombreArchivo) {
-  const audio = new Audio(`../audios/audios_especiales/${nombreArchivo}.mp3`);
-  audio.play();
-}
+
 // Reproducir el audio con las posiciones
 function reproducirAudioPosiciones() {
   pila.forEach((tag, index) => {

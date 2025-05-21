@@ -59,7 +59,7 @@ function guardarTagTheBoss(tag) {
   }
     // Si ambas pilas están completas, reiniciar en 5 segundos
   if (pilaNegra.length === ordenNegro.length && pilaRoja.length === ordenRojo.length) {
-    console.log("✅ Ambas pilas completas. Reiniciando en 5 segundos...");
+    actualizarAccion("✅ Ambas pilas completas. Reiniciando en 5 segundos...");
     setTimeout(() => {
       reiniciarTheBoss();
     }, 5000);
@@ -76,7 +76,10 @@ function reiniciarTheBoss() {
   pilaRoja = [];
   cartasLeidas = 0;
   ultimoTag = null;
-  actualizarAccion("Conectar el dispositivo BLE");
+  if(limpiarDatos) {
+    limpiarDatos();
+  }
+  actualizarAccion("Reinicio: Leer cartas de a una y Repartir según indique Camer Codex");
   console.log("Rutina The Boss reiniciada");
   reproducirAudioColor("inicio");
 }

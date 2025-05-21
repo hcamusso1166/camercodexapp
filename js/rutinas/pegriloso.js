@@ -6,7 +6,7 @@ let etapaRegistro = true;
 
 // Esta función será llamada desde main.js para procesar los tags
 function guardarTagPegriloso(tag) {
-  console.log("Tag leído:", tag);
+  // console.log("Tag leído:", tag);
 
   if (etapaRegistro) {
     // Registrar la Bala de Plata
@@ -41,8 +41,11 @@ function reproducirAudio(nombreArchivo) {
 function reiniciarPegriloso() {
   balaDePlata = null;
   etapaRegistro = true;
+  if(limpiarDatos) {
+    limpiarDatos();
+  }
   if (accionMagoMensaje) {
-    actualizarAccion("Registrar Bala de Plata");
+    actualizarAccion("Reiniciada: Registrar Bala de Plata");
   }
   console.log("Rutina 'Pegriloso' reiniciada");
   reproducirAudio("audios_especiales/rutina_reiniciada");

@@ -195,7 +195,7 @@ function limpiarDatos() {
   latestValueSent.innerHTML = ''; // Limpia el valor enviado
   timestampContainer.innerHTML = ''; // Limpia la fecha y hora
  
-  console.log("Datos limpiados");
+  //console.log("Datos limpiados");
 }
 // Manejo de las acciones que se deben realizar
 function actualizarAccion(accion) {
@@ -276,11 +276,13 @@ function handleCharacteristicChange(event) {
   const path = window.location.pathname;
 
   const accionesPorRuta = [
-    { match: "fuera-de-este-mundo.html", accion: () => reproducirAudioColor(color) },
+    { match: "fueraDeEsteMundo.html", accion: () => reproducirAudioColor(color) },
     { match: "elefantes.html",            accion: () => guardarTag(mvalor) },
     { match: "momias.html",               accion: () => reproducirColor(mvalor) },
     { match: "pegriloso.html",            accion: () => guardarTagPegriloso(mvalor) },
     { match: "theboss.html",              accion: () => guardarTagTheBoss(mvalor) },
+    { match: "pruebaDeFuego.html",        accion: () => guardarTagPruebaDeFuego(mvalor) },
+    
   ];
 
   for (const entrada of accionesPorRuta) {
@@ -315,6 +317,11 @@ function reproducirAudioParaTag(tag) {
     audio.removeAttribute('src');
     audio.load();
   }
+}
+//Reproducir audios especiales
+function reproducirAudio(nombreArchivo) {
+  const audio = new Audio(`../audios/audios_especiales/${nombreArchivo}.mp3`);
+  audio.play();
 }
 
 // Función para escribir en la característica del LED. Esta función se llama desde los botones de encendido y apagado
@@ -380,4 +387,32 @@ function getDateTime() {
 
   return `${day}/${month}/${year} at ${hours}:${minutes}:${seconds}`;
 }
+
+// Función global reutilizable para mostrar botón de reinicio
+function mostrarBotonReinicioGlobal(nombreFuncionReinicio) {
+  const contenedor = document.getElementById("botonReinicioContainer");
+  if (!contenedor) return;
+
+  // Limpiar por si ya hay un botón previo
+  contenedor.innerHTML = "";
+
+  const boton = document.createElement("button");
+  boton.className = "button-primary";
+  boton.innerHTML = `
+  <img src="../icons/refresh.SVG" alt="Refresh" id="icon-left">
+  Reiniciar rutina`;
+
+  // Llama por nombre a la función global que reinicia
+  boton.onclick = function () {
+    const funcion = window[nombreFuncionReinicio];
+    if (typeof funcion === "function") {
+      funcion();
+    } else {
+      console.error(`❌ La función '${nombreFuncionReinicio}' no está definida.`);
+    }
+  };
+
+  contenedor.appendChild(boton);
+}
+
 // Fin del script
