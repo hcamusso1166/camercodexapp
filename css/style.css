@@ -25,7 +25,7 @@ body {
 header {
   background-color: #0c0c0c;
   width: 100%;
-  padding: 20px 0;
+  padding: 10px 0;
   color: #f3b13f;
   font-size: 2em;
   font-weight: bold;
@@ -34,7 +34,7 @@ header {
 .slogan {
   font-size: 1em;
   color: #ccc;
-  margin: 5px 0 10px 0;
+  margin: 5px 0 5px 0;
   font-weight: normal;
   font-family: Georgia, serif;
 }
