@@ -490,10 +490,10 @@ text-align: center;
   border-radius: 12px;
   text-align: center;
   transition: transform 0.3s ease;
-  height: 120px; /* Altura fija */
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 5px;
 }
 
 .rutina-card:hover {
@@ -504,6 +504,8 @@ text-align: center;
   height: 80%; /* Ocupar buena parte del card */
   font-size: 0.9em;
   font-weight: 700;
+  padding: 5px;
+  margin: 5px;
 }
 /* Paginación */
 .pagination {
