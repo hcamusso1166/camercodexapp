@@ -14,18 +14,9 @@
 
   <div class="content">
     <div class="card-grid single-column">
-      <div class="card dark-card" id="accionMagoCard">
-        <h2>Acción</h2>
-        <p class="gray-label" id="accionMagoMensaje">Conectar el dispositivo BLE</p>
-      </div>
-      <div class="card dark-card highlighted-card">
-        <h2>Carta</h2>
-        <p class="reading"><span id="valueContainer">NaN</span></p>
-        <p class="gray-label">Last reading: <span id="timestamp"></span></p>
-      </div>
-      <div class="card dark-card compacto">
-        <h3>Dispositivo Bluetooth (BLE)</h3>
-        <div class="button-row"> 
+      <div class="card dark-card">
+        <h2>Dispositivo Bluetooth (BLE)</h2>
+        <p>
           <button id="connectBleButton" class="button-primary connectButton">
             <img src="../icons/bluetooth.svg" alt="Bluetooth Icon" id="icon-left">
             Conectar
@@ -34,7 +25,7 @@
             <img src="../icons/bluetooth_disabled.svg" alt="Disconnect Bluetooth Icon" id="icon-left">
             Desconectar
           </button>
-        
+        </p>
         <p class="gray-label">BLE state: <strong><span id="bleState" style="color:#d13a30;">Disconnected</span></strong></p>
         <div id="ble-messages" class="ble-diagnostic inicialmente-oculto">
           <p class="ble-ok">
@@ -51,11 +42,18 @@
           Estado BLE
         </button>
       </div>
+      <div class="card dark-card" id="accionMagoCard">
+        <h2>Acción</h2>
+        <p class="gray-label" id="accionMagoMensaje">Conectar el dispositivo BLE</p>
       </div>
-      
+      <div class="card dark-card highlighted-card">
+        <h2>Carta</h2>
+        <p class="reading"><span id="valueContainer">NaN</span></p>
+        <p class="gray-label">Last reading: <span id="timestamp"></span></p>
+      </div>
 
-      <div class="card dark-card compacto" id="ledControlCard">
-        <h3>LED Control dispositivo</h3>
+      <div class="card dark-card">
+        <h2>LED Control dispositivo</h2>
         <button id="onButton" class="button-primary connectButton">ON</button>
         <button id="offButton" class="button-primary disconnectButton">OFF</button>
         <p class="gray-label">Last value sent: <span id="valueSent"></span></p>

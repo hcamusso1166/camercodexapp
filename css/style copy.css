@@ -156,12 +156,11 @@ button {
 
 .gray-label {
   color: #bebebe;
-  font-size: 1.2emrem;
+  font-size: 1rem;
 }
 
 .reading {
   font-size: 1.8rem;
-  margin: 10px;
 }
 .ble-diagnostic {
   margin: 10px;
@@ -200,21 +199,16 @@ button {
   padding: 20px;
   box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.4);
   color: #f0f0f0;
-  text-align: center;
+  text-align: left;
 }
 
 .dark-card h2 {
   color: #f3b13f;
-  font-size: 1.5rem;
-  margin-bottom: 0px;
-  font-family: 'Georgia', serif;
-}
-.dark-card h3 {
-  color: #f3b13f;
-  font-size: 1rem;
+  font-size: 1.2rem;
   margin-bottom: 12px;
   font-family: 'Georgia', serif;
 }
+
 .dark-card button {
   width: 100%;
   max-width: 280px;
@@ -245,7 +239,7 @@ button {
   color: #0c0c1d;
   border-radius: 8px;
   text-align: center;
-  font-size: 2em;
+  font-size: 1em;
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -272,7 +266,7 @@ button {
   color: #0c0c1d;
   border: none;
   border-radius: 8px;
-  font-size: 2em;
+  font-size: 1em;
   font-weight: 500;
   font-family: 'Roboto', sans-serif;
   cursor: pointer;
@@ -468,7 +462,7 @@ text-align: center;
 }
 #accionMagoCard {
   width: 100%;
-  max-width: 400px; /* Ancho máximo consistente con las otras tarjetas */
+  max-width: 300px; /* Ancho máximo consistente con las otras tarjetas */
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -568,102 +562,4 @@ text-align: center;
   .rutinas-container {
     grid-template-columns: 1fr;
   }
-}
-/* Prioridades visuales para rutinas */
-.card-grid.single-column {
-  gap: 8px; /* menos separación entre tarjetas */
-  padding: 0 10px;
-}
-
-/* Tarjeta más importante: Carta */
-.highlighted-card {
-  flex-grow: 2;
-  padding: 20px;
-  font-size: 1.2em;
-}
-
-/* Tarjeta secundaria: Acción */
-#accionMagoCard {
-  padding: 5px;
-  font-size: 1em;
-}
-
-/* Tarjetas menos relevantes: BLE y LED */
-.card.dark-card:nth-child(1), /* BLE */
-.card.dark-card:nth-child(4)  /* LED */
-{
-  padding: 8px;
-  font-size: 0.85em;
-}
-
-.card.dark-card:nth-child(1) button,
-.card.dark-card:nth-child(4) button {
-  font-size: 0.8em;
-  padding: 6px 8px;
-  max-width: 160px;
-  margin: 4px auto;
-}
-
-/* Footer button */
-.card.dark-card:nth-child(5) {
-  padding: 10px;
-}
-/* AJUSTES ESPECIALES PARA LA VISTA DE RUTINA MÓVIL */
-
-/* Compactar tarjetas BLE y LED */
-.card.dark-card.compacto {
-  padding: 8px 12px;
-  font-size: 0.8em;
-}
-
-/* Reordenar botones en línea horizontal */
-.card.dark-card.compacto .button-row {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-/* Botones chicos */
-.card.dark-card.compacto button {
-  font-size: 1.5emem;
-  padding: 6px 10px;
-  flex: 1 1 45%;
-  max-width: 130px;
-}
-
-/* Reducir altura del BLE check */
-.card.dark-card.compacto #checkBluetoothBtn {
-  font-size: 0.75em;
-  padding: 5px 5px;
-  max-width: 30%;
-}
-
-/* Compactar LED control */
-.card.dark-card#ledControlCard {
-  padding: 8px 12px;
-  font-size: 0.8em;
-}
-.card.dark-card#ledControlCard button {
-  font-size: 0.75em;
-  padding: 6px 10px;
-  margin: 4px auto;
-  max-width: 130px;
-}
-
-/* Aumentar énfasis visual en la carta */
-.card.highlighted-card {
-  flex-grow: 2;
-  padding: 5px;
-  font-size: 1.2em;
-}
-.reading {
-  font-size: 2.5rem;
-  font-weight: bold;
-}
-
-/* Ajuste general de separación */
-.card-grid.single-column {
-  gap: 10px;
-  padding: 5px 5px;
 }
