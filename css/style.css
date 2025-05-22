@@ -164,7 +164,7 @@ button {
   margin: 10px;
 }
 .ble-diagnostic {
-  margin: 10px;
+  margin: 5px;
   font-family: monospace;
 }
 
@@ -340,8 +340,8 @@ text-align: center;
 #ble-messages {
   background-color: #1c1c2a;
   border: 1px solid #444;
-  padding: 16px;
-  margin-top: 10px;
+  padding: 5px;
+  margin-top: 5px;
   border-radius: 8px;
   font-size: 0.95em;
   color: #ccc;
@@ -350,7 +350,8 @@ text-align: center;
   visibility: hidden;
   transition: opacity 0.5s ease, visibility 0.5s ease;
   display: none; /* Evitar que ocupe espacio cuando se oculta */
-  min-height: 60px;
+  //min-height: 60px;
+  width: 100%;
 }
 
 #ble-messages.visible {
