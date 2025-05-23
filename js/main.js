@@ -206,42 +206,43 @@ function actualizarAccion(accion) {
 }
 // Connect to BLE Device
 function connectToDevice() {
-  //console.log('Initializing Bluetooth...');
+  console.log('Initializing Bluetooth...');
   navigator.bluetooth.requestDevice({
     filters: [{ name: deviceName }],
     optionalServices: [bleService]
   })
     .then(device => {
-      //console.log('Device Selected:', device.name);
+      console.log('Device Selected:', device.name);
       bleStateContainer.innerHTML = device.name;
 
 
       //bleStateContainer.style.color = "#24af37";
       // Limpiar datos antes de la nueva conexión
-      limpiarDatos();  // Limpiar TAGs y arrays previos
+      //limpiarDatos();  // Limpiar TAGs y arrays previos
       device.addEventListener('gattservicedisconnected', onDisconnected);
       return device.gatt.connect();
     })
     .then(gattServer => {
       bleServer = gattServer;
-      //console.log("Connected to GATT Server");
+      console.log("Connected to GATT Server");
       return bleServer.getPrimaryService(bleService);
     })
     .then(service => {
       bleServiceFound = service;
-      //console.log("Service discovered:", service.uuid);
+      console.log("Service discovered:", service.uuid);
       return service.getCharacteristic(sensorCharacteristic);
     })
     .then(characteristic => {
-      //console.log("Characteristic discovered:", characteristic.uuid);
+      console.log("Characteristic discovered:", characteristic.uuid);
       sensorCharacteristicFound = characteristic;
       // Limpiar cualquier valor persistente en la característica antes de empezar
       characteristic.writeValue(new Uint8Array([0])).then(() => {
-      //console.log("Característica BLE reiniciada.");
+      console.log("Característica BLE reiniciada.");
       characteristic.addEventListener('characteristicvaluechanged', handleCharacteristicChange);
       characteristic.startNotifications();
-      //console.log("Notifications Started.");
+      console.log("Notifications Started.");
       bleStateContainer.style.color = "#24af37";
+      limpiarDatos();  // Limpiar TAGs y arrays previos
       // Actualizamos la acción a "Leer carta"
       actualizarAccion("Leer carta");
 

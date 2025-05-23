@@ -30,6 +30,21 @@ header {
   font-size: 2em;
   font-weight: bold;
   font-family: Georgia, serif;
+  position: relative;
+}
+.status-icons {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+}
+
+.status-icons img {
+  width: 16px;
+  height: 16px;
+  opacity: 0.8;
 }
 .slogan {
   font-size: 1em;
