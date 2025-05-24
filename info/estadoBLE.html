@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Estado BLE - Camer Codex</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+
+  <main class="content" style="max-width: 600px; margin: 2rem auto; padding: 0 1rem;">
+    <h1>Estado de Web Bluetooth</h1>
+    <button id="checkBluetoothBtn" class="button-primary">
+    <img src="../icons/search.svg" alt="Check Bluetooth Icon" id="icon-left">
+    Estado BLE
+  </button>
+
+  <div id="ble-messages" class="ble-diagnostic inicialmente-oculto">
+    <p class="ble-ok">
+      <img src="../icons/check_F3B13F.svg" alt="Check Icon" id="icon-small">
+      Web Bluetooth disponible.
+    </p>
+    <p class="ble-warning">
+      <img src="../icons/warning_F3B13F.svg" alt="Warning Icon" id="icon-small">
+      Se pedirá permiso.
+    </p>
+  </div>
+  </main>
+
+  <footer>
+    <p style="text-align:center; font-size:0.9rem; color:#888;">
+      &copy; 2025 Camer Codex
+    </p>
+  </footer>
+
+  <script src="../js/info/estadoBLE-check.js"></script>
+</body>
+</html>

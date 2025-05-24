@@ -32,6 +32,19 @@ header {
   font-family: Georgia, serif;
   position: relative;
 }
+main p{
+  font-size: 0.5em;
+  color: #ccc;
+  margin: 10px 0;
+  font-weight: normal;
+  font-family: Roboto, serif;
+}
+main h3 {
+  color: #f3b13f;
+  font-size: 1.5rem;
+  margin-bottom: 0px;
+  font-family: 'Georgia', serif;
+}
 .status-icons {
   position: absolute;
   top: 50%;
@@ -298,10 +311,6 @@ button {
 .button-primary:hover {
   background-color: #d99c36;
 }
-
-
-
-
 .single-column {
   display: flex;
   flex-direction: column;
@@ -318,7 +327,6 @@ button {
   background-color: #f3b13f;
   color: #ffffff;
 }
-
 .connectButton:hover {
   background-color: #d99c36;
 }
@@ -326,11 +334,9 @@ button {
   background-color: #f3b13f;
   color: #ffffff;
 }
-
 .disconnectButton:hover {
   background-color: #d99c36;
 }
-
 .dark-card h2,
 .dark-card .gray-label {
 text-align: center;
@@ -338,20 +344,17 @@ text-align: center;
 .highlighted-card {
   text-align: center;
 }
-
 .inicialmente-oculto {
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.5s ease, visibility 0.5s ease;
   min-height: 60px;
 }
-
 .inicialmente-oculto.visible {
   opacity: 1;
   visibility: visible;
 }
 /* 1. Mostrar/ocultar BLE Messages sin ocupar espacio */
-/* 2. Mostrar/ocultar BLE Messages sin ocupar espacio */
 #ble-messages {
   background-color: #1c1c2a;
   border: 1px solid #444;
@@ -368,15 +371,12 @@ text-align: center;
   //min-height: 60px;
   width: 100%;
 }
-
 #ble-messages.visible {
   opacity: 1;
   visibility: visible;
   display: block; /* Muestra el mensaje */
 }
-
-
-/* 3. Centrado de botones */
+/* Centrado de botones */
 .card button, .button-primary, .button-secondary {
   width: 100%;
   max-width: 280px;
@@ -390,10 +390,6 @@ text-align: center;
   transition: background-color 0.3s ease;
   display: inline-block; /* Para asegurarnos de que el botón se ajuste en el contenedor */
 }
-
-
-/* 3. Botón Estado Bluetooth con tamaño uniforme */
-/* 1. Botón Estado Bluetooth - Mismo tamaño que los otros */
 #checkBluetoothBtn {
   background-color: #d5a043;
   color: #0c0c1d;
@@ -410,13 +406,9 @@ text-align: center;
   margin-top: 6px;
   text-align: center;
 }
-
 #checkBluetoothBtn:hover {
   background-color: #d99c36;
 }
-
-
-/* 4. Estilo consistente para BLE state: Disconnected */
 #bleState {
   font-size: 1em;
   font-weight: normal;
@@ -424,21 +416,18 @@ text-align: center;
 }
 #disconnectBleButton{
   background-color: #8a7a38 !important;
-
 }
 #disconnectBleButton:hover {
   background-color: #d99c36;
 }
 #checkBluetoothBtn {
   background-color: #8a7a38;
-
 }
 #checkBluetoothBtn:hover {
   background-color: #d99c36;
 }
 #offButton {
   background-color: #8a7a38 !important;
-
 }
 #offButton:hover {
   background-color: #d99c36;
@@ -473,7 +462,6 @@ text-align: center;
   display: inline-block;
   text-align: center;
 }
-
 #icon-small {
   width: 15px !important;
   height: 15px !important;
@@ -488,7 +476,6 @@ text-align: center;
   margin: 0 auto;
   box-sizing: border-box;
 }
-
 #accionMagoMensaje {
   text-align: center;
   overflow-wrap: break-word;
@@ -505,7 +492,6 @@ text-align: center;
   padding: 5px;
   max-width: 100%;
 }
-
 /* Cada tarjeta de rutina */
 .rutina-card {
   background-color: #1a1a1a;
@@ -517,7 +503,6 @@ text-align: center;
   justify-content: center;
   padding: 5px;
 }
-
 .rutina-card:hover {
   transform: translateY(-5px);
 }
@@ -535,7 +520,6 @@ text-align: center;
   justify-content: center;
   margin-top: 5px;
 }
-
 .page-btn {
   background-color: #f3b13f;
   border: 2px solid #f3b13f;
@@ -683,3 +667,80 @@ text-align: center;
   gap: 10px;
   padding: 5px 5px;
 }
+.menu-icon {
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1100; /* Para que quede sobre otros elementos */
+}
+
+#menuToggle {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.menu-dropdown {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    background-color: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 8px;
+    top: 40px;
+    left: 5px;
+    padding: 8px;
+    z-index: 1000;
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.9rem;
+    font-weight: normal;
+    padding: 6px 12px;
+    line-height: 1.3;
+    color: #d9d9d9;
+    text-decoration: none;
+    /* display: block; */
+    text-align: start;
+    width: max-content;
+}
+
+.menu-dropdown.hidden {
+  display: none;
+}
+
+.menu-dropdown a {
+  color: #D9D9D9;
+  text-decoration: none;
+  margin: 4px 0;
+  font-size: 0.9em;
+  transition: color 0.2s ease;
+}
+
+.menu-dropdown a:hover {
+  text-decoration: underline;
+  color: #f3b13f;
+}
+.popup-modal {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 9999;
+}
+
+.popup-content {
+  background: #222; color: #d9d9d9;
+  padding: 20px; border-radius: 8px;
+  max-width: 90%; max-height: 80%;
+  overflow-y: auto; position: relative;
+}
+
+#popupCloseBtn {
+  position: absolute; top: 8px; right: 10px;
+  background: transparent; border: none;
+  font-size: 20px; color: #d9d9d9; cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
+

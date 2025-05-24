@@ -236,74 +236,12 @@ if (esAppInstalada()) {
 }
 
 // Manejo de Bluetooth y geolocalización
-const menuToggle = document.getElementById('menuToggle'); // icono 3 puntos
-const menuDropdown = document.getElementById('menuDropdown');
-const popupModal = document.getElementById('popupModal');
-const popupBody = document.getElementById('popupBody');
-const popupCloseBtn = document.getElementById('popupCloseBtn');
-const estadoBLEbtn = document.getElementById("verEstadoBLE");
-menuDropdown.addEventListener('click', (e) => {
-  if (e.target.matches('a[data-popup]')) {
-    e.preventDefault();
-    const popupId = e.target.getAttribute('data-popup');
-    abrirPopup(popupId);
-  }
-});
+
+  
 
 
-async function abrirPopup(popupId) {
-  try {
-    const response = await fetch(`../info/${popupId}.html`);
-    if (!response.ok) throw new Error("No se pudo cargar el contenido");
-    
-    const text = await response.text();
-    
-    // Parsear el HTML para extraer solo el contenido dentro de <main>
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(text, "text/html");
-    const mainElement = doc.querySelector("main");
 
-    if (!mainElement) {
-      throw new Error("No se encontró contenido principal <main> en el archivo.");
-    }
 
-    popupBody.innerHTML = mainElement.innerHTML;
-    menuDropdown.classList.add('hidden');
-    popupModal.classList.remove("hidden");
-
-    // Cargar el script solo para estadoBLE y solo una vez
-    // En abrirPopup, tras insertar el contenido y agregar el script:
-if (popupId === "estadoBLE") {
-  if (!document.getElementById("estadoBLE-check-script")) {
-    const script = document.createElement("script");
-    script.id = "estadoBLE-check-script";
-    script.src = "../js/info/estadoBLE-check.js";
-    script.onload = () => {
-      if (typeof initEstadoBLE === "function") {
-        initEstadoBLE();
-      }
-    };
-    document.body.appendChild(script);
-  } else {
-    // Si ya está cargado, sólo llamar a initEstadoBLE
-    if (typeof initEstadoBLE === "function") {
-      initEstadoBLE();
-    }
-  }
-}
-
-  } catch (error) {
-    popupBody.innerHTML = `<p>Error cargando contenido: ${error.message}</p>`;
-    popupModal.classList.remove("hidden");
-  }
-
-}
-
-popupCloseBtn.addEventListener('click', () => {
-  popupModal.classList.add('hidden');
-  popupBody.innerHTML = '';          // Limpiar contenido del popup
-  menuDropdown.classList.add('hidden');  // Cerrar menú
-});
 
 
 
@@ -537,42 +475,7 @@ function getDateTime() {
   return `${day}/${month}/${year} at ${hours}:${minutes}:${seconds}`;
 }
 
-    document.addEventListener("DOMContentLoaded", () => {
 
-
-      if (menuToggle && menuDropdown) {
-        menuToggle.addEventListener('click', (e) => {
-          e.stopPropagation(); // evitar que el click burbujee y cierre el menú
-          menuDropdown.classList.toggle('hidden');
-        });
-      }
-
-      if (estadoBLEbtn) {
-        estadoBLEbtn.addEventListener("click", () => {
-          const bleMessages = document.getElementById("ble-messages");
-          if (bleMessages) {
-            bleMessages.classList.add("visible");
-            setTimeout(() => {
-              bleMessages.classList.remove("visible");
-            }, 5000);
-          }
-          menuDropdown.classList.add("hidden");
-        });
-             
-      }
-    }
-    
-    
-);
-document.addEventListener('click', (e) => {
-  const target = e.target;
-
-  // Si el click NO es dentro del menú ni sobre el icono, cerrar menú
-  if (!menuDropdown.contains(target) && target !== menuToggle) {
-    menuDropdown.classList.add('hidden');
-  }
-});
-// Paginación de rutinas
 
 let currentPage = 1;
 const routinesPerPage = 10; // Limitar a 10 rutinas por página

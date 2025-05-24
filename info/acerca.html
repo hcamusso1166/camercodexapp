@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Acerca de - Camer Codex</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+  <main>
+    <h3>Acerca de Camer Codex</h3>
+
+    <p>
+      <strong>Versión actual:</strong>
+      <span id="versionApp">Cargando...</span>
+    </p>
+
+    <p>
+      Camer Codex es una aplicación web progresiva (PWA) diseñada para ilusionistas
+      que utilizan tecnología Bluetooth Low Energy (BLE) para mejorar sus rutinas mágicas.
+    </p>
+
+    <p>
+      Esta app permite la conexión con dispositivos RFID y control de LEDs para ofrecer
+      una experiencia mágica única y avanzada.
+    </p>
+
+    <p>
+      <strong>Autor:</strong> Hernán Camusso (Mr. Camer)<br />
+      <strong>Contacto:</strong> contacto@camer.com (ficticio)
+    </p>
+
+  </main>
+
+  <footer>
+    <p style="text-align:center; font-size:0.9rem; color:#888;">
+      &copy; 2025 Camer Codex
+    </p>
+  </footer>
+
+  <script>
+    // Actualizar la versión al cargar la página
+    document.addEventListener("DOMContentLoaded", () => {
+      // Intentar obtener la versión desde el index (si la app la comparte globalmente)
+      const versionGlobal = document.getElementById('appVersion')?.textContent;
+      const versionSpan = document.getElementById('versionApp');
+      if (versionGlobal && versionSpan) {
+        versionSpan.textContent = versionGlobal.trim();
+      } else if (versionSpan) {
+        versionSpan.textContent = '1.0.0'; // valor por defecto
+      }
+    });
+  </script>
+</body>
+</html>
