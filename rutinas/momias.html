@@ -9,7 +9,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-  <header>Camer Codex</header>
+  <header id="headerRoutine">Camer Codex
+    <div class="menu-icon">
+      <img src="../icons/more_vert_16_D9D9D9.svg" alt="Menú" id="menuToggle">
+      <div id="menuDropdown" class="menu-dropdown hidden">
+        <a href="#" data-popup="ayuda">Ayuda</a>
+        <a href="#" data-popup="acerca">Acerca de</a>
+        <a href="#" data-popup="estadoBLE">Estado BLE</a>
+      </div>
+    </div>
+    <div id="popupModal" class="popup-modal hidden">
+      <div class="popup-content">
+        <button id="popupCloseBtn">X</button>
+      <div id="popupBody"></div>
+      </div>
+    </div>
+    <div class="status-icons">
+      <img id="estadoConexionBLE" src="../icons/bluetooth_disabled_16_D9D9D9.svg" alt="Conexión BLE" title="Conexión BLE">
+      <img id="estadoBLEIcon" src="../icons/block_16_D9D9D9.svg" alt="Estado BLE" title="Estado BLE">
+      <img src="../icons/battery_unknown_16_D9D9D9.svg" alt="Batería" title="Batería">
+    </div>
+  </header>
   <div class="rutina">Momias de Camer</div>
 
   <div class="content">
@@ -21,7 +41,7 @@
       <div class="card dark-card highlighted-card">
         <h2>Momia</h2>
         <p class="reading"><span id="valueContainer"></span></p>
-        <p class="gray-label">Last reading: <span id="timestamp"></span></p>
+        <p class="gray-label">Lectura: <span id="timestamp"></span></p>
       </div>
       <div class="card dark-card compacto">
         <h3>Dispositivo Bluetooth (BLE)</h3>
@@ -35,12 +55,12 @@
             Desconectar
           </button>
 
-        <p class="gray-label">BLE state: <strong><span id="bleState" style="color:#d13a30;">Disconnected</span></strong></p>
-        <button id="checkBluetoothBtn" class="button-primary ">
+        <p class="gray-label">BLE state: <strong><span id="bleState" style="color:#d13a30;">Desconectado</span></strong></p>
+        <button id="checkBluetoothBtn" class="button-primary ocultaBLE">
           <img src="../icons/search.svg" alt="Check Bluetooth Icon" id="icon-left">
           Estado BLE
         </button>
-        <div id="ble-messages" class="ble-diagnostic inicialmente-oculto">
+        <div id="ble-messages" class="ble-diagnostic inicialmente-oculto ocultaBLE">
           <p class="ble-ok">
             <img src="../icons/check_F3B13F.svg" alt="Check Icon" id="icon-small"> 
             Web Bluetooth disponible.
@@ -58,7 +78,7 @@
         <h3>LED Control dispositivo</h3>
         <button id="onButton" class="button-primary connectButton">ON</button>
         <button id="offButton" class="button-primary disconnectButton">OFF</button>
-        <!--<p class="gray-label">Last value sent: <span id="valueSent"></span></p>-->
+        <p class="gray-label">Valor enviado: <span id="valueSent"></span></p>
       </div>
       <div class="card dark-card">
         <button onclick="window.location.href='../index.html'" class="button-secondary">
