@@ -239,7 +239,7 @@ button {
 }
 .dark-card h3 {
   color: #f3b13f;
-  font-size: 1rem;
+  font-size: 0.8rem;
   margin-bottom: 12px;
   font-family: 'Georgia', serif;
 }
@@ -619,7 +619,7 @@ text-align: center;
 /* Reordenar botones en línea horizontal */
 .card.dark-card.compacto .button-row {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 6px;
 }
@@ -648,7 +648,7 @@ text-align: center;
   font-size: 0.75em;
   padding: 6px 10px;
   margin: 4px auto;
-  max-width: 130px;
+  max-width: 35px;
 }
 
 /* Aumentar énfasis visual en la carta */
