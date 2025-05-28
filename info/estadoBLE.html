@@ -8,23 +8,24 @@
 </head>
 <body>
 
-  <main class="content" style="max-width: 600px; margin: 2rem auto; padding: 0 1rem;">
-    <h1>Estado de Web Bluetooth</h1>
-    <button id="checkBluetoothBtn" class="button-primary">
-    <img src="../icons/search.svg" alt="Check Bluetooth Icon" id="icon-left">
-    Estado BLE
-  </button>
-
-  <div id="ble-messages" class="ble-diagnostic inicialmente-oculto">
-    <p class="ble-ok">
-      <img src="../icons/check_F3B13F.svg" alt="Check Icon" id="icon-small">
-      Web Bluetooth disponible.
-    </p>
-    <p class="ble-warning">
-      <img src="../icons/warning_F3B13F.svg" alt="Warning Icon" id="icon-small">
-      Se pedirá permiso.
-    </p>
-  </div>
+  <main >
+    <div class="card dark-card "> 
+    <h3>Web Bluetooth</h3>
+      <button id="checkBluetoothBtn" class="button-primary ">
+            <img src="../icons/search.svg" alt="Check Bluetooth Icon" id="icon-left">
+            Disponible?
+          </button>
+          <div id="ble-messages" class="ble-diagnostic inicialmente-oculto ">
+            <p class="ble-ok">
+              <img src="../icons/check_F3B13F.svg" alt="Check Icon" id="icon-small">
+              Web Bluetooth disponible.
+            </p>
+            <p class="ble-warning">
+              <img src="../icons/warning_F3B13F.svg" alt="Warning Icon" id="icon-small">
+              Se pedirá permiso.
+            </p>
+          </div>
+    </div>
   </main>
 
   <footer>

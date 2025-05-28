@@ -430,6 +430,7 @@ function handleCharacteristicChange(event) {
     { match: "theboss.html",              accion: () => guardarTagTheBoss(mvalor) },
     { match: "pruebaDeFuego.html",        accion: () => guardarTagPruebaDeFuego(mvalor) },
     { match: "imposibleDeVer.html",        accion: () => reproducirAudioParaTag(mvalor) },
+    { match: "manoPoker.html",        accion: () => evaluarManoPoker(mvalor) },
     
   ];
 

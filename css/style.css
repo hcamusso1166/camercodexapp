@@ -184,7 +184,7 @@ button {
 
 .gray-label {
   color: #bebebe;
-  font-size: 1.2emrem;
+  font-size: 1em;
 }
 
 .reading {
@@ -483,6 +483,17 @@ text-align: center;
   hyphens: auto;
   max-width: 100%;
   padding: 0 10px;
+}
+#info {
+  text-align: center;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+  max-width: 100%;
+  padding: 0 10px;
+  font-size: 0.7em !important;
+  font-family:'Roboto', sans-serif !important;
+  font-weight: 400 !important;
 }
 /* Contenedor de las rutinas */
 .rutinas-container {
