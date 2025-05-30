@@ -498,7 +498,7 @@ text-align: center;
 /* Contenedor de las rutinas */
 .rutinas-container {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 columnas */
+  grid-template-columns: repeat(6, 1fr);
   gap: 5px;
   padding: 5px;
   max-width: 100%;
@@ -506,16 +506,15 @@ text-align: center;
 /* Cada tarjeta de rutina */
 .rutina-card {
   background-color: #1a1a1a;
-  border-radius: 12px;
   text-align: center;
   transition: transform 0.3s ease;
-  display: flex;
   align-items: center;
   justify-content: center;
-  padding: 5px;
+  padding: 10px;
+  aspect-ratio: 1;
 }
 .rutina-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-1px);
 }
 .rutina-card button {
   width: 90%;
@@ -525,6 +524,23 @@ text-align: center;
   padding: 5px;
   margin: 5px;
 }
+/* Estilo para pantallas móviles */
+@media (max-width: 768px) {
+  .rutinas-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 columnas */
+    grid-template-rows: repeat(10, auto); /* 10 filas */
+    gap: 5px; /* Ajustamos el espacio entre tarjetas */
+  }
+
+  .rutina-card {
+    display: flex;
+    border-radius: 12px;
+    aspect-ratio: 4; /* Mantiene la proporción de las tarjetas */
+    width: 90%;
+    }
+}
+
 /* Paginación */
 .pagination {
   display: flex;
@@ -566,13 +582,7 @@ text-align: center;
   box-sizing: border-box; /* Asegura que el padding y el border se incluyan en el tamaño total */
 }
 
-/* Opcional: ajuste para pantallas intermedias */
-@media (max-width: 768px) {
-  .rutina-card {
-    width: 100%;
-    max-width: 100%;
-  }
-}
+
 
 /* Solo en pantallas muy pequeñas (por ejemplo, ≤ 360px) pasamos a 1 columna */
 @media (max-width: 360px) {

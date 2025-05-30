@@ -17,7 +17,6 @@ function actualizarIconoConexionBLE(estado) {
   icon.title = icon.alt;
 }
 
-// main.js
 window.addEventListener("DOMContentLoaded", function () {
 document.getElementById('appVersion').textContent = appVersion;
 actualizarIconoConexionBLE("desconectado");
@@ -423,14 +422,17 @@ function handleCharacteristicChange(event) {
   const path = window.location.pathname;
 
   const accionesPorRuta = [
-    { match: "fueraDeEsteMundo.html", accion: () => reproducirAudioColor(color) },
+    { match: "fueraDeEsteMundo.html",     accion: () => reproducirAudioColor(color) },
     { match: "elefantes.html",            accion: () => guardarTag(mvalor) },
     { match: "momias.html",               accion: () => reproducirColor(mvalor) },
     { match: "pegriloso.html",            accion: () => guardarTagPegriloso(mvalor) },
     { match: "theboss.html",              accion: () => guardarTagTheBoss(mvalor) },
     { match: "pruebaDeFuego.html",        accion: () => guardarTagPruebaDeFuego(mvalor) },
-    { match: "imposibleDeVer.html",        accion: () => reproducirAudioParaTag(mvalor) },
-    { match: "manoPoker.html",        accion: () => evaluarManoPoker(mvalor) },
+    { match: "imposibleDeVer.html",       accion: () => reproducirAudioParaTag(mvalor) },
+    { match: "oraculo.html",              accion: () => reproducirAudioParaTag(mvalor) },
+    { match: "manoPoker.html",            accion: () => evaluarManoPoker(mvalor) },
+    { match: "heartsAndCrafts.html",      accion: () => reproducirAudioParaTag(mvalor) },   
+    { match: "trucoCarreraCorazon.html",  accion: () => reproducirAudioParaTag(mvalor) },
     
   ];
 
