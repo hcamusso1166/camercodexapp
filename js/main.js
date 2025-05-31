@@ -389,12 +389,12 @@ function connectToDevice() {
       limpiarDatos();  // Limpiar TAGs y arrays previos
       // Actualizamos la acción a "Leer carta"
       actualizarAccion("Leer carta");
-
+      // Dependiendo de la ruta actual, actualizar la primera acción:
       if (window.location.pathname.includes("pegriloso.html")) {    
           actualizarAccion("Registrar Bala de Plata");
       }
       if (window.location.pathname.includes("elefantes.html")) {    
-          actualizarAccion("Leer carta y REPETIR la lectura de la última carta");
+          actualizarAccion("Leer carta y REPETIR la lectura de la PRIMERA carta para finalizar la dada");
       }
       if (window.location.pathname.includes("momias.html")) {    
           actualizarAccion("Acercar Sarcófago para descubrir el color");
@@ -422,7 +422,7 @@ function handleCharacteristicChange(event) {
   const path = window.location.pathname;
 
   const accionesPorRuta = [
-    { match: "fueraDeEsteMundo.html",     accion: () => reproducirAudioColor(color) },
+    { match: "fueraDeEsteMundo.html",     accion: () => reproducirAudioColor(color,mvalor) },
     { match: "elefantes.html",            accion: () => guardarTag(mvalor) },
     { match: "momias.html",               accion: () => reproducirColor(mvalor) },
     { match: "pegriloso.html",            accion: () => guardarTagPegriloso(mvalor) },
