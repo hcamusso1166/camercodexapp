@@ -3,15 +3,13 @@ let finDada = false;
 let contador = 0;
 let cadencia = 2000;  // Cadencia de audio en ms (puedes configurarlo)
 let lectura = null;
-let segundaLectura = null;
 
 // Esta función será llamada desde main.js para almacenar el TAG y realizar la lógica de la dada
 function guardarTag(tag) {
   if (!finDada) {
-    if (tag === pila[0]) {
-      // Si el tag es igual a la primer carta dada, fin de la dada
+    if (tag === pila[0] && pila.length > 1) {
+      // Si el tag es igual a la primer carta dada y hay cartas en la pila, fin de la dada
       finDada = true;
-      // enviar audio 'STOP' despues de 2 segundos
       setTimeout(function() {
         reproducirAudio("stop"); // Reproducir el audio de "STOP"
         actualizarAccion("Nombrar las cartas en orden!");
@@ -25,16 +23,15 @@ function guardarTag(tag) {
         mostrarPosiciones();
       }, 5000);
     } else {
-      if (tag === lectura || tag === segundaLectura || pila.includes(tag)) {
-        // Si el tag es igual a la lectura actual o la segunda lectura, o ya está en las cartas, no hacer nada
+      if (tag === lectura || pila.includes(tag)) {
+        // Si el tag es igual a la lectura actual, o ya está en la pila de cartas, no hacer nada
         console.warn("Tag repetido, ignorado.");
         return; // Evita repetir lectura del mismo tag
       }
-      // Se agrega el tag a la pila, que funciona como pila, ultimo en entrar, primero en salir
-      pila.push(tag); // Agregar al final de la pila
+      // Se agrega el tag a la pila, que funciona como cola, primero en entrar, primero en salir
+      pila.push(tag); // Agregar al inicio de la pila
       reproducirAudioParaTag(tag); // Reproducir el audio de la carta
       contador++;
-      segundaLectura = lectura; // Guardar la lectura anterior
       lectura = tag; // Actualizar la lectura actual
       console.log("Tag guardado:", tag, "Contador:", contador);
       console.log("Pila actual:", pila);
