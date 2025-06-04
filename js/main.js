@@ -433,7 +433,8 @@ function handleCharacteristicChange(event) {
     { match: "manoPoker.html",            accion: () => evaluarManoPoker(mvalor) },
     { match: "heartsAndCrafts.html",      accion: () => reproducirAudioParaTag(mvalor) },   
     { match: "trucoCarreraCorazon.html",  accion: () => reproducirAudioParaTag(mvalor) },
-    
+    { match: "ojosVendados.html",         accion: () => reproducirOjosVendados(mvalor) },
+    { match: "dadaSimple.html",           accion: () => reproducirAudioParaTag(mvalor) },
   ];
 
   for (const entrada of accionesPorRuta) {
