@@ -422,17 +422,14 @@ function handleCharacteristicChange(event) {
   const path = window.location.pathname;
 
   const accionesPorRuta = [
-    { match: "fueraDeEsteMundo.html",     accion: () => reproducirAudioColor(color,mvalor) },
+    { match: "fueraDeEsteMundo.html",     accion: () => reproducirAudioColor(color) },
     { match: "elefantes.html",            accion: () => guardarTag(mvalor) },
     { match: "momias.html",               accion: () => reproducirColor(mvalor) },
     { match: "pegriloso.html",            accion: () => guardarTagPegriloso(mvalor) },
     { match: "theboss.html",              accion: () => guardarTagTheBoss(mvalor) },
     { match: "pruebaDeFuego.html",        accion: () => guardarTagPruebaDeFuego(mvalor) },
-    { match: "imposibleDeVer.html",       accion: () => reproducirAudioParaTag(mvalor) },
     { match: "oraculo.html",              accion: () => reproducirAudioParaTag(mvalor) },
     { match: "manoPoker.html",            accion: () => evaluarManoPoker(mvalor) },
-    { match: "heartsAndCrafts.html",      accion: () => reproducirAudioParaTag(mvalor) },   
-    { match: "trucoCarreraCorazon.html",  accion: () => reproducirAudioParaTag(mvalor) },
     { match: "ojosVendados.html",         accion: () => reproducirOjosVendados(mvalor) },
     { match: "dadaSimple.html",           accion: () => reproducirAudioParaTag(mvalor) },
   ];
