@@ -7,6 +7,14 @@ let cadencia =  2500;  // Cadencia de audio en ms (puedes configurarlo)
 let lectura = null;
 let mapaCartasAudios = {};
 let cartasTexto = {};
+let mapaCartas = {};
+
+fetch('../audios/cartas.json')
+  .then(res => res.json())
+  .then(data => {
+    mapaCartas = data;
+    console.log("Mapa de cartas Archivos Audios cargado correctamente");
+  })
 
 fetch('../audios/coleccion/coleccionAudios.json')
   .then(res => res.json())
@@ -25,6 +33,11 @@ fetch('../audios/coleccion/coleccionTexto.json')
 
 // Esta función será llamada desde main.js para almacenar el TAG y realizar la lógica de la dada
 function guardarTag(tag) {
+  if (faseFinal) {
+    console.warn("La rutina ha finalizado, no se pueden guardar más tags.");
+    reproducirAudioFaseFinal(tag); // Reproducir el audio de la carta
+    return; 
+  };
   if (!finDada) {
     if (tag === pila[0] && pila.length > 1) {
       // Si el tag es igual a la primer carta dada y hay cartas en la pila, fin de la dada
@@ -75,9 +88,12 @@ function reproducirAudioPosiciones() {
   pila.forEach((tag, index) => {
     setTimeout(() => {
       reproducirAudioParaTag(tag);
-      i = index;
     }, cadencia * index);
   });
+  // Luego de reproducir todos los audios, reiniciar la rutina
+  setTimeout(() => {
+    reiniciarColeccionista();
+  }, cadencia * pila.length + 500); // Pequeña espera extra para finalizar el último audio
 }
 
 function reproducirAudioParaTag(tag) {
@@ -99,6 +115,63 @@ function reproducirAudioParaTag(tag) {
     audio.removeAttribute('src');
     audio.load();
   }
+}
+function reproducirAudioFaseFinal(tag) {
+  const audio = document.getElementById("tagAudio");
+  const archivo = mapaCartasAudios[tag];
+
+  if (archivo && archivo.trim() !== "") {
+    //console.log("Tag:", tag, "→ Archivo:", archivo);
+    audio.src = `../audios/coleccion/${archivo}`;
+    audio.play().then(() => {
+      //console.log(`Reproduciendo: ${archivo}`);
+    }).catch(err => {
+      console.error("No se pudo reproducir el audio:", err);
+      console.log("Tag:", tag, "→ Archivo:", archivo);
+    });
+  } else {
+    console.warn(`No se encontró archivo de audio para: ${tag}`);
+    console.log("Tag:", tag, "→ Archivo:", archivo);
+    audio.removeAttribute('src');
+    audio.load();
+  }
+  setTimeout(() => {
+      const audio2 = document.getElementById("tagAudio");
+      const archivo2 = mapaCartas[tag];
+      if (archivo2 && archivo2.trim() !== "") {
+    //console.log("Tag:", tag, "→ Archivo:", archivo);
+    audio2.src = `../audios/${archivo2}`;
+    audio2.play().then(() => {
+      //console.log(`Reproduciendo: ${archivo}`);
+    }).catch(err => {
+      console.error("No se pudo reproducir el audio:", err);
+      console.log("Tag:", tag, "→ Archivo:", archivo);
+    });
+  } else {
+    console.warn(`No se encontró archivo de audio para: ${tag}`);
+    console.log("Tag:", tag, "→ Archivo:", archivo);
+    audio.removeAttribute('src');
+    audio.load();
+  }
+  }, cadencia); // Espera la cadencia antes de reproducir el audio de la carta
+
+
+  
+    
+}
+// Limpia variables y deja todo listo para una nueva carta
+function reiniciarColeccionista() {
+  pila = [];
+  finDada = false;
+  faseFinal = true;
+  contador = 0;
+  i = 0;
+  lectura = null;
+  document.getElementById("resultado").innerHTML = "";
+  if (typeof limpiarDatos === 'function') {
+    limpiarDatos();
+  }
+  actualizarAccion("Leer carta para fase final");
 }
 
 
