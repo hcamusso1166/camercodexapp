@@ -1,5 +1,12 @@
 // theboss.js
-
+let cartasPoker = {};
+fetch('../audios/cartasPoker.json')
+  .then(res => res.json())
+  .then(data => {
+    cartasPoker = data;
+    console.log("Mapa de cartas Poker para texto  cargado correctamente");
+  })
+  .catch(err => console.error("Error cargando cartasPoker.json", err));
 let pilaNegra = [];
 let pilaRoja = [];
 let cartasLeidas = 0;
@@ -17,8 +24,8 @@ function guardarTagTheBoss(tag) {
     return;
   }
   ultimoTag = tag;
-
-  const palo = tag[1];
+  const textCarta = cartasPoker[tag];
+  const palo = textCarta[1];
   let color = null;
 
   if (palo === "P" || palo === "T") {

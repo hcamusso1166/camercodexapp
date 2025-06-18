@@ -3,6 +3,15 @@
 let balaDePlata = null;
 let etapaRegistro = true;
 
+let cartasPoker = {};
+
+fetch('../audios/cartasPoker.json')
+  .then(res => res.json())
+  .then(data => {
+    cartasPoker = data;
+    console.log("Mapa de cartas Poker para texto  cargado correctamente");
+  })
+  .catch(err => console.error("Error cargando cartasPoker.json", err));
 
 // Esta función será llamada desde main.js para procesar los tags
 function guardarTagPegriloso(tag) {

@@ -1,25 +1,27 @@
 let pila = [];
 let finDada = false;
+let faseFinal = false; // Variable para indicar si se ha llegado a la fase final de la rutina
 let contador = 0;
-let cadencia = 2000;  // Cadencia de audio en ms (puedes configurarlo)
+let i = 0; 
+let cadencia =  2500;  // Cadencia de audio en ms (puedes configurarlo)
 let lectura = null;
-let mapaCartas = {};
-let cartasPoker = {};
+let mapaCartasAudios = {};
+let cartasTexto = {};
 
-fetch('../audios/cartas.json')
+fetch('../audios/coleccion/coleccionAudios.json')
   .then(res => res.json())
   .then(data => {
-    mapaCartas = data;
+    mapaCartasAudios = data;
     console.log("Mapa de cartas Archivos Audios cargado correctamente");
   })
-  .catch(err => console.error("Error cargando cartas.json", err));
-fetch('../audios/cartasPoker.json')
+  .catch(err => console.error("Error cargando coleccionAudios.json", err));
+fetch('../audios/coleccion/coleccionTexto.json')
   .then(res => res.json())
   .then(data => {
-    cartasPoker = data;
-    console.log("Mapa de cartas Poker para texto  cargado correctamente");
+    cartasTexto = data;
+    console.log("Mapa de cartas para texto  cargado correctamente");
   })
-  .catch(err => console.error("Error cargando cartasPoker.json", err));
+  .catch(err => console.error("Error cargando coleccionTexto.json", err));
 
 // Esta función será llamada desde main.js para almacenar el TAG y realizar la lógica de la dada
 function guardarTag(tag) {
@@ -60,7 +62,7 @@ function guardarTag(tag) {
 function mostrarPosiciones() {
   let resultadoHTML = "<h2>Posiciones de las cartas:</h2>";
   pila.forEach((tag, index) => {
-      const textCarta = cartasPoker[tag]; 
+      const textCarta = cartasTexto[tag]; 
 
     resultadoHTML += `<p>Posición ${index + 1}: Carta ${textCarta}</p>`;
   });
@@ -73,17 +75,18 @@ function reproducirAudioPosiciones() {
   pila.forEach((tag, index) => {
     setTimeout(() => {
       reproducirAudioParaTag(tag);
+      i = index;
     }, cadencia * index);
   });
-
 }
+
 function reproducirAudioParaTag(tag) {
   const audio = document.getElementById("tagAudio");
-  const archivo = mapaCartas[tag];
+  const archivo = mapaCartasAudios[tag];
 
   if (archivo && archivo.trim() !== "") {
     //console.log("Tag:", tag, "→ Archivo:", archivo);
-    audio.src = `../audios/${archivo}`;
+    audio.src = `../audios/coleccion/${archivo}`;
     audio.play().then(() => {
       //console.log(`Reproduciendo: ${archivo}`);
     }).catch(err => {

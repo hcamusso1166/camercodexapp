@@ -321,16 +321,25 @@ const ledCharacteristic = '19b10002-e8f2-537e-4f6c-d104768a1214';
 const sensorCharacteristic = '19b10001-e8f2-537e-4f6c-d104768a1214';
 
 let bleServer, bleServiceFound, sensorCharacteristicFound;
+/* llevar a los js de cada rutina
 let mapaCartas = {};
+let cartasPoker = {};
 
 fetch('../audios/cartas.json')
   .then(res => res.json())
   .then(data => {
     mapaCartas = data;
-    console.log("Mapa de cartas cargado correctamente");
+    console.log("Mapa de cartas Archivos Audios cargado correctamente");
   })
   .catch(err => console.error("Error cargando cartas.json", err));
-
+fetch('../audios/cartasPoker.json')
+  .then(res => res.json())
+  .then(data => {
+    cartasPoker = data;
+    console.log("Mapa de cartas Poker para texto  cargado correctamente");
+  })
+  .catch(err => console.error("Error cargando cartasPoker.json", err));
+*/
 // Función que limpia los TAGs y valores anteriores
 function limpiarDatos() {
   if (retrievedValue) retrievedValue.innerHTML = '';
@@ -419,6 +428,8 @@ function handleCharacteristicChange(event) {
   const valor = new TextDecoder().decode(event.target.value).trim();
   const mvalor = valor[0] + valor[1];
   const color = valor[2];
+  const dorso = valor[3]; 
+  console.log("Valor recibido:", valor, "mvalor:", mvalor, "color:", color, "dorso:", dorso);
   const path = window.location.pathname;
 
   const accionesPorRuta = [
@@ -432,6 +443,7 @@ function handleCharacteristicChange(event) {
     { match: "manoPoker.html",            accion: () => evaluarManoPoker(mvalor) },
     { match: "ojosVendados.html",         accion: () => reproducirOjosVendados(mvalor) },
     { match: "dadaSimple.html",           accion: () => reproducirAudioParaTag(mvalor) },
+    { match: "coleccionista.html",        accion: () => guardarTag(mvalor) },
   ];
 
   for (const entrada of accionesPorRuta) {
@@ -440,13 +452,27 @@ function handleCharacteristicChange(event) {
       break; // solo una acción por rutina
     }
   }
-
-  retrievedValue.innerHTML = mvalor;
-  timestampContainer.innerHTML = getDateTime();
+  // Si no me encuentro en la ruta momias.html, ejecuto lo siguente:
+  // hago una estructura switch para determinar qué hacer con el valor recibido de acuerdo a la ruta actual
+  if (path.includes("momias.html")) {
+    // Si estoy en momias.html, actualizo el valor recibido y el color
+    retrievedValue.innerHTML = 'Color: ' + mvalor ;
+    timestampContainer.innerHTML = getDateTime();
+  } else if (path.includes("coleccionista.html")) {
+    // Si  estoy en coleccionista actualizo el valor recibido de acuerdo al coleccionistaTexto
+    const textCarta = cartasTexto[mvalor]; 
+    retrievedValue.innerHTML = textCarta;
+    timestampContainer.innerHTML = getDateTime();
+  } else {
+    // Actualizar el valor recibido en el contenedor
+    const textCarta = cartasPoker[mvalor]; 
+    retrievedValue.innerHTML = textCarta;
+    timestampContainer.innerHTML = getDateTime(); 
+  }
 }
 
 
-
+/* Se lleva a las rutinas correspondientes
 function reproducirAudioParaTag(tag) {
   const audio = document.getElementById("tagAudio");
   const archivo = mapaCartas[tag];
@@ -467,6 +493,7 @@ function reproducirAudioParaTag(tag) {
     audio.load();
   }
 }
+  */
 //Reproducir audios especiales
 function reproducirAudio(nombreArchivo) {
   const audio = new Audio(`../audios/audios_especiales/${nombreArchivo}.mp3`);
