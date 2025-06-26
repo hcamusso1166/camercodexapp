@@ -408,6 +408,9 @@ function connectToDevice() {
       if (window.location.pathname.includes("momias.html")) {    
           actualizarAccion("Acercar Sarcófago para descubrir el color");
       }
+      if (window.location.pathname.includes("dadoR.html")) {    
+          actualizarAccion("Leer dado");
+      }
     });
     })
 
@@ -443,6 +446,7 @@ function handleCharacteristicChange(event) {
     { match: "manoPoker.html",            accion: () => evaluarManoPoker(mvalor) },
     { match: "ojosVendados.html",         accion: () => reproducirOjosVendados(mvalor) },
     { match: "dadaSimple.html",           accion: () => reproducirAudioParaTag(mvalor) },
+    { match: "dadoR.html",                accion: () => reproducirAudioParaTag(mvalor) },
     { match: "coleccionista.html",        accion: () => guardarTag(mvalor) },
   ];
 
@@ -461,6 +465,11 @@ function handleCharacteristicChange(event) {
   } else if (path.includes("coleccionista.html")) {
     // Si  estoy en coleccionista actualizo el valor recibido de acuerdo al coleccionistaTexto
     const textCarta = cartasTexto[mvalor]; 
+    retrievedValue.innerHTML = textCarta;
+    timestampContainer.innerHTML = getDateTime();
+      } else if (path.includes("dadoR.html")) {
+    // Si  estoy en coleccionista actualizo el valor recibido de acuerdo al coleccionistaTexto
+    const textCarta = mapaTexto[mvalor]; 
     retrievedValue.innerHTML = textCarta;
     timestampContainer.innerHTML = getDateTime();
   } else {
@@ -629,6 +638,15 @@ function nextPage() {
     displayRoutines();
   }
 }
+function reproducirVibracion(patron = [300]) {
+  if ("vibrate" in navigator) {
+    const resultado = navigator.vibrate(patron);
+    console.log("🔔 Vibración ejecutada:", patron, "Resultado:", resultado);
+  } else {
+    console.warn("🚫 Vibración no soportada en este navegador/dispositivo.");
+  }
+}
+
 
 // Inicializar la vista
 displayRoutines();
