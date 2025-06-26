@@ -25,7 +25,8 @@ fetch('../audios/audios_especiales/dadoTexto.json')
         reproducirVibracion([200, 100, 200]); // vibración de 300ms y luego 200ms
         break;
       case "03":
-        reproducirVibracion([200, 100, 200, 100, 200]);
+        reproducirVibracion([200, 100, 200, 100, 200]); // vibración de 500ms
+        break;
       case "04":
         reproducirVibracion([200, 100, 200, 200, 200, 100, 200]); // 
         break;
