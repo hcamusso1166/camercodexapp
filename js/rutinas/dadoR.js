@@ -33,7 +33,7 @@ fetch('../audios/audios_especiales/dadoTexto.json')
         reproducirVibracion([200, 100, 200, 100, 400, 100, 200, 100, 200]); // 
         break;
       case "06":  
-        reproducirVibracion([200, 100, 200, 100, 200, 50, 200, 100, 200, 100, 300]); // 
+        reproducirVibracion([800]); // 
         break;
       default:
         break;
