@@ -17,7 +17,19 @@ fetch('../audios/audios_especiales/dadoTexto.json')
   .catch(err => console.error("Error cargando dadoTexto.json", err));
 
   function reproducirAudioParaTag(tag) {
-    reproducirVibracion(); // vibración estándar de 300ms
+    switch (tag) {
+      case "01":
+        reproducirVibracion(); // vibración estándar de 300ms
+        break;
+      case "02":
+        reproducirVibracion([200, 100, 200]); // vibración de 300ms y luego 200ms
+        break;
+      case "03":
+        reproducirVibracion([200, 100, 200, 100, 200]); // vibración de
+      default:
+        break;
+    }
+    
 
   const audio = document.getElementById("tagAudio");
   const archivo = mapaAudio[tag];
