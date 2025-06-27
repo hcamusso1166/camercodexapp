@@ -447,12 +447,22 @@ function connectToDevice() {
 
   // 🔋 Manejo de batería
     if (batteryChar) {
-      batteryChar.addEventListener('characteristicvaluechanged', handleBatteryChange);
-      batteryChar.startNotifications().then(() => {
-        console.log("Notificaciones de batería iniciadas.");
+
+      batteryChar.readValue().then(value => {
+        const raw = new TextDecoder().decode(value).trim();
+        const nivel = parseInt(raw, 10);
+
+        if (!isNaN(nivel)) {
+          console.log("🔋 Nivel de batería leído:", nivel + "%");
+          actualizarIconoBateria(nivel);
+        } else {
+          console.warn("⚠️ Valor de batería no reconocido:", raw);
+        }
       }).catch(err => {
-        console.warn("No se pudieron iniciar notificaciones de batería:", err);
+      console.warn("❌ No se pudo leer nivel de batería:", err);
       });
+
+
     }
 })
 
