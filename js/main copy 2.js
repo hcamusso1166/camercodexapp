@@ -16,27 +16,6 @@ function actualizarIconoConexionBLE(estado) {
   icon.alt = estado === "conectado" ? "Dispositivo conectado" : "Dispositivo no conectado";
   icon.title = icon.alt;
 }
-function actualizarIconoBateria(nivel) {
-  const icon = document.getElementById('batteryIcon');
-  if (!icon) return;
-
-  let src = "../icons/battery_unknown_16_D9D9D9.svg"; // valor por defecto
-
-  if (nivel >= 80) {
-    src = "../icons/battery_full_16_D9D9D9.svg";
-  } else if (nivel >= 50) {
-    src = "../icons/battery_4_bar_16_D9D9D9.svg";
-  } else if (nivel >= 20) {
-    src = "../icons/battery_2_bar_16_D9D9D9.svg";
-  } else {
-    src = "../icons/battery_alert_16_D9D9D9.svg";
-  }
-
-  icon.src = src;
-  icon.alt = `Batería: ${nivel}%`;
-  icon.title = icon.alt;
-}
-
 
 window.addEventListener("DOMContentLoaded", function () {
 document.getElementById('appVersion').textContent = appVersion;
@@ -340,9 +319,8 @@ const deviceName = 'MrCamerDev1.0';
 const bleService = '19b10000-e8f2-537e-4f6c-d104768a1214';
 const ledCharacteristic = '19b10002-e8f2-537e-4f6c-d104768a1214';
 const sensorCharacteristic = '19b10001-e8f2-537e-4f6c-d104768a1214';
-const bateryCharacteristic = '9b04030c-2f33-42b2-9fc5-a97a44a1145d';
 
-let bleServer, bleServiceFound, sensorCharacteristicFound, bateryCharacteristicFound;
+let bleServer, bleServiceFound, sensorCharacteristicFound;
 /* llevar a los js de cada rutina
 let mapaCartas = {};
 let cartasPoker = {};
@@ -403,60 +381,38 @@ function connectToDevice() {
     .then(service => {
       bleServiceFound = service;
       console.log("Service discovered:", service.uuid);
-
-    return service.getCharacteristic(sensorCharacteristic)
-      .then(sensorChar => {
-        return Promise.all([
-          sensorChar,
-          service.getCharacteristic(bateryCharacteristic).catch(err => {
-            console.warn("⚠️ No se pudo obtener la característica de batería:", err);
-            return null; // evitar que falle toda la promesa
-          })
-        ]);
-      });
-
+      return service.getCharacteristic(sensorCharacteristic);
     })
-.then(([sensorChar, batteryChar]) => {
-  console.log("Característica sensor descubierta:", sensorChar.uuid);
-  if (batteryChar) {
-    console.log("Característica batería descubierta:", batteryChar.uuid);
-  } else {
-    console.warn("Característica de batería no disponible.");
-  }
+    .then(characteristic => {
+      console.log("Characteristic discovered:", characteristic.uuid);
+      sensorCharacteristicFound = characteristic;
+      // Limpiar cualquier valor persistente en la característica antes de empezar
+      characteristic.writeValue(new Uint8Array([0])).then(() => {
+      console.log("Característica BLE reiniciada.");
+      characteristic.addEventListener('characteristicvaluechanged', handleCharacteristicChange);
+      characteristic.startNotifications();
+      console.log("Notifications Started.");
+      actualizarIconoConexionBLE("conectado");
 
-  sensorCharacteristicFound = sensorChar;
-
-  // Reiniciar característica sensor
-  sensorChar.writeValue(new Uint8Array([0])).then(() => {
-    console.log("Característica BLE reiniciada.");
-    sensorChar.addEventListener('characteristicvaluechanged', handleCharacteristicChange);
-    sensorChar.startNotifications();
-    console.log("Notificaciones de sensor iniciadas.");
-
-    actualizarIconoConexionBLE("conectado");
-    bleStateContainer.style.color = "#24af37";
-    limpiarDatos();
-    actualizarAccion("Leer carta");
-
-    const path = window.location.pathname;
-    if (path.includes("pegriloso.html")) actualizarAccion("Registrar Bala de Plata");
-    if (path.includes("elefantes.html")) actualizarAccion("Leer carta y REPETIR la lectura de la PRIMERA carta para finalizar la dada");
-    if (path.includes("momias.html")) actualizarAccion("Acercar Sarcófago para descubrir el color");
-    if (path.includes("dadoR.html")) actualizarAccion("Leer dado");
-  });
-
-  // 🔋 Manejo de batería
-    if (batteryChar) {
-      batteryChar.addEventListener('characteristicvaluechanged', handleBatteryChange);
-      batteryChar.startNotifications().then(() => {
-        console.log("Notificaciones de batería iniciadas.");
-      }).catch(err => {
-        console.warn("No se pudieron iniciar notificaciones de batería:", err);
-      });
-    }
-})
-
-
+      bleStateContainer.style.color = "#24af37";
+      limpiarDatos();  // Limpiar TAGs y arrays previos
+      // Actualizamos la acción a "Leer carta"
+      actualizarAccion("Leer carta");
+      // Dependiendo de la ruta actual, actualizar la primera acción:
+      if (window.location.pathname.includes("pegriloso.html")) {    
+          actualizarAccion("Registrar Bala de Plata");
+      }
+      if (window.location.pathname.includes("elefantes.html")) {    
+          actualizarAccion("Leer carta y REPETIR la lectura de la PRIMERA carta para finalizar la dada");
+      }
+      if (window.location.pathname.includes("momias.html")) {    
+          actualizarAccion("Acercar Sarcófago para descubrir el color");
+      }
+      if (window.location.pathname.includes("dadoR.html")) {    
+          actualizarAccion("Leer dado");
+      }
+    });
+    })
 
     .catch(error => {
       console.log('Error: ', error);
@@ -523,18 +479,6 @@ function handleCharacteristicChange(event) {
     timestampContainer.innerHTML = getDateTime(); 
   }
 }
-function handleBatteryChange(event) {
-  const valor = new TextDecoder().decode(event.target.value).trim();
-  const nivel = parseInt(valor, 10);
-
-  if (!isNaN(nivel)) {
-    console.log("🔋 Nivel de batería recibido:", nivel + "%");
-    actualizarIconoBateria(nivel);
-  } else {
-    console.warn("⚠️ Nivel de batería no reconocido:", valor);
-  }
-}
-
 
 
 /* Se lleva a las rutinas correspondientes
@@ -653,15 +597,10 @@ function getDateTime() {
         });
              
       }
-      const batteryIcon = document.getElementById('batteryIcon');
-      if (batteryIcon) {
-        batteryIcon.src = "../icons/battery_unknown_16_D9D9D9.svg";
-        batteryIcon.alt = "Estado batería desconocido";
-        batteryIcon.title = batteryIcon.alt;
-      }
-
     }
-    );
+    
+    
+);
 document.addEventListener('click', (e) => {
   const target = e.target;
 

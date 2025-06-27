@@ -46,7 +46,7 @@ fetch('../audios/audios_especiales/dadoTexto.json')
       }).catch(err => {
         console.error("❌ No se pudo reproducir el audio:", err);
       });
-    }, duracionVibracion + 150); // +50 ms de colchón para evitar solapamiento
+    }, duracionVibracion + 50); // +50 ms de colchón para evitar solapamiento
   } else {
     console.warn(`⚠️ No se encontró archivo de audio para: ${tag}`);
     audio.removeAttribute('src');

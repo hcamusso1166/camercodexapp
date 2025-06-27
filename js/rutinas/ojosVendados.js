@@ -8,6 +8,15 @@ fetch('../audios/ojosVendados.json')
   })
   .catch(err => console.error("Error cargando colores.json", err));
 
+let cartasPoker = {};
+
+fetch('../audios/cartasPoker.json')
+  .then(res => res.json())
+  .then(data => {
+    cartasPoker = data;
+    console.log("Mapa de cartas Poker para texto  cargado correctamente");
+  })
+  .catch(err => console.error("Error cargando cartasPoker.json", err));
 
 
   function reproducirOjosVendados(tag) {
