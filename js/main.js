@@ -340,9 +340,9 @@ const deviceName = 'MrCamerDev1.0';
 const bleService = '19b10000-e8f2-537e-4f6c-d104768a1214';
 const ledCharacteristic = '19b10002-e8f2-537e-4f6c-d104768a1214';
 const sensorCharacteristic = '19b10001-e8f2-537e-4f6c-d104768a1214';
-const bateryCharacteristic = '9b04030c-2f33-42b2-9fc5-a97a44a1145d';
+const batteryCharacteristic = '9b04030c-2f33-42b2-9fc5-a97a44a1145d';
 
-let bleServer, bleServiceFound, sensorCharacteristicFound, bateryCharacteristicFound;
+let bleServer, bleServiceFound, sensorCharacteristicFound, batteryCharacteristicFound;
 /* llevar a los js de cada rutina
 let mapaCartas = {};
 let cartasPoker = {};
@@ -408,7 +408,7 @@ function connectToDevice() {
       .then(sensorChar => {
         return Promise.all([
           sensorChar,
-          service.getCharacteristic(bateryCharacteristic).catch(err => {
+          service.getCharacteristic(batteryCharacteristic).catch(err => {
             console.warn("⚠️ No se pudo obtener la característica de batería:", err);
             return null; // evitar que falle toda la promesa
           })
@@ -449,14 +449,14 @@ function connectToDevice() {
     if (batteryChar) {
 
       batteryChar.addEventListener('characteristicvaluechanged', handleBatteryChange);
+
+      setTimeout(() => {
       batteryChar.startNotifications().then(() => {
-        console.log("Notificaciones de batería iniciadas.");
+        console.log("🔔 Notificaciones de batería iniciadas (con delay)");
       }).catch(err => {
-        console.warn("No se pudieron iniciar notificaciones de batería:", err);
+        console.warn("❌ Error al iniciar notificaciones de batería:", err);
       });
-
-
-
+      }, 150);  // esperar 150ms para garantizar que el descriptor esté activo
     }
 })
 
