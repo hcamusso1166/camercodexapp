@@ -16,6 +16,7 @@ function actualizarIconoConexionBLE(estado) {
   icon.alt = estado === "conectado" ? "Dispositivo conectado" : "Dispositivo no conectado";
   icon.title = icon.alt;
 }
+
 function actualizarIconoBateria(nivel) {
   const icon = document.getElementById('batteryIcon');
   if (!icon) return;

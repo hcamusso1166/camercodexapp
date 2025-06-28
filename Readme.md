@@ -14,10 +14,27 @@
 ## 📦 Versión Actual
 
 **v1.0 - Vainilla**
-
+Sub versión: **v1.4.0 - Batería Estable**
 ---
 
-## 🎭 Rutinas mágicas disponibles
+## 🎭 Rutinas mágicas disponibles (16)
+
+1. **Fuera de Este Mundo**
+2. **Un Juego "Pegriloso"**
+3. **Memoria de Elefante**
+4. **Las Momias de Camer**
+5. **The Boss**
+6. **Prueba de Fuego**
+7. **Imposible de Ver**
+8. **El Oráculo de Ébano**
+9. **La Mano del Destino**
+10. **Hearts & Crafts**
+11. **Truco, Carrera y Corazón**
+12. **Con los Ojos Vendados**
+13. **El Sospechoso de Siempre**
+14. **El Coleccionista**
+15. **Dado "R"**
+16. **Lectura Simple - Continua**
 
 - **Rutina 1: Fuera de Este Mundo**
   - Conexión BLE autónoma.
@@ -55,14 +72,15 @@
 ## 🌟 Características principales
 
 - Conexión Bluetooth BLE con lectores externos.
-- Lectura de tags RFID con disparo de efectos.
-- Reproducción de audios asociados a cada tag.
-- Diagnóstico de compatibilidad BLE y permisos.
-- Control de LED (ON / OFF) desde la app.
-- Funciona como PWA en móviles Android y escritorio.
-- Instalación directa como app desde navegador.
-- Funciona offline una vez instalada.
-- Íconos personalizados y diseño minimalista.
+- Lectura de tags RFID con disparo de efectos mágicos.
+- Visualización de lecturas en pantalla.
+- Reproducción de audios asociados (cartas, colores, acciones).
+- Diagnóstico BLE y permisos integrados.
+- Indicador gráfico de nivel de batería en tiempo real.
+- Control de LED (ON/OFF) desde la interfaz.
+- Funciona como PWA en Android y escritorio.
+- Soporte offline completo una vez instalada.
+- Diseño optimizado para móvil y PC.
 
 ---
 
@@ -70,22 +88,26 @@
 
 - HTML5 + JavaScript (Web Bluetooth API)
 - CSS puro
+- BLE sobre ESP32 con GATT personalizado
 - PWA: manifest.json + service worker
 - Vercel (hosting)
 
 ---
 ## 🧩 Estructura del proyecto
 
--/index.html ← Menú principal
--/rutinas/ ← Rutinas separadas (1 archivo HTML + lógica)
--/js/ ← main.js, config.js
--/js/rutinas/*.js <- Por cada rutina un js con logica especìfica>
--/css/ ← Estilos globales
--/icons/ ← SVGs usados en botones
--/audios/ ← Archivos MP3 para cada carta
--/audios/audios_especiales <- audios para el resto de la app, especiales, tales con Colores, acciones, etc.>
--/manifest.json ← PWA metadata
--/service-worker.js ← Cache para PWA offline
+/index.html              ← Menú principal
+/rutinas/                ← 1 HTML por rutina
+/js/                     ← main.js, config.js y lógica BLE
+/js/rutinas/*.js         ← JS específico por rutina
+/css/                    ← Estilos globales
+/icons/                  ← SVGs de botones e íconos
+/audios/                 ← MP3 por carta
+/audios/audios_especiales/ ← Audios para colores, acciones, efectos especiales
+/manifest.json           ← Metadata PWA
+/service-worker.js       ← Cache y soporte offline
+/README.md               ← Este archivo
+/CHANGELOG.md            ← Registro de versiones
+/BLE-troubleshooting.md  ← Guía técnica de compatibilidad BLE
 
 ## 🖥️ Modo de uso en PC
 

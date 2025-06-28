@@ -7,7 +7,23 @@ Registro de versiones del sistema mágico-tecnológico desarrollado por Mr. Came
 ## 📦 Versión Actual
 
 **v1.0 - Vainilla**
+## [1.4.0] - 2025-06-27
 
+### Añadido
+- Visualización del estado de batería con íconos adaptativos.
+- Integración completa de la característica BLE `batteryCharacteristic`.
+- Soporte de lectura de batería en PC y móviles (Android).
+- Diagnóstico `BLE-troubleshooting.md` agregado para documentación técnica.
+
+### Mejorado
+- Compatibilidad BLE móvil mejorada con retardo de 150ms antes de `startNotifications()` para características con descriptor CCCD.
+- Mejor manejo de errores al conectar características opcionales.
+
+### Corregido
+- Problema donde el valor de batería no se mostraba en móviles por falta de sincronización BLE.
+- Eliminación de dobles `then()` en `connectToDevice()` para evitar errores en la conexión BLE.
+
+---
 ## [1.3.0] - 2025-05-14
 
 ### Añadido
