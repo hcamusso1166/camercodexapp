@@ -497,6 +497,7 @@ function handleCharacteristicChange(event) {
     { match: "dadaSimple.html",           accion: () => reproducirAudioParaTag(mvalor) },
     { match: "dadoR.html",                accion: () => reproducirAudioParaTag(mvalor) },
     { match: "coleccionista.html",        accion: () => guardarTag(mvalor) },
+    { match: "rapidoNumeroso.html",        accion: () => sumarTag(mvalor) },
   ];
 
   for (const entrada of accionesPorRuta) {
@@ -517,7 +518,7 @@ function handleCharacteristicChange(event) {
     retrievedValue.innerHTML = textCarta;
     timestampContainer.innerHTML = getDateTime();
       } else if (path.includes("dadoR.html")) {
-    // Si  estoy en coleccionista actualizo el valor recibido de acuerdo al coleccionistaTexto
+    // Si  estoy en dadoR actualizo el valor recibido de acuerdo al dado
     const textCarta = mapaTexto[mvalor]; 
     retrievedValue.innerHTML = textCarta;
     timestampContainer.innerHTML = getDateTime();

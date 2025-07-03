@@ -768,3 +768,20 @@ text-align: center;
 .ocultaBLE {
   display: none !important;
 }
+.suma-box {
+  background-color: #1a1a1a;
+  color: #00ff88;
+  font-size: 2rem;
+  padding: 10px 20px;
+  margin-top: 10px;
+  border: 2px solid #00ff88;
+  border-radius: 12px;
+  text-align: center;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+.label {
+  margin-right: 10px;
+  font-weight: bold;
+}
