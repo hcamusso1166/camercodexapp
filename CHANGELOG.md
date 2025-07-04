@@ -7,6 +7,25 @@ Registro de versiones del sistema mágico-tecnológico desarrollado por Mr. Came
 ## 📦 Versión Actual
 
 **v1.0 - Vainilla**
+
+## [1.5.0] - 2025-07-02
+
+### Añadido
+ - Rutina "Rápido y Numeroso" completamente integrada:
+ - Lectura de cartas una a una vía BLE.
+ - Suma automática del valor total con reproducción de audio compuesto.
+ - Repetición doble del resultado tras el “stop” mágico.
+ - Visualización de la suma en pantalla en tiempo real.
+ - Reinicio automático de variables tras completar el efecto.
+
+### Mejorado
+ - Nueva función reproducirAudioCompuesto() para armar números con pocos archivos.
+ - Lógica de detección de repetición de carta inicial refinada.
+ - Mostrar la suma en la interfaz con estilo destacado.
+
+### Corregido
+ - Corrección en la detección de valores tipo "10♠" o figuras para evitar errores de conversión.
+
 ## [1.4.0] - 2025-06-27
 
 ### Añadido

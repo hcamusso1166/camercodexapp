@@ -14,10 +14,10 @@
 ## 📦 Versión Actual
 
 **v1.0 - Vainilla**
-Sub versión: **v1.4.0 - Batería Estable**
+Sub versión: **v1.17.0 - Rápido y Numeroso**
 ---
 
-## 🎭 Rutinas mágicas disponibles (16)
+## 🎭 Rutinas mágicas disponibles (17)
 
 1. **Fuera de Este Mundo**
 2. **Un Juego "Pegriloso"**
@@ -34,7 +34,8 @@ Sub versión: **v1.4.0 - Batería Estable**
 13. **El Sospechoso de Siempre**
 14. **El Coleccionista**
 15. **Dado "R"**
-16. **Lectura Simple - Continua**
+16. **Rápido y Numeroso**
+25. **Lectura Simple - Continua**
 
 - **Rutina 1: Fuera de Este Mundo**
   - Conexión BLE autónoma.
@@ -65,9 +66,28 @@ Sub versión: **v1.4.0 - Batería Estable**
   - Bajo estas condiciones totalmente al azar, las cartas siempre siguen a su jefe.
 
   ** Rutina 6: Prueba de Fuego **
-  - El espetador elije libremente una carta.
+  - El espectador elije libremente una carta.
   - Se le plantea un desafìo, una Prueba de Fuego: que vuelva a elegir la misma carta!
   - No lo logra, pero logra llegar a su carta de una manera sorprendente!
+
+  ** Rutina 7: Imposible de Ver**
+
+  ** Rutina 8. El Oráculo de Ébano**
+  ** Rutina 9. La Mano del Destino**
+  ** Rutina 10. Hearts & Crafts**
+  ** Rutina 11. Truco, Carrera y Corazón**
+  ** Rutina 12. Con los Ojos Vendados**
+  ** Rutina 13. El Sospechoso de Siempre**
+  ** Rutina 14. El Coleccionista**
+  ** Rutina 15. Dado "R"**
+  
+  ** Rutina 16. Rápido y Numeroso**
+   - El espectador entrega cartas una a una mientras el mago no mira.
+   - La app suma automáticamente los valores.
+   - Se anuncia el total sin mirar las cartas.
+   - El resultado se repite por audio, y todo se reinicia mágicamente.
+
+  ** Rutina 25. Lectura Simple - Continua**
 
 ## 🌟 Características principales
 
