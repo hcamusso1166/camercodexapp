@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Voluntad Prestada - Camer Codex</title>
+  <link rel="stylesheet" type="text/css" href="../css/style.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <header id="headerRoutine">Camer Codex
+    <div class="menu-icon">
+      <img src="../icons/more_vert_16_D9D9D9.svg" alt="Menú" id="menuToggle">
+      <div id="menuDropdown" class="menu-dropdown hidden">
+        <a href="#" data-popup="ayuda">Ayuda</a>
+        <a href="#" data-popup="acerca">Acerca de</a>
+        <a href="#" data-popup="estadoBLE">Web Bluetooth</a>
+      </div>
+    </div>
+    <div id="popupModal" class="popup-modal hidden">
+      <div class="popup-content">
+        <button id="popupCloseBtn">X</button>
+      <div id="popupBody"></div>
+      </div>
+    </div>
+    <div class="status-icons">
+      <img id="estadoConexionBLE" src="../icons/bluetooth_disabled_16_D9D9D9.svg" alt="Conexión BLE" title="Conexión BLE">
+      <img id="estadoBLEIcon" src="../icons/block_16_D9D9D9.svg" alt="Estado BLE" title="Estado BLE">
+      <img id="batteryIcon" src="../icons/battery_unknown_16_D9D9D9.svg" alt="Estado batería" title="Batería desconocida">
+    </div>
+  </header>
+  <div class="rutina">Voluntad Prestada</div>
+
+  <div class="content">
+    <div class="card-grid single-column">
+      <div class="card dark-card" id="accionMagoCard">
+        <h2>Acción</h2>
+        <p class="gray-label" id="accionMagoMensaje">Conectar el dispositivo BLE</p>
+      </div>
+      <div class="card dark-card highlighted-card">
+        <h2>Carta</h2>
+        <p class="reading"><span id="valueContainer"></span></p>
+        <p class="gray-label">Lectura: <span id="timestamp"></span></p>
+      </div>
+      <div class="card dark-card compacto">
+        <h3>Dispositivo Bluetooth (BLE)</h3>
+        <div class="button-row"> 
+          <button id="connectBleButton" class="button-primary connectButton">
+            <img src="../icons/bluetooth.svg" alt="Bluetooth Icon" id="icon-left">
+            Conectar
+          </button>
+          <button id="disconnectBleButton" class="button-primary disconnectButton">
+            <img src="../icons/bluetooth_disabled.svg" alt="Disconnect Bluetooth Icon" id="icon-left">
+            Desconectar
+          </button>
+
+        <p class="gray-label">Estado BLE: <strong><span id="bleState" style="color:#d13a30;">Desconectado</span></strong></p>
+        <button id="checkBluetoothBtn" class="button-primary ocultaBLE">
+          <img src="../icons/search.svg" alt="Check Bluetooth Icon" id="icon-left">
+          Estado BLE
+        </button>
+        <div id="ble-messages" class="ble-diagnostic inicialmente-oculto ocultaBLE">
+          <p class="ble-ok">
+            <img src="../icons/check_F3B13F.svg" alt="Check Icon" id="icon-small"> 
+            Web Bluetooth disponible.
+          </p>
+          <p class="ble-warning">
+            <img src="../icons/warning_F3B13F.svg" alt="Warning Icon" id="icon-small"> 
+            Se pedirá permiso.
+          </p>
+        </div>
+      </div>
+    </div>
+
+
+      <div class="card dark-card compacto" id="ledControlCard">
+        <h3>LED Control dispositivo</h3>
+        <button id="onButton" class="button-primary connectButton">ON</button>
+        <button id="offButton" class="button-primary disconnectButton">OFF</button>
+        <p class="gray-label ocultaBLE">Valor enviado: <span id="valueSent"></span></p>
+      </div>
+      <div class="card dark-card">
+        <button onclick="window.location.href='../index.html'" class="button-secondary">
+          <img src="../icons/home_F3B13F.svg" alt="Home" id="icon-left"> 
+          Volver al Menú
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer>v <span id="appVersion"></span></footer>
+
+  <audio id="tagAudio" src="" preload="auto"></audio>
+  <script src="../js/config.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/rutinas/voluntadPrestada.js"></script>
+</body>
+</html>

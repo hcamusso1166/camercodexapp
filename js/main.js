@@ -497,7 +497,8 @@ function handleCharacteristicChange(event) {
     { match: "dadaSimple.html",           accion: () => reproducirAudioParaTag(mvalor) },
     { match: "dadoR.html",                accion: () => reproducirAudioParaTag(mvalor) },
     { match: "coleccionista.html",        accion: () => guardarTag(mvalor) },
-    { match: "rapidoNumeroso.html",        accion: () => sumarTag(mvalor) },
+    { match: "rapidoNumeroso.html",       accion: () => sumarTag(mvalor) },
+    { match: "voluntadPrestada.html",     accion: () => tagVoluntadPrestada(valor) },
   ];
 
   for (const entrada of accionesPorRuta) {

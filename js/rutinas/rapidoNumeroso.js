@@ -100,7 +100,7 @@ function reproducirAudioSuma(suma) {
 }}
 
 function obtenerValorCarta(nombreCarta) {
-  const valorStr = nombreCarta.match(/\d+|[AJQK]/)[0]; // extrae valor numérico o letra
+  const valorStr = nombreCarta.match(/\d+|[ADJQK]/)[0]; // extrae valor numérico o letra
   switch (valorStr) {
     case 'A': return 1;
     case 'D': return 10;
