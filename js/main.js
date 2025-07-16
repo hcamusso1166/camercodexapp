@@ -23,11 +23,11 @@ function actualizarIconoBateria(nivel) {
 
   let src = "../icons/battery_unknown_16_D9D9D9.svg"; // valor por defecto
 
-  if (nivel >= 80) {
+  if (nivel >= 4.5) {
     src = "../icons/battery_full_16_D9D9D9.svg";
-  } else if (nivel >= 50) {
+  } else if (nivel >= 4) {
     src = "../icons/battery_4_bar_16_D9D9D9.svg";
-  } else if (nivel >= 20) {
+  } else if (nivel >= 3.7) {
     src = "../icons/battery_2_bar_16_D9D9D9.svg";
   } else {
     src = "../icons/battery_alert_16_D9D9D9.svg";
@@ -535,8 +535,8 @@ function handleBatteryChange(event) {
   const nivel = parseInt(valor, 10);
 
   if (!isNaN(nivel)) {
-    console.log("🔋 Nivel de batería recibido:", nivel + "%", "valor " + valor);
-    actualizarIconoBateria(nivel);
+    console.log("🔋 Nivel de batería recibido:",  "valor " + valor);
+    actualizarIconoBateria(valor);
   } else {
     console.warn("⚠️ Nivel de batería no reconocido:", valor);
   }
