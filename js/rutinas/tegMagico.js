@@ -82,11 +82,20 @@ function guardarTagTeg(tag) {
 // Mostrar la posición y carta dictada
 function mostrarPosiciones() {
   let resultadoHTML = "<h2>Posiciones de las cartas:</h2>";
+  const simbolosAReproducir = [];
+
+  // Reiniciamos contadores
+  totalGaleones = 0;
+  totalGlobos = 0;
+  totalCañones = 0;
+  totalComodines = 0;
+
   pila.forEach((tag, index) => {
-      const textCarta = mapaTEGTexto[tag]; 
-      const simbolo = mapaSimbolosTexto[tag] || "Simbolo no encontrado";
+    const textCarta = mapaTEGTexto[tag]; 
+    const simbolo = mapaSimbolosTexto[tag] || "Simbolo no encontrado";
     resultadoHTML += `<p>Pais ${index + 1}: ${textCarta}: ${simbolo}</p>`;
-    switch (simbolo ) {
+
+    switch (simbolo) {
       case "Galeón":
         totalGaleones++;
         break;
@@ -99,17 +108,23 @@ function mostrarPosiciones() {
       case "Comodín":
         totalComodines++;
         break;
-      default:
-        break;
     }
   });
+
+  if (totalGaleones > 0) simbolosAReproducir.push(["galeon", totalGaleones]);
+  if (totalGlobos > 0) simbolosAReproducir.push(["globo", totalGlobos]);
+  if (totalCañones > 0) simbolosAReproducir.push(["cañon", totalCañones]);
+  if (totalComodines > 0) simbolosAReproducir.push(["comodin", totalComodines]);
+
   resultadoHTML += `<p>Total Galeones: ${totalGaleones}</p>`;
   resultadoHTML += `<p>Total Globos: ${totalGlobos}</p>`;
   resultadoHTML += `<p>Total Cañones: ${totalCañones}</p>`;
   resultadoHTML += `<p>Total Comodines: ${totalComodines}</p>`;
   document.getElementById("resultado").innerHTML = resultadoHTML;
-  reproducirAudioPosiciones();
+
+  reproducirAudioPosiciones(simbolosAReproducir);
 }
+
 
 function mostrarCartaOculta(tag) {
   let resultadoHTML = "<h2>Carta Oculta:</h2>";
@@ -125,16 +140,47 @@ function mostrarSimbolos() {
   document.getElementById("resultado").innerHTML = resultadoHTML;
 }
 // Reproducir el audio con las posiciones
-function reproducirAudioPosiciones() {
+function reproducirAudioPosiciones(simbolosAReproducir) {
+  // Reproducir cartas en orden con cadencia
   pila.forEach((tag, index) => {
     setTimeout(() => {
       reproducirAudioParaTag(tag);
     }, cadencia * index);
   });
-  // Luego de reproducir todos los audios, reiniciar la rutina
+
+  // Después de reproducir todas las cartas, reproducimos los símbolos
+  const delayTotal = cadencia * pila.length + 1000;
+  setTimeout(() => {
+    reproducirSimbolos(simbolosAReproducir);
+  }, delayTotal);
+}
+
+function reproducirSimbolos(simbolosArray) {
+  console.log("Reproduciendo símbolos...");
+
+  let delayAcumulado = 0;
+
+  simbolosArray.forEach(([simbolo, cantidad], index) => {
+    setTimeout(() => {
+      const audio = document.getElementById("tagAudio");
+      audio.src = `../audios/teg/${simbolo}.mp3`;
+      audio.play().catch(err => console.error("Error al reproducir símbolo:", err));
+
+      setTimeout(() => {
+        audio.src = `../audios/suma/${cantidad}.mp3`;
+        audio.play().catch(err => console.error("Error al reproducir cantidad:", err));
+      }, 1200); // Reproduce cantidad 1.2 seg después del símbolo
+
+    }, delayAcumulado * index);
+
+    // Sumamos 2500ms para símbolo + 2500ms para cantidad
+    delayAcumulado += 2500 + 2500;
+  });
+
+  // Cuando termine todo, continuar con fase final
   setTimeout(() => {
     continuarFaseFinal();
-  }, 10000); // Pequeña espera extra 10 seg. para finalizar el último audio
+  }, delayAcumulado + 1000);
 }
 
 function reproducirAudioParaTag(tag) {
