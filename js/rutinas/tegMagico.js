@@ -8,6 +8,7 @@ let totalCañones = 0;
 let totalComodines = 0;
 let i = 0; 
 let cadencia =  2500;  // Cadencia de audio en ms (puedes configurarlo)
+let cadenciaSimbolos = 1000; // Cadencia de audio para símbolos en ms
 let lectura = null;
 let mapaTEGAudios = {};//para cartas TEG audios
 let mapaTEGTexto = {};//para cartas TEG texto
@@ -160,28 +161,31 @@ function reproducirSimbolos(simbolosArray) {
 
   let delayAcumulado = 0;
 
-  simbolosArray.forEach(([simbolo, cantidad], index) => {
+  simbolosArray.forEach(([simbolo, cantidad]) => {
     setTimeout(() => {
       const audio = document.getElementById("tagAudio");
+      console.log(`Reproduciendo símbolo: ${simbolo} con cantidad: ${cantidad}`);
+
+      // Reproduce el símbolo
       audio.src = `../audios/teg/${simbolo}.mp3`;
       audio.play().catch(err => console.error("Error al reproducir símbolo:", err));
 
+      // Luego de 1000ms, reproduce la cantidad
       setTimeout(() => {
         audio.src = `../audios/suma/${cantidad}.mp3`;
         audio.play().catch(err => console.error("Error al reproducir cantidad:", err));
-      }, 1200); // Reproduce cantidad 1.2 seg después del símbolo
+      }, 1000); // Podés ajustar este valor si querés más fluidez
 
-    }, delayAcumulado * index);
+    }, delayAcumulado);
 
-    // Sumamos 2500ms para símbolo + 2500ms para cantidad
-    delayAcumulado += 2500 + 2500;
+    delayAcumulado += 2200; // Tiempo total estimado para símbolo + cantidad
   });
 
-  // Cuando termine todo, continuar con fase final
   setTimeout(() => {
     continuarFaseFinal();
-  }, delayAcumulado + 1000);
+  }, delayAcumulado + 500);
 }
+
 
 function reproducirAudioParaTag(tag) {
   const audio = document.getElementById("tagAudio");
@@ -243,13 +247,7 @@ function continuarFaseFinal() {
   contador = 0;
   i = 0;
   lectura = null;
-  
-  /*document.getElementById("resultado").innerHTML = "";
-  
-  if (typeof limpiarDatos === 'function') {
-    limpiarDatos();
-  }
-    */
+
   actualizarAccion("Leer carta para fase final");
 }
 // Limpia variables y deja todo listo para una nueva carta
