@@ -30,13 +30,13 @@ function tagVoluntadPrestada(valor) {
     console.log("Pila Izquierda:", pilaIzquierdaR, pilaIzquierdaN);
   if (pilaDerecha.length < 8 && color === "N")  {
     pilaDerecha.push(color);
-    destino = "DERECHA";
+    destino = "derecha";
   } else if (pilaIzquierdaR.length < 5 && color === "R") {
     pilaIzquierdaR.push(color);
-    destino = "IZQUIERDA";
+    destino = "izquierda";
   } else if (pilaIzquierdaN.length < 3 && color === "N"){
     pilaIzquierdaN.push(color);
-    destino = "IZQUIERDA";
+    destino = "izquierda";
   } else {
     // 
       console.log("No Distribuir la carta");

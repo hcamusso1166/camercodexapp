@@ -1,11 +1,12 @@
 console.log("Camer Codex - main.js cargado");
 function actualizarIconoConexionBLE(estado) {
   const icon = document.getElementById('estadoConexionBLE');
+  /*
   if (!icon) {
     console.warn("No se encontró el ícono de conexión BLE.");
     return;
   }
-
+  */
   const iconMap = {
     conectado: "../icons/bluetooth_connected_16_D9D9D9.svg",
     desconectado: "../icons/bluetooth_disabled_16_D9D9D9.svg"
@@ -499,6 +500,7 @@ function handleCharacteristicChange(event) {
     { match: "coleccionista.html",        accion: () => guardarTag(mvalor) },
     { match: "rapidoNumeroso.html",       accion: () => sumarTag(mvalor) },
     { match: "voluntadPrestada.html",     accion: () => tagVoluntadPrestada(valor) },
+    { match: "tegMagico.html",            accion: () => guardarTagTeg(mvalor) },
   ];
 
   for (const entrada of accionesPorRuta) {
@@ -521,6 +523,11 @@ function handleCharacteristicChange(event) {
       } else if (path.includes("dadoR.html")) {
     // Si  estoy en dadoR actualizo el valor recibido de acuerdo al dado
     const textCarta = mapaTexto[mvalor]; 
+    retrievedValue.innerHTML = textCarta;
+    timestampContainer.innerHTML = getDateTime();
+    } else if (path.includes("tegMagico.html")) {
+    // Si  estoy en TEG Magico actualizo el valor recibido de acuerdo al TegTexto
+    const textCarta = mapaTEGTexto[mvalor]; 
     retrievedValue.innerHTML = textCarta;
     timestampContainer.innerHTML = getDateTime();
   } else {
