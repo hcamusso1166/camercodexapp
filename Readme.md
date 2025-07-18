@@ -35,6 +35,9 @@ Sub versión: **v1.17.0 - Rápido y Numeroso**
 14. **El Coleccionista**
 15. **Dado "R"**
 16. **Rápido y Numeroso**
+17. **Voluntad Prestada**
+18. **TEG Mágico**
+19. **Me viste la Cara**
 25. **Lectura Simple - Continua**
 
 - **Rutina 1: Fuera de Este Mundo**
