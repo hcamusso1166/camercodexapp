@@ -94,7 +94,7 @@ function mostrarPosiciones() {
   pila.forEach((tag, index) => {
     const textCarta = mapaTEGTexto[tag]; 
     const simbolo = mapaSimbolosTexto[tag] || "Simbolo no encontrado";
-    resultadoHTML += `<p>Pais ${index + 1}: ${textCarta}: ${simbolo}</p>`;
+    resultadoHTML += `<p>Pais ${index + 1}: ${textCarta}</p>`;
 
     switch (simbolo) {
       case "Galeón":
