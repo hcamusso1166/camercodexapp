@@ -38,6 +38,7 @@ function evaluarManoPoker(mvalor) {
     }
   }
 
+  /*
   function evaluarMano(cartas) {
   if (cartas.length !== 5) {
     return {
@@ -118,3 +119,4 @@ function evaluarManoPoker(mvalor) {
     ranking
   };
 }
+  */
