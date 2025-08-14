@@ -16,7 +16,7 @@ fetch('../audios/cartasPoker.json')
   })
   .catch(err => console.error("Error cargando cartasPoker.json", err));
 
-  function reproducirAudioParaTag(tag) {
+  function reproducirAudioParaTag(tag,color,dorso) {
   const audio = document.getElementById("tagAudio");
   const archivo = mapaCartas[tag];
 
@@ -24,7 +24,8 @@ fetch('../audios/cartasPoker.json')
     //console.log("Tag:", tag, "→ Archivo:", archivo);
     audio.src = `../audios/${archivo}`;
     audio.play().then(() => {
-      //console.log(`Reproduciendo: ${archivo}`);
+    console.log(`Reproduciendo: ${archivo}`);
+    console.log("Color:", color, " dorso:", dorso);
     }).catch(err => {
       console.error("No se pudo reproducir el audio:", err);
       console.log("Tag:", tag, "→ Archivo:", archivo);

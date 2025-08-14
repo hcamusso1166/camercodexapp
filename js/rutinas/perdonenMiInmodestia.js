@@ -75,7 +75,7 @@ function obtenerValorCarta(nombreCarta) {
     default: return parseInt(valorStr, 10) || 0;
   }
 }
-
+/*
 function mostrarResumen() {
   const audio = document.getElementById("tagAudio");
   // 1. Mostrar suma
@@ -161,6 +161,134 @@ setTimeout(() => {
   resultadoHTML += `<p>Mejor jugada de póker: ${resultado.descripcion}</p>`;
   resultadoHTML += `<p> ${resultado.cartas}</p>`;
  document.getElementById("resultado").innerHTML = resultadoHTML;
+}
+*/
+function mostrarResumen() {
+  const audio = document.getElementById("tagAudio");
+  let resultadoHTML = "<h2>Resumen:</h2>";
+  document.getElementById("resultado").innerHTML = resultadoHTML;
+
+  // Calcular valores
+  let pares = 0, impares = 0;
+  let cantidadPorPalos = { 'T': 0, 'C': 0, 'P': 0, 'D': 0 };
+  let cartasEvaluadas = [];
+
+  pila.forEach(tag => {
+    const carta = cartasPoker[tag];
+    cartasEvaluadas.push(carta);
+    const valor = obtenerValorCarta(carta);
+    const palo = carta.slice(-1);
+    if (valor % 2 === 0) pares++; else impares++;
+    cantidadPorPalos[palo]++;
+  });
+
+  const resultado = evaluarMejorManoDePoker(cartasEvaluadas);
+
+  // Construir resultado HTML
+  resultadoHTML += `<p>La suma total es: ${suma}</p>`;
+  resultadoHTML += `<p>Pares: ${pares}, Impares: ${impares}</p>`;
+  resultadoHTML += `<p>Cantidad por palo:</p>`;
+  resultadoHTML += `<p>Tre: ${cantidadPorPalos.T}, Co: ${cantidadPorPalos.C}, Pi: ${cantidadPorPalos.P}, Dia: ${cantidadPorPalos.D}</p>`;
+  resultadoHTML += `<p>Mejor jugada de póker: ${resultado.descripcion}</p>`;
+  resultadoHTML += `<p>${resultado.cartas.join(', ')}</p>`;
+  document.getElementById("resultado").innerHTML = resultadoHTML;
+
+  // Planificar audios con timings controlados
+  let delay = 0;
+
+  const reproducirSecuencial = (fn, tiempo = 1000) => {
+    setTimeout(fn, delay);
+    delay += tiempo;
+  };
+
+  reproducirSecuencial(() => reproducirAudioCompuesto(suma), 4000);
+  reproducirSecuencial(() => reproducirAudioEnPoker("pares"));
+  reproducirSecuencial(() => reproducirAudioCompuesto(pares), 2000);
+  reproducirSecuencial(() => reproducirAudioEnPoker("impares"));
+  reproducirSecuencial(() => reproducirAudioCompuesto(impares), 2000);
+  reproducirSecuencial(() => reproducirAudioEnPoker("palos"), 3000);
+  reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.T), 4000);
+  reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.C), 4000);
+  reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.P), 4000);
+  reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.D), 4000);
+  reproducirSecuencial(() => reproducirAudioEnPoker("mejorjugada"), 2000);
+  reproducirSecuencial(() => reproducirAudioEnPoker(resultado.descripcion.replace(/\s+/g, '').toLowerCase()), 1000);
+  reproducirSecuencial(() => anunciarDetalleJugada(resultado), 500);
+
+}
+function anunciarDetalleJugada(resultado) {
+  const cartas = resultado.cartas.map(c => c.slice(0, -1));
+  const palos = resultado.cartas.map(c => c.slice(-1));
+  const cuenta = {};
+  cartas.forEach(v => cuenta[v] = (cuenta[v] || 0) + 1);
+  const valoresOrdenados = Object.entries(cuenta).sort((a, b) => b[1] - a[1]);
+
+  const convertirValor = v => {
+    const mapaEspecial = { "A": "uno", "D": "diez", "J": "J", "Q": "Q", "K": "K" };
+    return mapaEspecial[v] || mapaSuma[v]?.replace(".mp3", "");
+  };
+
+  const dominante = convertirValor(valoresOrdenados[0][0]);
+  const secundario = valoresOrdenados[1] ? convertirValor(valoresOrdenados[1][0]) : null;
+
+  const paloDominante = palos.sort((a,b) => palos.filter(p=>p===b).length - palos.filter(p=>p===a).length)[0];
+  const paloAudio = {
+    'T': 'treboles',
+    'C': 'corazones',
+    'P': 'picas',
+    'D': 'diamantes'
+  };
+
+  const audio = document.getElementById("tagAudio");
+  let i = 0;
+
+  function play(nombre) {
+    setTimeout(() => {
+      audio.src = `../audios/poker/${nombre}.mp3`;
+      audio.play();
+    }, i * 1500);
+    i++;
+  }
+
+  function playCompuesto(prefijo, nombre) {
+    play(prefijo);
+    setTimeout(() => {
+      const path = isNaN(nombre) ? `../audios/poker/${nombre}.mp3` : `../audios/suma/${nombre}.mp3`;
+      audio.src = path;
+      audio.play();
+    },  i * 1500);
+    i++;
+  }
+
+  switch (resultado.descripcion.toLowerCase()) {
+    case 'pareja':
+    case 'trío':
+    case 'póker':
+      playCompuesto("de", dominante);
+      break;
+    case 'doble pareja':
+    case 'full':
+      playCompuesto("de", dominante);
+      if (secundario) playCompuesto("y", secundario);
+      break;
+    case 'escalera':
+    case 'escalera de color':
+    case 'escalera real':
+      const valoresNumericos = cartas.map(v => {
+        const m = { "A":14, "K":13, "Q":12, "J":11, "T":10 };
+        return isNaN(v) ? m[v] : parseInt(v);
+      });
+      const max = Math.max(...valoresNumericos);
+      playCompuesto("al", mapaSuma[max.toString()].replace(".mp3", ""));
+      play(paloAudio[paloDominante]);
+      break;
+    case 'color':
+      play(paloAudio[paloDominante]);
+      break;
+    case 'carta alta':
+      playCompuesto("de", dominante);
+      break;
+  }
 }
 
 function reproducirAudioCompuesto(numero) {

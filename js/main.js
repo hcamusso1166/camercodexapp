@@ -495,7 +495,7 @@ function handleCharacteristicChange(event) {
     { match: "oraculo.html",              accion: () => reproducirAudioParaTag(mvalor) },
     { match: "manoPoker.html",            accion: () => evaluarManoPoker(mvalor) },
     { match: "ojosVendados.html",         accion: () => reproducirOjosVendados(mvalor) },
-    { match: "dadaSimple.html",           accion: () => reproducirAudioParaTag(mvalor) },
+    { match: "dadaSimple.html",           accion: () => reproducirAudioParaTag(mvalor,color,dorso) },
     { match: "dadoR.html",                accion: () => reproducirAudioParaTag(mvalor) },
     { match: "coleccionista.html",        accion: () => guardarTag(mvalor) },
     { match: "rapidoNumeroso.html",       accion: () => sumarTag(mvalor) },
@@ -579,7 +579,11 @@ function reproducirAudio(nombreArchivo) {
   const audio = new Audio(`../audios/audios_especiales/${nombreArchivo}.mp3`);
   audio.play();
 }
-
+//Reproducir audios en Poker
+function reproducirAudioEnPoker(nombreArchivo) {
+  const audio = new Audio(`../audios/poker/${nombreArchivo}.mp3`);
+  audio.play();
+}
 // Función para escribir en la característica del LED. Esta función se llama desde los botones de encendido y apagado
 function writeOnCharacteristic(value) {
   if (bleServer && bleServer.connected) {
