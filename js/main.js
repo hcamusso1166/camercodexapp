@@ -476,6 +476,7 @@ function onDisconnected(event) {
   actualizarIconoConexionBLE("desconectado");
   actualizarAccion("Conectar el dispositivo BLE");
 }
+//al recibir la informacion desde el MrCamerDevv1.0, se ejecuta esta función
 
 function handleCharacteristicChange(event) {
   const valor = new TextDecoder().decode(event.target.value).trim();
