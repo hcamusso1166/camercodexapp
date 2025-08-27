@@ -4,17 +4,16 @@ const urlsToCache = [
   '/index.html',
   '/css/style.css',
   '/manifest.json',
-  '/js/main.js',
-  '/js/config.js',
   '/favicon.ico',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
-  '/img/servidor.gif',
-  '/img/sprite.png',
   '/audios/cartas.json'
 ];
 
+
+
 // Instalación del Service Worker y cacheo inicial
+
 self.addEventListener('install', (event) => {
   console.log('[ServiceWorker] Installing...');
   event.waitUntil(
@@ -28,6 +27,8 @@ self.addEventListener('install', (event) => {
       })
   );
 });
+
+
 
 // Activación y limpieza de cachés viejas
 self.addEventListener('activate', (event) => {
@@ -48,19 +49,10 @@ self.addEventListener('activate', (event) => {
 // Interceptar fetch y responder con caché si está disponible
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request)
-        .then((networkResponse) => {
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, networkResponse.clone());
-            return networkResponse;
-          });
-        })
-        .catch(() => caches.match('/index.html'));
-    })
+    caches.match(event.request)
+      .then((response) => {
+        return response || fetch(event.request);
+      })
   );
 });
 

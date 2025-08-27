@@ -516,29 +516,31 @@ function handleCharacteristicChange(event) {
   if (path.includes("momias.html")) {
     // Si estoy en momias.html, actualizo el valor recibido y el color
     retrievedValue.innerHTML = 'Color: ' + mvalor ;
-    timestampContainer.innerHTML = getDateTime();
+    //timestampContainer.innerHTML = getDateTime();
   } else if (path.includes("coleccionista.html")) {
     // Si  estoy en coleccionista actualizo el valor recibido de acuerdo al coleccionistaTexto
     const textCarta = cartasTexto[mvalor]; 
     retrievedValue.innerHTML = textCarta;
-    timestampContainer.innerHTML = getDateTime();
+    //timestampContainer.innerHTML = getDateTime();
       } else if (path.includes("dadoR.html")) {
     // Si  estoy en dadoR actualizo el valor recibido de acuerdo al dado
     const textCarta = mapaTexto[mvalor]; 
     retrievedValue.innerHTML = textCarta;
-    timestampContainer.innerHTML = getDateTime();
+    //timestampContainer.innerHTML = getDateTime();
     } else if (path.includes("tegMagico.html")) {
     // Si  estoy en TEG Magico actualizo el valor recibido de acuerdo al TegTexto
     const textCarta = mapaTEGTexto[mvalor]; 
     retrievedValue.innerHTML = textCarta;
-    timestampContainer.innerHTML = getDateTime();
+    //timestampContainer.innerHTML = getDateTime();
   } else {
     // Actualizar el valor recibido en el contenedor
     const textCarta = cartasPoker[mvalor]; 
     retrievedValue.innerHTML = textCarta;
-    timestampContainer.innerHTML = getDateTime(); 
+    //timestampContainer.innerHTML = getDateTime(); 
   }
+  timestampContainer.innerHTML = getDateTime(); 
 }
+
 function handleBatteryChange(event) {
   const valor = new TextDecoder().decode(event.target.value).trim();
   const nivel = parseInt(valor, 10);
