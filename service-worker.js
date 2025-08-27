@@ -19,9 +19,19 @@ self.addEventListener('install', (event) => {
   console.log('[ServiceWorker] Installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
+      .then(async (cache) => {
         console.log('[ServiceWorker] Caching app shell');
-        return cache.addAll(urlsToCache);
+                await cache.addAll(urlsToCache);
+
+        // Precargar archivos de audio listados en cartas.json
+        try {
+          const response = await fetch('/audios/cartas.json');
+          const audioMap = await response.json();
+          const audioFiles = Object.values(audioMap).map((file) => `/audios/${file}`);
+          await cache.addAll(audioFiles);
+        } catch (err) {
+          console.error('[ServiceWorker] Error caching audio files:', err);
+        }
       })
       .catch((err) => {
         console.error('[ServiceWorker] Error caching app shell:', err);
@@ -48,7 +58,7 @@ self.addEventListener('activate', (event) => {
 // Interceptar fetch y responder con caché si está disponible
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
+    caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
         return cachedResponse;
       }
