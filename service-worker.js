@@ -3,6 +3,8 @@ const urlsToCache = [
   '/',
   '/index.html',
   '/css/style.css',
+  '/css/rutinas/fuera-de-este-mundo.css',
+  '/css/rutinas/juego-pegriloso.css',
   '/manifest.json',
   '/js/main.js',
   '/js/config.js',
@@ -43,7 +45,20 @@ const urlsToCache = [
   '/rutinas/tegMagico.html',
   '/rutinas/theBoss.html',
   '/rutinas/voluntadPrestada.html',
-  '/audios/cartas.json'
+  '/audios/cartas.json',
+  '/audios/cartasPoker.json',
+  '/audios/ojosVendados.json',
+  '/audios/audios_especiales/colores.json',
+  '/audios/audios_especiales/dadoAudio.json',
+  '/audios/audios_especiales/dadoTexto.json',
+  '/audios/audios_especiales/elefantes.json',
+  '/audios/coleccion/coleccionAudios.json',
+  '/audios/coleccion/coleccionTexto.json',
+  '/audios/suma/sumaAudio.json',
+  '/audios/suma/sumaTexto.json',
+  '/audios/teg/tegAudios.json',
+  '/audios/teg/tegTextos.json',
+  '/audios/teg/tegSimbolosTexto.json',
 ];
 // Los recursos listados arriba se precargan durante la instalación.
 // Cualquier otro archivo se almacenará en caché la primera vez que se
