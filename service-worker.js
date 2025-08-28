@@ -1,5 +1,6 @@
-const CACHE_NAME = 'camer-codex-cache-v1';
+const CACHE_NAME = 'camer-codex-cache-v2';
 const MANIFEST_URL = '/cache-files.json';
+
 // Los archivos listados en cache-files.json se precargan durante la
 // instalación. Cualquier otro recurso solicitado se añadirá al caché de
 // forma dinámica a través del manejador `fetch`.
@@ -7,52 +8,64 @@ const MANIFEST_URL = '/cache-files.json';
 // Instalación del Service Worker y cacheo inicial
 self.addEventListener('install', (event) => {
   console.log('[ServiceWorker] Installing...');
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-    .then(async (cache) => {
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    try {
+      // Leer listado completo de archivos y agregarlos al caché
+      const response = await fetch(MANIFEST_URL);
+      const files = await response.json();
+      for (const file of files) {
         try {
-          // Leer listado completo de archivos y agregarlos al caché
-          const response = await fetch(MANIFEST_URL);
-          const files = await response.json();
-          await cache.addAll([...files, MANIFEST_URL]);
+          await cache.add(file);
         } catch (err) {
-          console.error('[ServiceWorker] Error caching files:', err);
+          console.warn('[ServiceWorker] Failed to cache', file, err);
         }
-      })
-  );
+      }
+      await cache.add(MANIFEST_URL);
+      console.log(`[ServiceWorker] Cached ${files.length} files`);
+    } catch (err) {
+      console.error('[ServiceWorker] Error caching files:', err);
+    }
+  })());
+  self.skipWaiting();
 });  
 
 // Activación y limpieza de cachés viejas
 self.addEventListener('activate', (event) => {
   console.log('[ServiceWorker] Activating...');
-  event.waitUntil(
-    caches.keys().then((keyList) => {
-      return Promise.all(keyList.map((key) => {
-        if (key !== CACHE_NAME) {
-          console.log('[ServiceWorker] Removing old cache:', key);
-          return caches.delete(key);
-        }
-      }));
-    })
-  );
-  return self.clients.claim();
+  event.waitUntil((async () => {
+    const keyList = await caches.keys();
+    await Promise.all(keyList.map((key) => {
+      if (key !== CACHE_NAME) {
+        console.log('[ServiceWorker] Removing old cache:', key);
+        return caches.delete(key);
+      }
+    }));
+    await self.clients.claim();
+  })());
 });
 
 // Interceptar fetch y responder con caché si está disponible
 self.addEventListener('fetch', (event) => {
-  const { request } = event;
+const { request } = event;
   const rangeHeader = request.headers.get('range');
 
   // Manejo de peticiones con Rangos (audio/video)
   if (rangeHeader) {
     const url = new URL(request.url);
+
+    // Ignorar peticiones de otros orígenes
+    if (url.origin !== self.location.origin) {
+      event.respondWith(fetch(request));
+      return;
+    }
+
     event.respondWith(
       (async () => {
         const cache = await caches.open(CACHE_NAME);
         let response = await cache.match(url.pathname);
 
         if (!response) {
-          // Si no está en caché, obtener el archivo completo de la red
           const networkResponse = await fetch(url.pathname);
           await cache.put(url.pathname, networkResponse.clone());
           response = networkResponse;
@@ -80,8 +93,9 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+
   event.respondWith(
-   (async () => {
+    (async () => {
       const url = new URL(request.url);
       const cacheKey = url.origin === self.location.origin ? url.pathname : request.url;
       const cache = await caches.open(CACHE_NAME);
