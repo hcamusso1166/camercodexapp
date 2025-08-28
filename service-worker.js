@@ -1,5 +1,6 @@
 const CACHE_NAME = 'camer-codex-cache-v2';
 const MANIFEST_URL = '/cache-files.json';
+const CARTAS_URL = '/audios/cartas.json';
 
 // Los archivos listados en cache-files.json se precargan durante la
 // instalación. Cualquier otro recurso solicitado se añadirá al caché de
@@ -8,27 +9,47 @@ const MANIFEST_URL = '/cache-files.json';
 // Instalación del Service Worker y cacheo inicial
 self.addEventListener('install', (event) => {
   console.log('[ServiceWorker] Installing...');
-  event.waitUntil((async () => {
+ event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
     try {
-      // Leer listado completo de archivos y agregarlos al caché
+      // Leer listado completo de archivos base y agregarlos al caché
       const response = await fetch(MANIFEST_URL);
       const files = await response.json();
-      for (const file of files) {
+
+      await Promise.all(files.map(async (path) => {
         try {
-          await cache.add(file);
+          await cache.add(path);
         } catch (err) {
-          console.warn('[ServiceWorker] Failed to cache', file, err);
+          console.warn('[ServiceWorker] Failed to cache', path, err);
         }
-      }
+      }));
+
       await cache.add(MANIFEST_URL);
-      console.log(`[ServiceWorker] Cached ${files.length} files`);
+
+      // Precargar audios definidos en cartas.json
+      try {
+        const cartasResp = await fetch(CARTAS_URL);
+        const cartas = await cartasResp.json();
+        await cache.add(CARTAS_URL);
+        const audios = Object.values(cartas).map(name => `/audios/${name}`);
+        await Promise.all(audios.map(async (path) => {
+          try {
+            await cache.add(path);
+          } catch (err) {
+            console.warn('[ServiceWorker] Failed to cache', path, err);
+          }
+        }));
+      } catch (err) {
+        console.error('[ServiceWorker] Error caching audios:', err);
+      }
+
+      console.log('[ServiceWorker] Precache complete');
     } catch (err) {
       console.error('[ServiceWorker] Error caching files:', err);
     }
   })());
   self.skipWaiting();
-});  
+});
 
 // Activación y limpieza de cachés viejas
 self.addEventListener('activate', (event) => {
@@ -47,6 +68,20 @@ self.addEventListener('activate', (event) => {
 
 // Interceptar fetch y responder con caché si está disponible
 self.addEventListener('fetch', (event) => {
+const { request } = event;
+  const rangeHeader = request.headers.get('range');
+
+  // Manejo de peticiones con Rangos (audio/video)
+  if (rangeHeader) {
+    const url = new URL(request.url);
+
+    // Ignorar peticiones de otros orígenes
+    if (url.origin !== self.location.origin) {
+      event.respondWith(fetch(request));
+      return;
+    }
+
+    event.respondWith(
 const { request } = event;
   const rangeHeader = request.headers.get('range');
 
@@ -92,6 +127,7 @@ const { request } = event;
     );
     return;
   }
+
 
 
   event.respondWith(
