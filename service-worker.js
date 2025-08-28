@@ -1,93 +1,26 @@
 const CACHE_NAME = 'camer-codex-cache-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/css/style.css',
-  '/css/rutinas/fuera-de-este-mundo.css',
-  '/css/rutinas/juego-pegriloso.css',
-  '/manifest.json',
-  '/js/main.js',
-  '/js/config.js',
-  '/js/rutinas/colecciones.js',
-  '/js/rutinas/dadaSimple.js',
-  '/js/rutinas/dadoR.js',
-  '/js/rutinas/elefante.js',
-  '/js/rutinas/fueraDeEsteMundo.js',
-  '/js/rutinas/manoPoker.js',
-  '/js/rutinas/momias.js',
-  '/js/rutinas/ojosVendados.js',
-  '/js/rutinas/ocaculo.js',
-  '/js/rutinas/pegriloso.js',
-  '/js/rutinas/perdonenMiInmodestia.js',
-  '/js/rutinas/pruebaDeFuego.js',
-  '/js/rutinas/rapidoNumeroso.js',
-  '/js/rutinas/tegMagico.js',
-  '/js/rutinas/theBoss.js',
-  '/js/rutinas/voluntadPrestada.js',
-  '/favicon.ico',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
-  '/img/servidor.gif',
-  '/img/sprite.png',
-  '/rutinas/coleccionista.html',
-  '/rutinas/dadaSimple.html',
-  '/rutinas/dadoR.html',
-  '/rutinas/elefantes.html',
-  '/rutinas/fueraDeEsteMundo.html',
-  '/rutinas/manoPoker.html',
-  '/rutinas/momias.html',
-  '/rutinas/ojosVendados.html',
-  '/rutinas/oraculo.html',
-  '/rutinas/pegriloso.html',
-  '/rutinas/perdonenMiInmodestia.html',
-  '/rutinas/pruebaDeFuego.html',
-  '/rutinas/rapidoNumeroso.html',
-  '/rutinas/tegMagico.html',
-  '/rutinas/theBoss.html',
-  '/rutinas/voluntadPrestada.html',
-  '/audios/cartas.json',
-  '/audios/cartasPoker.json',
-  '/audios/ojosVendados.json',
-  '/audios/audios_especiales/colores.json',
-  '/audios/audios_especiales/dadoAudio.json',
-  '/audios/audios_especiales/dadoTexto.json',
-  '/audios/audios_especiales/elefantes.json',
-  '/audios/coleccion/coleccionAudios.json',
-  '/audios/coleccion/coleccionTexto.json',
-  '/audios/suma/sumaAudio.json',
-  '/audios/suma/sumaTexto.json',
-  '/audios/teg/tegAudios.json',
-  '/audios/teg/tegTextos.json',
-  '/audios/teg/tegSimbolosTexto.json',
-];
-// Los recursos listados arriba se precargan durante la instalación.
-// Cualquier otro archivo se almacenará en caché la primera vez que se
-// solicite, gracias al manejador `fetch` definido más abajo.
+const MANIFEST_URL = '/cache-files.json';
+// Los archivos listados en cache-files.json se precargan durante la
+// instalación. Cualquier otro recurso solicitado se añadirá al caché de
+// forma dinámica a través del manejador `fetch`.
 
 // Instalación del Service Worker y cacheo inicial
 self.addEventListener('install', (event) => {
   console.log('[ServiceWorker] Installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(async (cache) => {
-        console.log('[ServiceWorker] Caching app shell');
-        await cache.addAll(urlsToCache);
-
-        // Precargar archivos de audio listados en cartas.json
+    .then(async (cache) => {
         try {
-          const response = await fetch('/audios/cartas.json');
-          const audioMap = await response.json();
-          const audioFiles = Object.values(audioMap).map((file) => `/audios/${file}`);
-          await cache.addAll(audioFiles);
+          // Leer listado completo de archivos y agregarlos al caché
+          const response = await fetch(MANIFEST_URL);
+          const files = await response.json();
+          await cache.addAll([...files, MANIFEST_URL]);
         } catch (err) {
-          console.error('[ServiceWorker] Error caching audio files:', err);
+          console.error('[ServiceWorker] Error caching files:', err);
         }
       })
-      .catch((err) => {
-        console.error('[ServiceWorker] Error caching app shell:', err);
-      })
   );
-});
+});  
 
 // Activación y limpieza de cachés viejas
 self.addEventListener('activate', (event) => {
