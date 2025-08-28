@@ -81,19 +81,23 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
+   (async () => {
+      const url = new URL(request.url);
+      const cacheKey = url.origin === self.location.origin ? url.pathname : request.url;
+      const cache = await caches.open(CACHE_NAME);
+      const cachedResponse = await cache.match(cacheKey);
       if (cachedResponse) {
         return cachedResponse;
       }
-      return fetch(request)
-        .then((networkResponse) => {
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, networkResponse.clone());
-            return networkResponse;
-          });
-        })
-        .catch(() => caches.match('/index.html'));
-    })
+      try {
+        const networkResponse = await fetch(request);
+        if (url.origin === self.location.origin) {
+          cache.put(cacheKey, networkResponse.clone());
+        }
+        return networkResponse;
+      } catch (err) {
+        return cache.match('/index.html');
+      }
+    })()
   );
 });
-
