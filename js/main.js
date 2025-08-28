@@ -228,6 +228,34 @@ window.addEventListener('online', () => {
     });
   }
 });
+async function ensurePersistence() {
+  if (!navigator.storage || !navigator.storage.persisted || !navigator.storage.persist) {
+    return;
+  }
+
+  const alreadyPersistent = await navigator.storage.persisted();
+  if (alreadyPersistent) {
+    console.log('[Storage] Persistencia garantizada');
+    return;
+  }
+
+  const granted = await navigator.storage.persist();
+  console.log(`[Storage] Persistencia ${granted ? 'garantizada' : 'no concedida'}`);
+}
+
+ensurePersistence();
+
+window.addEventListener('online', () => {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready.then(reg => {
+      if ('sync' in reg) {
+        reg.sync.register('sync-cache').catch(err =>
+          console.warn('No se pudo registrar sync:', err)
+        );
+      }
+    });
+  }
+});
 
 // Instalación de la PWA
 let deferredPrompt;
