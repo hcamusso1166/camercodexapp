@@ -199,7 +199,7 @@ function isWebBluetoothEnabled() {
 // Registro del Service Worker
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('../service-worker.js')
-    .then(async reg => {
+.then(async reg => {
       console.log("✅ Service Worker registrado:", reg);
       if ('sync' in reg) {
         try {
@@ -211,36 +211,28 @@ if ('serviceWorker' in navigator) {
     })
     .catch(err => console.error("❌ Error al registrar SW:", err));
 }
-if (navigator.storage && navigator.storage.persist) {
-  navigator.storage.persist().then(granted => {
-    console.log(`[Storage] Persistencia ${granted ? 'garantizada' : 'no concedida'}`);
-  });
-}
 
-window.addEventListener('online', () => {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.ready.then(reg => {
-      if ('sync' in reg) {
-        reg.sync.register('sync-cache').catch(err =>
-          console.warn('No se pudo registrar sync:', err)
-        );
-      }
-    });
-  }
-});
 async function ensurePersistence() {
-  if (!navigator.storage || !navigator.storage.persisted || !navigator.storage.persist) {
-    return;
-  }
+  try {
+    if (!navigator.storage || !navigator.storage.persisted || !navigator.storage.persist) {
+      return;
+    }
 
-  const alreadyPersistent = await navigator.storage.persisted();
-  if (alreadyPersistent) {
-    console.log('[Storage] Persistencia garantizada');
-    return;
-  }
+    const alreadyPersistent = await navigator.storage.persisted();
+    if (alreadyPersistent) {
+      console.log('[Storage] Persistencia garantizada');
+      return;
+    }
 
-  const granted = await navigator.storage.persist();
-  console.log(`[Storage] Persistencia ${granted ? 'garantizada' : 'no concedida'}`);
+    const granted = await navigator.storage.persist();
+    if (granted) {
+      console.log('[Storage] Persistencia garantizada');
+    } else {
+      console.warn('[Storage] Persistencia no concedida; el navegador puede limpiar la caché si necesita espacio');
+    }
+  } catch (err) {
+    console.warn('[Storage] Error solicitando persistencia:', err);
+  }
 }
 
 ensurePersistence();

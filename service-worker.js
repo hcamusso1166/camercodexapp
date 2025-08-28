@@ -1,6 +1,6 @@
 const CACHE_NAME = 'camer-codex-cache-v2';
 const MANIFEST_URL = '/cache-files.json';
-const CARTAS_URL = '/audios/cartas.json';
+//const CARTAS_URL = '/audios/cartas.json';
 
 // Los archivos listados en cache-files.json se precargan durante la
 // instalación. Cualquier otro recurso solicitado se añadirá al caché de
