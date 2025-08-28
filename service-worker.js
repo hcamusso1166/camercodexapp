@@ -82,20 +82,6 @@ const { request } = event;
     }
 
     event.respondWith(
-const { request } = event;
-  const rangeHeader = request.headers.get('range');
-
-  // Manejo de peticiones con Rangos (audio/video)
-  if (rangeHeader) {
-    const url = new URL(request.url);
-
-    // Ignorar peticiones de otros orígenes
-    if (url.origin !== self.location.origin) {
-      event.respondWith(fetch(request));
-      return;
-    }
-
-    event.respondWith(
       (async () => {
         const cache = await caches.open(CACHE_NAME);
         let response = await cache.match(url.pathname);
