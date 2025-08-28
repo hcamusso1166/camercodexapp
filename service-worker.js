@@ -6,55 +6,55 @@ const CARTAS_URL = '/audios/cartas.json';
 // instalación. Cualquier otro recurso solicitado se añadirá al caché de
 // forma dinámica a través del manejador `fetch`.
 
-// Instalación del Service Worker y cacheo inicial
-self.addEventListener('install', (event) => {
-  console.log('[ServiceWorker] Installing...');
- event.waitUntil((async () => {
-    const cache = await caches.open(CACHE_NAME);
-    try {
-      // Leer listado completo de archivos base y agregarlos al caché
-      const response = await fetch(MANIFEST_URL);
-      const files = await response.json();
+async function precache() {
+  const cache = await caches.open(CACHE_NAME);
+  try {
+    const response = await fetch(MANIFEST_URL);
+    const files = await response.json();
 
-      await Promise.all(files.map(async (path) => {
+    await Promise.all(files.map(async (path) => {
+      try {
+        await cache.add(path);
+      } catch (err) {
+        console.warn('[ServiceWorker] Failed to cache', path, err);
+      }
+    }));
+
+    await cache.add(MANIFEST_URL);
+/*
+    try {
+      const cartasResp = await fetch(CARTAS_URL);
+      const cartas = await cartasResp.json();
+      await cache.add(CARTAS_URL);
+      const audios = Object.values(cartas).map(name => `/audios/${name}`);
+      await Promise.all(audios.map(async (path) => {
         try {
           await cache.add(path);
         } catch (err) {
           console.warn('[ServiceWorker] Failed to cache', path, err);
         }
       }));
-
-      await cache.add(MANIFEST_URL);
-
-      // Precargar audios definidos en cartas.json
-      try {
-        const cartasResp = await fetch(CARTAS_URL);
-        const cartas = await cartasResp.json();
-        await cache.add(CARTAS_URL);
-        const audios = Object.values(cartas).map(name => `/audios/${name}`);
-        await Promise.all(audios.map(async (path) => {
-          try {
-            await cache.add(path);
-          } catch (err) {
-            console.warn('[ServiceWorker] Failed to cache', path, err);
-          }
-        }));
-      } catch (err) {
-        console.error('[ServiceWorker] Error caching audios:', err);
-      }
-
-      console.log('[ServiceWorker] Precache complete');
     } catch (err) {
-      console.error('[ServiceWorker] Error caching files:', err);
+      console.error('[ServiceWorker] Error caching audios:', err);
     }
-  })());
+*/
+    console.log('[ServiceWorker] Precache complete');
+  } catch (err) {
+    console.error('[ServiceWorker] Error caching files:', err);
+  }
+}
+
+// Instalación del Service Worker y cacheo inicial de todos los recursos
+self.addEventListener('install', (event) => {
+  console.log('[ServiceWorker] Installing...');
+  event.waitUntil(precache());
   self.skipWaiting();
 });
 
 // Activación y limpieza de cachés viejas
 self.addEventListener('activate', (event) => {
   console.log('[ServiceWorker] Activating...');
-  event.waitUntil((async () => {
+    event.waitUntil((async () => {
     const keyList = await caches.keys();
     await Promise.all(keyList.map((key) => {
       if (key !== CACHE_NAME) {
@@ -64,6 +64,12 @@ self.addEventListener('activate', (event) => {
     }));
     await self.clients.claim();
   })());
+});
+
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-cache') {
+    event.waitUntil(precache());
+  }
 });
 
 // Interceptar fetch y responder con caché si está disponible
@@ -114,10 +120,8 @@ const { request } = event;
     return;
   }
 
-
-
-  event.respondWith(
-    (async () => {
+    event.respondWith(
+      (async () => {
       const url = new URL(request.url);
       const cacheKey = url.origin === self.location.origin ? url.pathname : request.url;
       const cache = await caches.open(CACHE_NAME);

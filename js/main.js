@@ -199,10 +199,35 @@ function isWebBluetoothEnabled() {
 // Registro del Service Worker
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('../service-worker.js')
-    .then(reg => console.log("✅ Service Worker registrado:", reg))
+    .then(async reg => {
+      console.log("✅ Service Worker registrado:", reg);
+      if ('sync' in reg) {
+        try {
+          await reg.sync.register('sync-cache');
+        } catch (err) {
+          console.warn('No se pudo registrar sync:', err);
+        }
+      }
+    })
     .catch(err => console.error("❌ Error al registrar SW:", err));
 }
+if (navigator.storage && navigator.storage.persist) {
+  navigator.storage.persist().then(granted => {
+    console.log(`[Storage] Persistencia ${granted ? 'garantizada' : 'no concedida'}`);
+  });
+}
 
+window.addEventListener('online', () => {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready.then(reg => {
+      if ('sync' in reg) {
+        reg.sync.register('sync-cache').catch(err =>
+          console.warn('No se pudo registrar sync:', err)
+        );
+      }
+    });
+  }
+});
 
 // Instalación de la PWA
 let deferredPrompt;
@@ -264,16 +289,19 @@ const popupModal = document.getElementById('popupModal');
 const popupBody = document.getElementById('popupBody');
 const popupCloseBtn = document.getElementById('popupCloseBtn');
 const estadoBLEbtn = document.getElementById("verEstadoBLE");
-menuDropdown.addEventListener('click', (e) => {
-  if (e.target.matches('a[data-popup]')) {
-    e.preventDefault();
-    const popupId = e.target.getAttribute('data-popup');
-    abrirPopup(popupId);
-  }
-});
+if (menuDropdown) {
+  menuDropdown.addEventListener('click', (e) => {
+    if (e.target.matches('a[data-popup]')) {
+      e.preventDefault();
+      const popupId = e.target.getAttribute('data-popup');
+      abrirPopup(popupId);
+    }
+  });
+}
 
 
 async function abrirPopup(popupId) {
+  if (!popupBody || !menuDropdown || !popupModal) return;
   try {
     const response = await fetch(`../info/${popupId}.html`);
     if (!response.ok) throw new Error("No se pudo cargar el contenido");
@@ -321,11 +349,13 @@ if (popupId === "estadoBLE") {
 
 }
 
-popupCloseBtn.addEventListener('click', () => {
-  popupModal.classList.add('hidden');
-  popupBody.innerHTML = '';          // Limpiar contenido del popup
-  menuDropdown.classList.add('hidden');  // Cerrar menú
-});
+if (popupCloseBtn && popupModal && popupBody && menuDropdown) {
+  popupCloseBtn.addEventListener('click', () => {
+    popupModal.classList.add('hidden');
+    popupBody.innerHTML = '';          // Limpiar contenido del popup
+    menuDropdown.classList.add('hidden');  // Cerrar menú
+  });
+}
 
 
 
