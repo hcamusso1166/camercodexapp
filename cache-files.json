@@ -267,8 +267,6 @@
   "/info/estadoBLE.html",
   "/js/config.js",
   "/js/info/estadoBLE-check.js",
-  "/js/main copy 2.js",
-  "/js/main copy.js",
   "/js/main.js",
   "/js/rutinas/coleccionista.js",
   "/js/rutinas/dadaSimple.js",
@@ -292,8 +290,6 @@
   "/rutinas/dadoR.html",
   "/rutinas/elefantes.html",
   "/rutinas/fueraDeEsteMundo.html",
-  "/rutinas/heartsAndCraftsBORRAR.html",
-  "/rutinas/imposibleDeVerBORRAR.html",
   "/rutinas/manoPoker.html",
   "/rutinas/momias.html",
   "/rutinas/ojosVendados.html",
@@ -304,6 +300,5 @@
   "/rutinas/rapidoNumeroso.html",
   "/rutinas/tegMagico.html",
   "/rutinas/theboss.html",
-  "/rutinas/trucoCarreraCorazonBORRAR.html",
   "/rutinas/voluntadPrestada.html"
 ]
