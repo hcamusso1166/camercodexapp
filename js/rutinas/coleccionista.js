@@ -20,14 +20,14 @@ fetch('../audios/coleccion/coleccionAudios.json')
   .then(res => res.json())
   .then(data => {
     mapaCartasAudios = data;
-    console.log("Mapa de cartas Archivos Audios cargado correctamente");
+    console.log("Mapa de cartas Colecció Audios cargado correctamente");
   })
   .catch(err => console.error("Error cargando coleccionAudios.json", err));
 fetch('../audios/coleccion/coleccionTexto.json')
   .then(res => res.json())
   .then(data => {
     cartasTexto = data;
-    console.log("Mapa de cartas para texto  cargado correctamente");
+    console.log("Mapa de cartas colección para texto  cargado correctamente");
   })
   .catch(err => console.error("Error cargando coleccionTexto.json", err));
 

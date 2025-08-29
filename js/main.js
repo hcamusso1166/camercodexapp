@@ -1,12 +1,12 @@
 console.log("Camer Codex - main.js cargado");
 function actualizarIconoConexionBLE(estado) {
   const icon = document.getElementById('estadoConexionBLE');
-  /*
+  
   if (!icon) {
     console.warn("No se encontró el ícono de conexión BLE.");
     return;
   }
-  */
+  
   const iconMap = {
     conectado: "../icons/bluetooth_connected_16_D9D9D9.svg",
     desconectado: "../icons/bluetooth_disabled_16_D9D9D9.svg"
