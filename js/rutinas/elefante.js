@@ -38,7 +38,7 @@ function guardarTag(tag) {
       setTimeout(function() {
         // Mostrar posiciones y luego los audios de la pila de cartas
         mostrarPosiciones();
-      }, 5000);
+      }, cadencia);
     } else {
       if (tag === lectura || pila.includes(tag)) {
         // Si el tag es igual a la lectura actual, o ya está en la pila de cartas, no hacer nada
