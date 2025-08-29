@@ -197,9 +197,9 @@ function isWebBluetoothEnabled() {
 
 
 // Registro del Service Worker
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('../service-worker.js')
-.then(async reg => {
+if ('serviceWorker' in navigator && window.isSecureContext) {
+  navigator.serviceWorker.register('/service-worker.js')
+    .then(async reg => {
       console.log("✅ Service Worker registrado:", reg);
       if ('sync' in reg) {
         try {
@@ -209,7 +209,9 @@ if ('serviceWorker' in navigator) {
         }
       }
     })
-    .catch(err => console.error("❌ Error al registrar SW:", err));
+        .catch(err => console.warn("❌ Error al registrar SW:", err));
+} else {
+  console.warn('Service Worker no disponible en este contexto');
 }
 
 async function ensurePersistence() {

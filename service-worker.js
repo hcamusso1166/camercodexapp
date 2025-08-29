@@ -10,7 +10,17 @@ async function precache() {
   const cache = await caches.open(CACHE_NAME);
   try {
     const response = await fetch(MANIFEST_URL);
-    const files = await response.json();
+        if (!response.ok) {
+      console.warn('[ServiceWorker] No se pudo obtener el manifiesto de caché:', response.status);
+      return;
+    }
+    let files;
+    try {
+      files = await response.json();
+    } catch (err) {
+      console.warn('[ServiceWorker] Manifiesto de caché inválido:', err);
+      return;
+    }
 
     await Promise.all(files.map(async (path) => {
       try {
@@ -40,7 +50,7 @@ async function precache() {
 */
     console.log('[ServiceWorker] Precache complete');
   } catch (err) {
-    console.error('[ServiceWorker] Error caching files:', err);
+    console.warn('[ServiceWorker] Error caching files:', err);
   }
 }
 
