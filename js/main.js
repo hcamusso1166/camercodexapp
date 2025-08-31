@@ -782,7 +782,7 @@ function reproducirVibracion(patron = [300]) {
   }
 }
 
-  function evaluarMano(cartas) {
+function evaluarMano(cartas) {
   if (cartas.length !== 5) {
     return {
       descripcion: "Error: debe haber exactamente 5 cartas",
@@ -795,12 +795,12 @@ function reproducirVibracion(patron = [300]) {
   const palos = cartas.map(c => c.slice(-1));
 
   const valorNumerico = v => {
-    const mapa = { "A":14, "K":13, "Q":12, "J":11, "T":10 };
+    const mapa = { "A":14, "K":13, "Q":12, "J":11, "D":10 };
     return isNaN(v) ? mapa[v] : parseInt(v);
   };
 
-  const valoresNum = valores.map(valorNumerico).sort((a,b) => a-b);
-
+  const valoresNum = valores.map(valorNumerico).sort((a,b) => a - b);
+console.log("Valores numéricos ordenados:", valoresNum);
   const contarRepetidos = arr => {
     const cuenta = {};
     arr.forEach(v => cuenta[v] = (cuenta[v] || 0) + 1);
@@ -816,14 +816,17 @@ function reproducirVibracion(patron = [300]) {
     return true;
   };
 
+  const esEscaleraReal = () =>
+    todosIgualPalo &&
+    valoresNum.join(",") === "10,11,12,13,14";
+
   const escalera = esEscalera();
   const repeticiones = contarRepetidos(valores);
 
-  // Determinar jugada
   let descripcion = "";
   let ranking = 1;
 
-  if (escalera && todosIgualPalo && valoresNum[0] === 10) {
+  if (esEscaleraReal()) {
     descripcion = "Escalera Real";
     ranking = 10;
   } else if (escalera && todosIgualPalo) {
@@ -862,6 +865,7 @@ function reproducirVibracion(patron = [300]) {
     ranking
   };
 }
+
 // Inicializar la vista
 displayRoutines();
 

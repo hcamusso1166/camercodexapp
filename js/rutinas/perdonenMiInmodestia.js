@@ -23,7 +23,7 @@ fetch('../audios/suma/sumaAudio.json')//Mapa de Archivos Audios para la suma
 
 function guardarTag(tag) {
   if (finDada) return;
-  if (tag === pila[0] && pila.length > 1) {
+  if ((tag === pila[0] && pila.length > 5) || (tag === 'RE' && pila.length > 5)) { 
     finDada = true;
     reproducirAudio("stop");
     actualizarAccion("Analizar las cartas dadas...");
@@ -34,7 +34,8 @@ function guardarTag(tag) {
     return;
   }
 
-  if (tag === ultimoTag || pila.includes(tag)) return;
+  if ((tag === ultimoTag || pila.includes(tag)) || (tag === 'RE')|| (tag === '53')|| (tag === '54')) {reproducirAudio("next");return};// Evita repetir lectura del mismo tag o el tag RE (repetido)
+  // Se agrega el tag a la pila, que funciona como cola, primero en entrar, primero en salir
   pila.push(tag);
   reproducirAudioParaTag(tag); // Reproducir el audio de la carta
   ultimoTag = tag;
@@ -212,7 +213,16 @@ function mostrarResumen() {
   reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.P), 4000);
   reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.D), 4000);
   reproducirSecuencial(() => reproducirAudioEnPoker("mejorjugada"), 2000);
-  reproducirSecuencial(() => reproducirAudioEnPoker(resultado.descripcion.replace(/\s+/g, '').toLowerCase()), 1000);
+  reproducirSecuencial(() => {
+  if (resultado.descripcion) {
+    const nombre = resultado.descripcion.replace(/\s+/g, '').toLowerCase();
+    console.log("Reproduciendo jugada de póker:", nombre);
+    reproducirAudioEnPoker(nombre);
+  } else {
+    console.warn("⚠️ No hay descripción de jugada para reproducir.");
+  }
+}, 1000);
+
   reproducirSecuencial(() => anunciarDetalleJugada(resultado), 500);
 
 }
@@ -274,14 +284,14 @@ function anunciarDetalleJugada(resultado) {
     case 'escalera':
     case 'escalera de color':
     case 'escalera real':
-      const valoresNumericos = cartas.map(v => {
-        const m = { "A":14, "K":13, "Q":12, "J":11, "T":10 };
-        return isNaN(v) ? m[v] : parseInt(v);
-      });
-      const max = Math.max(...valoresNumericos);
-      playCompuesto("al", mapaSuma[max.toString()].replace(".mp3", ""));
+      const valores = cartas; // ya son letras como "D", "J", "Q", "K", "A"
+      const orden = ["2","3","4","5","6","7","8","9","D","J","Q","K","A"];
+      const cartaMasAlta = valores.sort((a,b) => orden.indexOf(b) - orden.indexOf(a))[0];
+
+      play("al");
+      play(cartaMasAlta.toUpperCase());  // usa audio ../audios/poker/A.mp3 por ejemplo
       play(paloAudio[paloDominante]);
-      break;
+
     case 'color':
       play(paloAudio[paloDominante]);
       break;
@@ -333,6 +343,11 @@ function evaluarMejorManoDePoker(cartas) {
     const res = evaluarMano(combo);
     if (res.ranking > mejor.ranking) mejor = res;
   });
+if (!mejor.descripcion) {
+  mejor.descripcion = "Sin jugada";
+  mejor.ranking = 0;
+  mejor.cartas = [];
+}
 
   return mejor;
 }
