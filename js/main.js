@@ -833,7 +833,7 @@ console.log("Valores numéricos ordenados:", valoresNum);
     descripcion = "Escalera de Color";
     ranking = 9;
   } else if (repeticiones[0] === 4) {
-    descripcion = "Póker";
+    descripcion = "Poker";
     ranking = 8;
   } else if (repeticiones[0] === 3 && repeticiones[1] === 2) {
     descripcion = "Full";
@@ -845,7 +845,7 @@ console.log("Valores numéricos ordenados:", valoresNum);
     descripcion = "Escalera";
     ranking = 5;
   } else if (repeticiones[0] === 3) {
-    descripcion = "Trío";
+    descripcion = "Trio";
     ranking = 4;
   } else if (repeticiones[0] === 2 && repeticiones[1] === 2) {
     descripcion = "Doble Pareja";
