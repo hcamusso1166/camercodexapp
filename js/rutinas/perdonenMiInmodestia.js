@@ -8,6 +8,15 @@ let ultimoTag = null;
 let mapaCartas = {};
 let cartasPoker = {};
 let mapaSuma = {};
+let reinicioTimeout = null;
+const audioElement = document.getElementById("tagAudio");
+audioElement.addEventListener('play', () => clearTimeout(reinicioTimeout));
+audioElement.addEventListener('ended', () => {
+  if (finDada) {
+    reinicioTimeout = setTimeout(reiniciarPerdonenMiInmodestia, 10000);
+  }
+});
+
 
 fetch('../audios/cartas.json')//Mapa de cartas poker Archivos Audios
   .then(res => res.json())
@@ -184,13 +193,16 @@ function mostrarResumen() {
   });
 
   const resultado = evaluarMejorManoDePoker(cartasEvaluadas);
-
+  const mostrarDescripcion =
+    (resultado.descripcion && resultado.descripcion.toLowerCase() === "carta alta" && resultado.cartaAltaEtiqueta)
+      ? `Carta Alta: ${resultado.cartaAltaEtiqueta}`
+       : resultado.descripcion;
   // Construir resultado HTML
   resultadoHTML += `<p>La suma total es: ${suma}</p>`;
   resultadoHTML += `<p>Pares: ${pares}, Impares: ${impares}</p>`;
   resultadoHTML += `<p>Cantidad por palo:</p>`;
   resultadoHTML += `<p>Tre: ${cantidadPorPalos.T}, Co: ${cantidadPorPalos.C}, Pi: ${cantidadPorPalos.P}, Dia: ${cantidadPorPalos.D}</p>`;
-  resultadoHTML += `<p>Mejor jugada de póker: ${resultado.descripcion}</p>`;
+  resultadoHTML += `<p>Mejor jugada de póker: ${mostrarDescripcion}</p>`;
   resultadoHTML += `<p>${resultado.cartas.join(', ')}</p>`;
   document.getElementById("resultado").innerHTML = resultadoHTML;
 
@@ -233,10 +245,12 @@ function anunciarDetalleJugada(resultado) {
   cartas.forEach(v => cuenta[v] = (cuenta[v] || 0) + 1);
   const valoresOrdenados = Object.entries(cuenta).sort((a, b) => b[1] - a[1]);
 
-  const convertirValor = v => {
-    const mapaEspecial = { "A": "uno", "D": "diez", "J": "J", "Q": "Q", "K": "K" };
-    return mapaEspecial[v] || mapaSuma[v]?.replace(".mp3", "");
-  };
+const convertirValor = v => {
+  // Para audios de Poker por letra y SUMA para números
+  const figuras = { "A": "A", "K": "K", "Q": "Q", "J": "J", "D": "D" };
+  return figuras[v] || v; // números como "2","3"... siguen como string para SUMA
+};
+
 
   const dominante = convertirValor(valoresOrdenados[0][0]);
   const secundario = valoresOrdenados[1] ? convertirValor(valoresOrdenados[1][0]) : null;
@@ -283,21 +297,38 @@ function anunciarDetalleJugada(resultado) {
       break;
     case 'escalera':
     case 'escalera de color':
-    case 'escalera real':
+    //case 'escalera real':
       const valores = cartas; // ya son letras como "D", "J", "Q", "K", "A"
       const orden = ["2","3","4","5","6","7","8","9","D","J","Q","K","A"];
-      const cartaMasAlta = valores.sort((a,b) => orden.indexOf(b) - orden.indexOf(a))[0];
+
+      // Detectar rueda (A-2-3-4-5) tratando al As como 1 solo en ese caso
+      const ordenAsc = valores.slice().sort((a, b) => orden.indexOf(a) - orden.indexOf(b));
+      const esRueda = ordenAsc.join("") === "2345A";
+      const cartaMasAlta = esRueda
+        ? "5"
+        : valores.sort((a, b) => orden.indexOf(b) - orden.indexOf(a))[0];
 
       play("al");
       play(cartaMasAlta.toUpperCase());  // usa audio ../audios/poker/A.mp3 por ejemplo
       play(paloAudio[paloDominante]);
-
+      break;
     case 'color':
       play(paloAudio[paloDominante]);
       break;
-    case 'carta alta':
-      playCompuesto("de", dominante);
-      break;
+case 'carta alta': {
+  // Decimos "de" + (A/K/Q/J/D por poker, o número por SUMA)
+  const etiqueta = resultado.cartaAltaEtiqueta; // ← viene de main.js
+  play("de");
+  if (["A","K","Q","J","D"].includes(etiqueta)) {
+    // figuras: usar carpeta poker
+    play(etiqueta); // ../audios/poker/A.mp3, etc.
+  } else {
+    // números: reproducir por SUMA respetando el tempo general
+    setTimeout(() => reproducirAudioCompuesto(parseInt(etiqueta, 10)), i * 1500);
+    i++; // avanzamos el compás para mantener la cadencia
+  }
+  break;
+}
   }
 }
 
@@ -351,88 +382,7 @@ if (!mejor.descripcion) {
 
   return mejor;
 }
-/*
-  function evaluarMano(cartas) {
-  if (cartas.length !== 5) {
-    return {
-      descripcion: "Error: debe haber exactamente 5 cartas",
-      cartas,
-      ranking: 0
-    };
-  }
 
-  const valores = cartas.map(c => c.slice(0, -1));
-  const palos = cartas.map(c => c.slice(-1));
-
-  const valorNumerico = v => {
-    const mapa = { "A":14, "K":13, "Q":12, "J":11, "T":10 };
-    return isNaN(v) ? mapa[v] : parseInt(v);
-  };
-
-  const valoresNum = valores.map(valorNumerico).sort((a,b) => a-b);
-
-  const contarRepetidos = arr => {
-    const cuenta = {};
-    arr.forEach(v => cuenta[v] = (cuenta[v] || 0) + 1);
-    return Object.values(cuenta).sort((a,b) => b - a); // eg. [3,2]
-  };
-
-  const todosIgualPalo = palos.every(p => p === palos[0]);
-
-  const esEscalera = () => {
-    for (let i = 0; i < 4; i++) {
-      if (valoresNum[i] + 1 !== valoresNum[i+1]) return false;
-    }
-    return true;
-  };
-
-  const escalera = esEscalera();
-  const repeticiones = contarRepetidos(valores);
-
-  // Determinar jugada
-  let descripcion = "";
-  let ranking = 1;
-
-  if (escalera && todosIgualPalo && valoresNum[0] === 10) {
-    descripcion = "Escalera Real";
-    ranking = 10;
-  } else if (escalera && todosIgualPalo) {
-    descripcion = "Escalera de Color";
-    ranking = 9;
-  } else if (repeticiones[0] === 4) {
-    descripcion = "Póker";
-    ranking = 8;
-  } else if (repeticiones[0] === 3 && repeticiones[1] === 2) {
-    descripcion = "Full";
-    ranking = 7;
-  } else if (todosIgualPalo) {
-    descripcion = "Color";
-    ranking = 6;
-  } else if (escalera) {
-    descripcion = "Escalera";
-    ranking = 5;
-  } else if (repeticiones[0] === 3) {
-    descripcion = "Trío";
-    ranking = 4;
-  } else if (repeticiones[0] === 2 && repeticiones[1] === 2) {
-    descripcion = "Doble Pareja";
-    ranking = 3;
-  } else if (repeticiones[0] === 2) {
-    descripcion = "Pareja";
-    ranking = 2;
-  } else {
-    const cartaAlta = Math.max(...valoresNum);
-    descripcion = `Carta Alta: ${cartaAlta}`;
-    ranking = 1;
-  }
-
-  return {
-    descripcion,
-    cartas,
-    ranking
-  };
-}
-*/
 function obtenerCombinaciones(array, size) {
   function backtrack(start = 0, path = []) {
     if (path.length === size) {
@@ -448,4 +398,18 @@ function obtenerCombinaciones(array, size) {
   const resultado = [];
   backtrack();
   return resultado;
+}
+
+function reiniciarPerdonenMiInmodestia() {
+  pila = [];
+  suma = 0;
+  finDada = false;
+  ultimoTag = null;
+  document.getElementById("resultado").innerHTML = "";
+  if (typeof limpiarDatos === 'function') {
+    limpiarDatos();
+  }
+  actualizarAccion("Leer carta");
+  clearTimeout(reinicioTimeout);
+  reinicioTimeout = null;
 }

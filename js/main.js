@@ -637,6 +637,7 @@ function reproducirAudio(nombreArchivo) {
 //Reproducir audios en Poker
 function reproducirAudioEnPoker(nombreArchivo) {
   const audio = new Audio(`../audios/poker/${nombreArchivo}.mp3`);
+  console.log("Reproduciendo audio Poker:", nombreArchivo);
   audio.play();
 }
 // Función para escribir en la característica del LED. Esta función se llama desde los botones de encendido y apagado
@@ -781,7 +782,10 @@ function reproducirVibracion(patron = [300]) {
     console.warn("🚫 Vibración no soportada en este navegador/dispositivo.");
   }
 }
-
+function numeroAValorEtiqueta(n) {
+  const mapa = { 14: 'A', 13: 'K', 12: 'Q', 11: 'J' };
+  return mapa[n] || String(n);
+}
 function evaluarMano(cartas) {
   if (cartas.length !== 5) {
     return {
@@ -810,10 +814,22 @@ console.log("Valores numéricos ordenados:", valoresNum);
   const todosIgualPalo = palos.every(p => p === palos[0]);
 
   const esEscalera = () => {
+    let consecutiva = true;
     for (let i = 0; i < 4; i++) {
-      if (valoresNum[i] + 1 !== valoresNum[i+1]) return false;
+      if (valoresNum[i] + 1 !== valoresNum[i + 1]) {
+        consecutiva = false;
+        break;
+      }
     }
-    return true;
+    if (consecutiva) return true;
+
+    if (valoresNum.includes(14)) {
+      const conAsBajo = valoresNum
+        .map(v => (v === 14 ? 1 : v))
+        .sort((a, b) => a - b);
+      return conAsBajo.toString() === "1,2,3,4,5";
+    }
+    return false;
   };
 
   const esEscaleraReal = () =>
@@ -854,16 +870,18 @@ console.log("Valores numéricos ordenados:", valoresNum);
     descripcion = "Pareja";
     ranking = 2;
   } else {
-    const cartaAlta = Math.max(...valoresNum);
-    descripcion = `Carta Alta: ${cartaAlta}`;
-    ranking = 1;
+    const cartaAltaNum = Math.max(...valoresNum);
+    const cartaAltaEtiqueta = numeroAValorEtiqueta(cartaAltaNum);
+    return {
+      descripcion: "Carta Alta",
+      cartas,
+      ranking: 1,
+      cartaAltaNum,
+      cartaAltaEtiqueta
+    };
   }
 
-  return {
-    descripcion,
-    cartas,
-    ranking
-  };
+  return { descripcion, cartas, ranking };
 }
 
 // Inicializar la vista
