@@ -85,94 +85,7 @@ function obtenerValorCarta(nombreCarta) {
     default: return parseInt(valorStr, 10) || 0;
   }
 }
-/*
-function mostrarResumen() {
-  const audio = document.getElementById("tagAudio");
-  // 1. Mostrar suma
-   let resultadoHTML = "<h2>Resumen:</h2>";
-  console.log("🧮 Suma total:", suma);
-  actualizarAccion(`La suma total es: ${suma}`);
-  reproducirAudioCompuesto(suma);
- resultadoHTML += `<p>La suma total es: ${suma}</p>`;
- document.getElementById("resultado").innerHTML = resultadoHTML;
-  // 2. Pares e impares
-  let pares = 0, impares = 0;
-  let cantidadPorPalos = { 'T': 0, 'C': 0, 'P': 0, 'D': 0 };
-  let cartasEvaluadas = [];
 
-  pila.forEach(tag => {
-    const carta = cartasPoker[tag];
-    cartasEvaluadas.push(carta);
-    const valor = obtenerValorCarta(carta);
-    const palo = carta.slice(-1);
-    if (valor % 2 === 0) pares++; else impares++;
-    cantidadPorPalos[palo]++;
-  });
-
-  console.log(`🔢 Pares: ${pares}, Impares: ${impares}`);
-  console.log("🃒 Cantidad por palo:", cantidadPorPalos);
-  resultadoHTML += `<p>Pares: ${pares}, Impares: ${impares}</p>`;
-  resultadoHTML += `<p>Cantidad por palo:</p>`;
-  resultadoHTML += `<p>Tre: ${cantidadPorPalos.T}, Co: ${cantidadPorPalos.C},</p>`;
-  resultadoHTML += `<p>Pi: ${cantidadPorPalos.P}, Dia: ${cantidadPorPalos.D}</p>`;
-  setTimeout(() => {
-      reproducirAudioCompuesto(pares);
-  }, 1000);
-
-setTimeout(() => {
-  audio.src = `../audios/poker/pares.mp3`;
-    audio.play().then(() => {
-      //console.log(`Reproduciendo: ${archivo}`);
-    }).catch(err => {
-      console.error("No se pudo reproducir el audio:", err);
-      console.log("Tag:", tag, "→ Archivo:", archivo);
-    });
-}, 2000);
-  setTimeout(() => {
-    reproducirAudioCompuesto(impares);
-  }, 3000);
-  setTimeout(() => {
-      audio.src = `../audios/poker/impares.mp3`;
-    audio.play().then(() => {
-      //console.log(`Reproduciendo: ${archivo}`);
-    }).catch(err => {
-      console.error("No se pudo reproducir el audio:", err);
-      console.log("Tag:", tag, "→ Archivo:", archivo);
-    });
-  }, 4000);
-setTimeout(() => {
-    audio.src = `../audios/poker/palos.mp3`;
-    audio.play().then(() => {
-      //console.log(`Reproduciendo: ${archivo}`);
-    }).catch(err => {
-      console.error("No se pudo reproducir el audio:", err);
-      console.log("Tag:", tag, "→ Archivo:", archivo);
-    });
-}, 5000);
-
-setTimeout(() => {
-  reproducirAudioCompuesto(cantidadPorPalos.T);
-}, 6000);
-setTimeout(() => {
-  reproducirAudioCompuesto(cantidadPorPalos.C);
-} , 7000);
-setTimeout(() => {  
-  reproducirAudioCompuesto(cantidadPorPalos.P);
-}, 8000);
-setTimeout(() => {  
-  reproducirAudioCompuesto(cantidadPorPalos.D);
-}, 9000);
-
-
- document.getElementById("resultado").innerHTML = resultadoHTML;
-  // 3. Evaluar mejor jugada de poker
-  const resultado = evaluarMejorManoDePoker(cartasEvaluadas);
-  console.log("🃏 Mejor jugada de póker:", resultado.descripcion);
-  resultadoHTML += `<p>Mejor jugada de póker: ${resultado.descripcion}</p>`;
-  resultadoHTML += `<p> ${resultado.cartas}</p>`;
- document.getElementById("resultado").innerHTML = resultadoHTML;
-}
-*/
 function mostrarResumen() {
   const audio = document.getElementById("tagAudio");
   let resultadoHTML = "<h2>Resumen:</h2>";
@@ -257,30 +170,30 @@ const convertirValor = v => {
 
   const paloDominante = palos.sort((a,b) => palos.filter(p=>p===b).length - palos.filter(p=>p===a).length)[0];
   const paloAudio = {
-    'T': 'treboles',
-    'C': 'corazones',
-    'P': 'picas',
-    'D': 'diamantes'
+    'T': 'T',
+    'C': 'C',
+    'P': 'P',
+    'D': 'D'
   };
 
   const audio = document.getElementById("tagAudio");
   let i = 0;
 
-  function play(nombre) {
+  function play(nombre, intervalo = 1500) {
     setTimeout(() => {
       audio.src = `../audios/poker/${nombre}.mp3`;
       audio.play();
-    }, i * 1500);
+    }, i * intervalo);
     i++;
   }
 
-  function playCompuesto(prefijo, nombre) {
-    play(prefijo);
+  function playCompuesto(prefijo, nombre, intervalo = 1500) {
+    play(prefijo, intervalo);
     setTimeout(() => {
       const path = isNaN(nombre) ? `../audios/poker/${nombre}.mp3` : `../audios/suma/${nombre}.mp3`;
       audio.src = path;
       audio.play();
-    },  i * 1500);
+    },  i * intervalo);
     i++;
   }
 
@@ -308,12 +221,16 @@ const convertirValor = v => {
         ? "5"
         : valores.sort((a, b) => orden.indexOf(b) - orden.indexOf(a))[0];
 
-      play("al");
-      play(cartaMasAlta.toUpperCase());  // usa audio ../audios/poker/A.mp3 por ejemplo
-      play(paloAudio[paloDominante]);
+      play("al",1000);
+      play(cartaMasAlta.toUpperCase(),1000);  // usa audio ../audios/poker/A.mp3 por ejemplo
+      play(paloAudio[paloDominante],1000);
+      break;
+    case 'escalera real':
+
+      play(paloAudio[paloDominante],1000);
       break;
     case 'color':
-      play(paloAudio[paloDominante]);
+      play(paloAudio[paloDominante],1000);
       break;
 case 'carta alta': {
   // Decimos "de" + (A/K/Q/J/D por poker, o número por SUMA)
