@@ -895,17 +895,11 @@ const convertirValor = v => {
       play(paloAudio[paloDominante],1000);
       break;
 case 'carta alta': {
-  // Decimos "de" + (A/K/Q/J/D por poker, o número por SUMA)
+  // Decimos "de" + (A/K/Q/J por poker, o número por SUMA)
   const etiqueta = resultado.cartaAltaEtiqueta; // ← viene de main.js
-  play("de");
-  if (["A","K","Q","J","D"].includes(etiqueta)) {
-    // figuras: usar carpeta poker
-    play(etiqueta); // ../audios/poker/A.mp3, etc.
-  } else {
-    // números: reproducir por SUMA respetando el tempo general
-    setTimeout(() => reproducirAudioCompuesto(parseInt(etiqueta, 10)), i * 1500);
-    i++; // avanzamos el compás para mantener la cadencia
-  }
+    // Reproducimos la etiqueta usando playCompuesto para soportar tanto
+  // figuras como números con el mismo mecanismo
+  playCompuesto("de", etiqueta);
   break;
 }
   }
