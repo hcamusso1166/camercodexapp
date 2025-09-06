@@ -1,19 +1,19 @@
-// perdonenMiInmodestia.js
-console.log("Camer Codex - perdonenMiInmodestia.js cargado");
+// manoPokerNew.js
+console.log("Camer Codex - manoPokerNew.js cargado");
 
 let pila = [];
-let suma = 0;
+//let suma = 0;
 let finDada = false;
 let ultimoTag = null;
 let mapaCartas = {};
 let cartasPoker = {};
-let mapaSuma = {};
+//let mapaSuma = {};
 let reinicioTimeout = null;
 const audioElement = document.getElementById("tagAudio");
 audioElement.addEventListener('play', () => clearTimeout(reinicioTimeout));
 audioElement.addEventListener('ended', () => {
   if (finDada) {
-    reinicioTimeout = setTimeout(reiniciarPerdonenMiInmodestia, 10000);
+    reinicioTimeout = setTimeout(reiniciarManoPokerNew, 10000);
   }
 });
 
@@ -26,11 +26,7 @@ fetch('../audios/cartasPoker.json')//Mapa de cartas poker Textos
   .then(res => res.json())
   .then(data => cartasPoker = data);
 
-fetch('../audios/suma/sumaAudio.json')//Mapa de Archivos Audios para la suma
-  .then(res => res.json())
-  .then(data => mapaSuma = data);
-
-function guardarTag(tag) {
+function guardarTagMano(tag) {
   if (finDada) return;
   if ((tag === pila[0] && pila.length > 5) || (tag === 'RE' && pila.length > 5)) { 
     finDada = true;
@@ -38,7 +34,7 @@ function guardarTag(tag) {
     actualizarAccion("Analizar las cartas dadas...");
 
     setTimeout(() => {
-      mostrarResumen();
+      mostrarResumenMano();
     }, 3000);
     return;
   }
@@ -49,9 +45,22 @@ function guardarTag(tag) {
   reproducirAudioParaTag(tag); // Reproducir el audio de la carta
   ultimoTag = tag;
   const carta = cartasPoker[tag];
-  const valor = obtenerValorCarta(carta);
-  suma += valor;
-  console.log("Carta:", carta, "Valor:", valor, "Suma parcial:", suma);
+  //const valor = obtenerValorCarta(carta);
+  //suma += valor;
+  //console.log("Carta:", carta, "Valor:", valor, "Suma parcial:", suma);
+  console.log("Carta:", carta);
+  if(pila.length===5){
+    actualizarAccion("Mano completa. ");
+    finDada = true;
+    setTimeout(() => {
+        reproducirAudio("stop");
+    }, 1000);
+    
+        setTimeout(() => {
+      mostrarResumenMano();
+    }, 3000);
+    return;
+  }
 }
 /*
 function reproducirAudioParaTag(tag) {
@@ -87,23 +96,23 @@ function obtenerValorCarta(nombreCarta) {
   }
 }
 */
-function mostrarResumen() {
+function mostrarResumenMano() {
   const audio = document.getElementById("tagAudio");
   let resultadoHTML = "<h2>Resumen:</h2>";
   document.getElementById("resultado").innerHTML = resultadoHTML;
-
+/*
   // Calcular valores
   let pares = 0, impares = 0;
-  let cantidadPorPalos = { 'T': 0, 'C': 0, 'P': 0, 'D': 0 };
+  let cantidadPorPalos = { 'T': 0, 'C': 0, 'P': 0, 'D': 0 };*/
   let cartasEvaluadas = [];
 
   pila.forEach(tag => {
     const carta = cartasPoker[tag];
     cartasEvaluadas.push(carta);
-    const valor = obtenerValorCarta(carta);
-    const palo = carta.slice(-1);
-    if (valor % 2 === 0) pares++; else impares++;
-    cantidadPorPalos[palo]++;
+    //const valor = obtenerValorCarta(carta);
+    //const palo = carta.slice(-1);
+//    if (valor % 2 === 0) pares++; else impares++;
+//    cantidadPorPalos[palo]++;
   });
 
   const resultado = evaluarMejorManoDePoker(cartasEvaluadas);
@@ -112,10 +121,10 @@ function mostrarResumen() {
       ? `Carta Alta: ${resultado.cartaAltaEtiqueta}`
        : resultado.descripcion;
   // Construir resultado HTML
-  resultadoHTML += `<p>La suma total es: ${suma}</p>`;
-  resultadoHTML += `<p>Pares: ${pares}, Impares: ${impares}</p>`;
-  resultadoHTML += `<p>Cantidad por palo:</p>`;
-  resultadoHTML += `<p>Tre: ${cantidadPorPalos.T}, Co: ${cantidadPorPalos.C}, Pi: ${cantidadPorPalos.P}, Dia: ${cantidadPorPalos.D}</p>`;
+  //resultadoHTML += `<p>La suma total es: ${suma}</p>`;
+  //resultadoHTML += `<p>Pares: ${pares}, Impares: ${impares}</p>`;
+  //resultadoHTML += `<p>Cantidad por palo:</p>`;
+  //resultadoHTML += `<p>Tre: ${cantidadPorPalos.T}, Co: ${cantidadPorPalos.C}, Pi: ${cantidadPorPalos.P}, Dia: ${cantidadPorPalos.D}</p>`;
   resultadoHTML += `<p>Mejor jugada de póker: ${mostrarDescripcion}</p>`;
   resultadoHTML += `<p>${resultado.cartas.join(', ')}</p>`;
   document.getElementById("resultado").innerHTML = resultadoHTML;
@@ -128,17 +137,17 @@ function mostrarResumen() {
     delay += tiempo;
   };
 
-  reproducirSecuencial(() => reproducirAudioCompuesto(suma), 4000);
-  reproducirSecuencial(() => reproducirAudioEnPoker("pares"));
-  reproducirSecuencial(() => reproducirAudioCompuesto(pares), 2000);
-  reproducirSecuencial(() => reproducirAudioEnPoker("impares"));
-  reproducirSecuencial(() => reproducirAudioCompuesto(impares), 2000);
-  reproducirSecuencial(() => reproducirAudioEnPoker("palos"), 3000);
-  reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.T), 4000);
+  //reproducirSecuencial(() => reproducirAudioCompuesto(suma), 4000);
+  //reproducirSecuencial(() => reproducirAudioEnPoker("pares"));
+  //reproducirSecuencial(() => reproducirAudioCompuesto(pares), 2000);
+  //reproducirSecuencial(() => reproducirAudioEnPoker("impares"));
+  //reproducirSecuencial(() => reproducirAudioCompuesto(impares), 2000);
+  //reproducirSecuencial(() => reproducirAudioEnPoker("palos"), 3000);
+  /*reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.T), 4000);
   reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.C), 4000);
   reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.P), 4000);
   reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.D), 4000);
-  reproducirSecuencial(() => reproducirAudioEnPoker("mejorjugada"), 2000);
+  reproducirSecuencial(() => reproducirAudioEnPoker("mejorjugada"), 2000);*/
   reproducirSecuencial(() => {
   if (resultado.descripcion) {
     const nombre = resultado.descripcion.replace(/\s+/g, '').toLowerCase();
@@ -319,9 +328,9 @@ function obtenerCombinaciones(array, size) {
   return resultado;
 }
 */
-function reiniciarPerdonenMiInmodestia() {
+function reiniciarManoPokerNew() {
   pila = [];
-  suma = 0;
+
   finDada = false;
   ultimoTag = null;
   document.getElementById("resultado").innerHTML = "";
@@ -332,3 +341,5 @@ function reiniciarPerdonenMiInmodestia() {
   clearTimeout(reinicioTimeout);
   reinicioTimeout = null;
 }
+
+
