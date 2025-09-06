@@ -879,10 +879,12 @@ const convertirValor = v => {
       // Detectar rueda (A-2-3-4-5) tratando al As como 1 solo en ese caso
       const ordenAsc = valores.slice().sort((a, b) => orden.indexOf(a) - orden.indexOf(b));
       const esRueda = ordenAsc.join("") === "2345A";
-      const cartaMasAlta = esRueda
+      var cartaMasAlta = esRueda
         ? "5"
         : valores.sort((a, b) => orden.indexOf(b) - orden.indexOf(a))[0];
 
+      if (cartaMasAlta === "D") cartaMasAlta = "10"; // para que diga "de diez" en vez de "de D"{
+        
       play("al",1000);
       play(cartaMasAlta.toUpperCase(),1000);  // usa audio ../audios/poker/A.mp3 por ejemplo
       play(paloAudio[paloDominante],1000);
