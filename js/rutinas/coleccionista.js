@@ -39,7 +39,7 @@ function guardarTag(tag) {
     return; 
   };
   if (!finDada) {
-    if (tag === pila[0] && pila.length > 1) {
+    if ((tag === pila[0] && pila.length > 1) || (tag === 'RE' && pila.length > 1)){
       // Si el tag es igual a la primer carta dada y hay cartas en la pila, fin de la dada
       finDada = true;
       setTimeout(function() {
@@ -55,9 +55,9 @@ function guardarTag(tag) {
         mostrarPosiciones();
       }, 5000);
     } else {
-      if (tag === lectura || pila.includes(tag)) {
+      if (tag === lectura || pila.includes(tag) || (tag === 'RE')|| (tag === '53')|| (tag === '54')) {
         // Si el tag es igual a la lectura actual, o ya está en la pila de cartas, no hacer nada
-        console.warn("Tag repetido, ignorado.");
+         reproducirAudio("next");
         return; // Evita repetir lectura del mismo tag
       }
       // Se agrega el tag a la pila, que funciona como cola, primero en entrar, primero en salir
