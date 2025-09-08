@@ -45,8 +45,8 @@ function guardarTag(tag) {
 
   if ((tag === ultimoTag || pila.includes(tag)) || (tag === 'RE')|| (tag === '53')|| (tag === '54')) {reproducirAudio("next");return};// Evita repetir lectura del mismo tag o el tag RE (repetido)
   // Se agrega el tag a la pila, que funciona como cola, primero en entrar, primero en salir
+  reproducirAudio("next");
   pila.push(tag);
-  reproducirAudioParaTag(tag); // Reproducir el audio de la carta
   ultimoTag = tag;
   const carta = cartasPoker[tag];
   const valor = obtenerValorCarta(carta);

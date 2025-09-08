@@ -637,7 +637,6 @@ function reproducirAudio(nombreArchivo) {
 //Reproducir audios en Poker
 function reproducirAudioEnPoker(nombreArchivo) {
   const audio = new Audio(`../audios/poker/${nombreArchivo}.mp3`);
-  console.log("Reproduciendo audio Poker:", nombreArchivo);
   audio.play();
 }
 // Función para escribir en la característica del LED. Esta función se llama desde los botones de encendido y apagado
@@ -843,7 +842,8 @@ const convertirValor = v => {
 
   function play(nombre, intervalo = 1500) {
     setTimeout(() => {
-      audio.src = `../audios/poker/${nombre}.mp3`;
+      const path = isNaN(nombre) ? `../audios/poker/${nombre}.mp3` : `../audios/suma/${nombre}.mp3`;
+      audio.src = path;
       audio.play();
     }, i * intervalo);
     i++;
@@ -863,11 +863,11 @@ const convertirValor = v => {
     case 'pareja':
     case 'trio':
     case 'poker':
-      playCompuesto("de", dominante);
+      play(dominante);
       break;
     case 'doble pareja':
     case 'full':
-      playCompuesto("de", dominante);
+      play( dominante);
       if (secundario) playCompuesto("y", secundario);
       break;
     case 'escalera':
@@ -883,14 +883,12 @@ const convertirValor = v => {
         ? "5"
         : valores.sort((a, b) => orden.indexOf(b) - orden.indexOf(a))[0];
 
-      if (cartaMasAlta === "D") cartaMasAlta = "10"; // para que diga "de diez" en vez de "de D"{
-        
-      play("al",1000);
-      play(cartaMasAlta.toUpperCase(),1000);  // usa audio ../audios/poker/A.mp3 por ejemplo
+      if (cartaMasAlta === "D") cartaMasAlta = "10"; // para que diga "de diez" en vez de "de D"
+      console.log("Carta más alta de la escalera:", cartaMasAlta, "Es rueda:", esRueda);
+      play(cartaMasAlta.toUpperCase(),1500);  // usa audio ../audios/poker/A.mp3 por ejemplo
       play(paloAudio[paloDominante],1000);
       break;
     case 'escalera real':
-
       play(paloAudio[paloDominante],1000);
       break;
     case 'color':
@@ -901,7 +899,7 @@ case 'carta alta': {
   const etiqueta = resultado.cartaAltaEtiqueta; // ← viene de main.js
     // Reproducimos la etiqueta usando playCompuesto para soportar tanto
   // figuras como números con el mismo mecanismo
-  playCompuesto("de", etiqueta);
+  play( etiqueta);
   break;
 }
   }

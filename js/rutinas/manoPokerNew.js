@@ -2,12 +2,10 @@
 console.log("Camer Codex - manoPokerNew.js cargado");
 
 let pila = [];
-//let suma = 0;
 let finDada = false;
 let ultimoTag = null;
 let mapaCartas = {};
 let cartasPoker = {};
-//let mapaSuma = {};
 let reinicioTimeout = null;
 const audioElement = document.getElementById("tagAudio");
 audioElement.addEventListener('play', () => clearTimeout(reinicioTimeout));
@@ -28,21 +26,11 @@ fetch('../audios/cartasPoker.json')//Mapa de cartas poker Textos
 
 function guardarTagMano(tag) {
   if (finDada) return;
-  if ((tag === pila[0] && pila.length > 5) || (tag === 'RE' && pila.length > 5)) { 
-    finDada = true;
-    reproducirAudio("stop");
-    actualizarAccion("Analizar las cartas dadas...");
-
-    setTimeout(() => {
-      mostrarResumenMano();
-    }, 3000);
-    return;
-  }
 
   if ((tag === ultimoTag || pila.includes(tag)) || (tag === 'RE')|| (tag === '53')|| (tag === '54')) {reproducirAudio("next");return};// Evita repetir lectura del mismo tag o el tag RE (repetido)
   // Se agrega el tag a la pila, que funciona como cola, primero en entrar, primero en salir
+  reproducirAudio("next");
   pila.push(tag);
-  reproducirAudioParaTag(tag); // Reproducir el audio de la carta
   ultimoTag = tag;
   const carta = cartasPoker[tag];
   console.log("Carta:", carta);
@@ -93,18 +81,16 @@ function mostrarResumenMano() {
   reproducirSecuencial(() => {
   if (resultado.descripcion) {
     const nombre = resultado.descripcion.replace(/\s+/g, '').toLowerCase();
-    console.log("Reproduciendo jugada de póker:", nombre);
     reproducirAudioEnPoker(nombre);
   } else {
     console.warn("⚠️ No hay descripción de jugada para reproducir.");
   }
-}, 1000);
+}, 1500);
   reproducirSecuencial(() => anunciarDetalleJugada(resultado), 500);
 }
 
 function reiniciarManoPokerNew() {
   pila = [];
-
   finDada = false;
   ultimoTag = null;
   document.getElementById("resultado").innerHTML = "";
