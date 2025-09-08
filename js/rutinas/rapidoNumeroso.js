@@ -28,16 +28,14 @@ fetch('../audios/cartasPoker.json')
 // Esta función será llamada desde main.js para sumar el valor de la carta y realizar la lógica de la dada
 function sumarTag(tag) {
   if (!finDada) {
-    if (tag === cartasLeidas[0] && cartasLeidas.length > 1) {
+    if ((tag === cartasLeidas[0] || tag === 'RE') && (cartasLeidas.length > 1))  {//incorporar el tag RE (RELOJ) para terminar la dada y exponer la suma total 
       finDada = true;
       // Paso 1: reproducir audio "stop"
       reproducirAudio("stop");
       actualizarAccion("Declarar la Suma Total al instante!");
-      //console.log("🔴 Se reprodujo audio Stop");
       // Paso 2 y 3: reproducir la suma total dos veces con separación
       setTimeout(() => {
         reproducirAudioCompuesto(suma);
-        //console.log("▶ Primera reproducción de la suma:", suma);
       }, 2000); // 2 segundos después del stop
 
       setTimeout(() => {
@@ -47,13 +45,13 @@ function sumarTag(tag) {
       // 🔄 Reiniciar rutina luego de unos segundos extra
       setTimeout(() => {
         reiniciarRapidoNumeroso();
-      }, 3000); // espera 3s después de segunda reproducción
+      }, 10000); // espera 3s después de segunda reproducción
     }, 5000); // 5 segundos después de la primera reproducción
 
     } else {
-      if (tag === ultimoTag  || cartasLeidas.includes(tag)) {
-        // Si el tag es igual a la ultimoTag  actual, o ya está en la cartasLeidas de cartas, no hacer nada
-        //console.warn("Tag repetido, ignorado.");
+      if (tag === ultimoTag  || cartasLeidas.includes(tag) || (tag === 'RE')|| (tag === '53')|| (tag === '54')) {
+        reproducirAudio("next");
+        // Si el tag es igual a la ultimoTag  actual, o ya está en la cartasLeidas de cartas, o es el reloj o el comodin no hacer nada
         return; // Evita repetir lectura del mismo tag
       }
       // Se agrega el tag a la cartasLeidas, que funciona como cola, primero en entrar, primero en salir
@@ -62,18 +60,11 @@ function sumarTag(tag) {
       carta = cartasPoker[tag];
       // Asumiendo que el tag trae la informaciòn de la carta, convertir el tag al valor para la suma, considerando que el A es 1, 2 es 2, 3 es 3...J=11, Q=12 y K=13
       valorCarta = obtenerValorCarta(carta);
-      // Acumular el valor de la carta en suma 
-      //console.log("Valor Carta:", valorCarta);
-      //console.log("Suma Parcial:", suma);
       suma += valorCarta; // Acumular el valor de la carta en suma
       reproducirAudioCompuesto(suma); // Reproducir el audio de la suma parcial.
       document.getElementById("sumaTotal").textContent = suma;
-
       contador++;
       ultimoTag  = tag; // Actualizar la lectura actual
-      //console.log("Tag guardado:", tag, "Contador:", contador);
-      //console.log("cartasLeidas actual:", cartasLeidas);
-      //console.log("Valor Carta:", valorCarta);
       console.log("Suma Parcial:", suma);
 
     }
