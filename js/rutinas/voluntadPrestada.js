@@ -13,16 +13,16 @@ let pilaIzquierdaN = [];//Contendrà  3 Negras (Picas o Treboles).
 let cartasLeidas = 0;
 let ultimoTag = null; // Nuevo: para evitar repeticiones consecutivas
 
-function tagVoluntadPrestada(color) {
+function tagVoluntadPrestada(valor) {
   //console.log("Tag recibido en Voluntad Prestada:", valor);
-  if (!color || color.length < 1) return;
+  if (!valor || valor.length < 3) return;
     // Nuevo control para evitar doble lectura consecutiva
-  if (color === ultimoTag) {
-    console.warn("Tag repetido consecutivo detectado. Ignorado:", color);
+  if (valor === ultimoTag) {
+    console.warn("Tag repetido consecutivo detectado. Ignorado:", valor);
     return;
   }
-  ultimoTag = color;
-  //let color = valor[2];
+  ultimoTag = valor;
+  let color = valor[2];
   // Decidir a qué pila debe ir
   let destino = null;
   // hacemos console.log de las pilas
