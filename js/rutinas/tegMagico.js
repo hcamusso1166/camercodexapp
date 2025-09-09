@@ -55,7 +55,7 @@ function guardarTagTeg(tag) {
   };
   if (!finDada) {
     if (tag === lectura || pila.includes(tag)) {// Si el tag es igual a la lectura actual, o ya está en la pila de cartas, no hacer nada
-        console.warn("Tag repetido, ignorado.");
+        reproducirAudio("next"); 
         return; // Evita repetir lectura del mismo tag
       }
       // Se agrega el tag a la pila, que funciona como cola, primero en entrar, primero en salir
