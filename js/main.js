@@ -552,7 +552,7 @@ function handleCharacteristicChange(event) {
     { match: "dadoR.html",                accion: () => reproducirAudioParaTag(mvalor) },
     { match: "coleccionista.html",        accion: () => guardarTag(mvalor) },
     { match: "rapidoNumeroso.html",       accion: () => sumarTag(mvalor) },
-    { match: "voluntadPrestada.html",     accion: () => tagVoluntadPrestada(valor) },
+    { match: "voluntadPrestada.html",     accion: () => tagVoluntadPrestada(color) },
     { match: "tegMagico.html",            accion: () => guardarTagTeg(mvalor) },
     { match: "perdonenMiInmodestia.html", accion: () => guardarTag(mvalor) },
   ];

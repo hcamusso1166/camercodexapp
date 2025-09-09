@@ -13,21 +13,21 @@ let pilaIzquierdaN = [];//Contendrà  3 Negras (Picas o Treboles).
 let cartasLeidas = 0;
 let ultimoTag = null; // Nuevo: para evitar repeticiones consecutivas
 
-function tagVoluntadPrestada(valor) {
-  console.log("Tag recibido en Voluntad Prestada:", valor);
-  if (!valor || valor.length < 3) return;
+function tagVoluntadPrestada(color) {
+  //console.log("Tag recibido en Voluntad Prestada:", valor);
+  if (!color || color.length < 1) return;
     // Nuevo control para evitar doble lectura consecutiva
-  if (valor === ultimoTag) {
-    console.warn("Tag repetido consecutivo detectado. Ignorado:", valor);
+  if (color === ultimoTag) {
+    console.warn("Tag repetido consecutivo detectado. Ignorado:", color);
     return;
   }
-  ultimoTag = valor;
-  let color = valor[2];
+  ultimoTag = color;
+  //let color = valor[2];
   // Decidir a qué pila debe ir
   let destino = null;
   // hacemos console.log de las pilas
-    console.log("Pila Derecha:", pilaDerecha);
-    console.log("Pila Izquierda:", pilaIzquierdaR, pilaIzquierdaN);
+    //console.log("Pila Derecha:", pilaDerecha);
+    //console.log("Pila Izquierda:", pilaIzquierdaR, pilaIzquierdaN);
   if (pilaDerecha.length < 8 && color === "N")  {
     pilaDerecha.push(color);
     destino = "derecha";
@@ -39,13 +39,13 @@ function tagVoluntadPrestada(valor) {
     destino = "izquierda";
   } else {
     // 
-      console.log("No Distribuir la carta");
+      //console.log("No Distribuir la carta");
       destino = "mezclar";
       color = "mezclar";
       ultimoTag = null;
     }
   reproducirAudio(destino);
-  console.log(`Carta clasificada como ${color} → pila ${destino}`);
+  //console.log(`Carta clasificada como ${color} → pila ${destino}`);
   
 
   cartasLeidas++;
@@ -57,7 +57,7 @@ function tagVoluntadPrestada(valor) {
     actualizarAccion("✅ Todas pilas completas. Reiniciando en 5 segundos...");
       setTimeout(() => {
       reproducirAudio("stop");
-    }, 1000);
+    }, 300);
     setTimeout(() => {
       reiniciarVoluntadPrestada();
     }, 5000);
