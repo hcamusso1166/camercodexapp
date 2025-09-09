@@ -47,7 +47,7 @@ function guardarTag(tag) {
         actualizarAccion("Nombrar las cartas en orden!");
       },100);
       
-      console.log("Se reprodujo audio Stop");
+      //console.log("Se reprodujo audio Stop");
       // Mostrar posiciones y luego los audios de la pila de cartas
       // Espera de 5 segundos (5000 ms)
       setTimeout(function() {
@@ -93,7 +93,7 @@ function reproducirAudioPosiciones() {
   // Luego de reproducir todos los audios, reiniciar la rutina
   setTimeout(() => {
     reiniciarColeccionista();
-  }, cadencia * pila.length + 500); // Pequeña espera extra para finalizar el último audio
+  }, cadencia * pila.length + 300); // Pequeña espera extra para finalizar el último audio
 }
 
 function reproducirAudioParaTag(tag) {
