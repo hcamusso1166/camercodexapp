@@ -68,14 +68,14 @@ function guardarTagTeg(tag) {
       setTimeout(function() {
         reproducirAudio("stop"); // Reproducir el audio de "STOP"
         actualizarAccion("Nombrar las cartas en orden!");
-      },2000);
+      },500);
 
       // Mostrar posiciones y luego los audios de la pila de cartas
       // Espera de 5 segundos (5000 ms)
       setTimeout(function() {
         // Mostrar posiciones y luego los audios de la pila de cartas
         mostrarPosiciones();
-      }, 8000);
+      }, 3000);
     }
   }
 }
@@ -151,9 +151,20 @@ function reproducirAudioPosiciones(simbolosAReproducir) {
 
   // Después de reproducir todas las cartas, reproducimos los símbolos
   const delayTotal = cadencia * pila.length + 1000;
+
   setTimeout(() => {
     reproducirSimbolos(simbolosAReproducir);
+
+    // calcular duración de la primera reproducción de símbolos
+    const delaySimbolos = cadencia * simbolosAReproducir.length + 1000;
+
+    // reproducir los símbolos nuevamente como refuerzo
+    setTimeout(() => {
+      reproducirSimbolos(simbolosAReproducir);
+    }, delaySimbolos);
+
   }, delayTotal);
+
 }
 
 function reproducirSimbolos(simbolosArray) {
@@ -205,40 +216,47 @@ function reproducirAudioParaTag(tag) {
 }
 function reproducirAudioFaseFinal(tag) {
   const audio = document.getElementById("tagAudio");
-  const archivo = mapaTEGAudios[tag];
 
-  if (archivo && archivo.trim() !== "") {
-    audio.src = `../audios/teg/${archivo}`;
+  // Primero reproducir la carta oculta
+  const archivoCarta = mapaCartas[tag];
+  if (archivoCarta && archivoCarta.trim() !== "") {
+    audio.src = `../audios/${archivoCarta}`;
     audio.play().then(() => {
+      mostrarCartaOculta(tag); // mostramos carta en pantalla
     }).catch(err => {
-      console.error("No se pudo reproducir el audio:", err);
+      console.error("No se pudo reproducir el audio de la carta oculta:", err);
     });
   } else {
-    console.warn(`No se encontró archivo de audio para: ${tag}`);
+    console.warn(`No se encontró archivo de audio para la carta: ${tag}`);
     audio.removeAttribute('src');
     audio.load();
   }
+
+  // Luego reproducir el objetivo, tras la cadencia
   setTimeout(() => {
-      const audio2 = document.getElementById("tagAudio");
-      const archivo2 = mapaCartas[tag];
-      if (archivo2 && archivo2.trim() !== "") {
-    audio2.src = `../audios/${archivo2}`;
-    audio2.play().then(() => {
-      mostrarCartaOculta(tag)
-    }).catch(err => {
-      console.error("No se pudo reproducir el audio:", err);
-    });
-  } else {
-    console.warn(`No se encontró archivo de audio para: ${tag}`);
-    audio.removeAttribute('src');
-    audio.load();
-  }
-  }, 6000); // Espera la cadencia antes de reproducir el audio de la carta
-
-
-  
-    
+    const archivoObjetivo = mapaTEGAudios[tag];
+    if (archivoObjetivo && archivoObjetivo.trim() !== "") {
+      audio.src = `../audios/teg/${archivoObjetivo}`;
+      audio.play().then(() => {
+        // Cuando termina el objetivo, esperar 5 seg. y repetir
+        setTimeout(() => {
+          audio.src = `../audios/teg/${archivoObjetivo}`;
+          audio.play().catch(err => {
+            console.error("No se pudo repetir el audio del objetivo:", err);
+          });
+        }, 5000);
+      }).catch(err => {
+        console.error("No se pudo reproducir el audio del objetivo:", err);
+      });
+    } else {
+      console.warn(`No se encontró archivo de audio para el objetivo: ${tag}`);
+      audio.removeAttribute('src');
+      audio.load();
+    }
+  }, 6000); // tiempo de espera entre carta y objetivo
 }
+
+
 // Limpia variables y deja todo listo para la Fase Final
 function continuarFaseFinal() {
   pila = [];
