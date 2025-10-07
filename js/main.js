@@ -1,4 +1,6 @@
 console.log("Camer Codex - main.js cargado");
+  // definir una variable global para controlar esto
+  var primeraVez = true;
 function actualizarIconoConexionBLE(estado) {
   const icon = document.getElementById('estadoConexionBLE');
   
@@ -16,6 +18,17 @@ function actualizarIconoConexionBLE(estado) {
   icon.src = src;
   icon.alt = estado === "conectado" ? "Dispositivo conectado" : "Dispositivo no conectado";
   icon.title = icon.alt;
+  //emitir audio de Dispositivo conectado o no conectado
+  //la primera vez que se carga la pagina no se debe emitir el desconectado, luego si
+
+  if (estado === "conectado") {
+    reproducirAudio("conectado");
+    reproducirVibracion([200, 100, 200]); // Vibrar dos veces con una pausa
+    primeraVez = false;
+  } else if (estado === "desconectado" && !primeraVez ) {
+    reproducirAudio("desconectado");
+    reproducirVibracion([500]); // Vibrar una vez
+  }
 }
 
 function actualizarIconoBateria(nivel) {
@@ -527,6 +540,7 @@ function onDisconnected(event) {
   bleStateContainer.style.color = "#d13a30";
   actualizarIconoConexionBLE("desconectado");
   actualizarAccion("Conectar el dispositivo BLE");
+
 }
 //al recibir la informacion desde el MrCamerDevv1.0, se ejecuta esta función
 
