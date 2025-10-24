@@ -45,10 +45,12 @@ function guardarTag(tag) {
 
   if ((tag === ultimoTag || pila.includes(tag)) || (tag === 'RE')|| (tag === '53')|| (tag === '54')) {reproducirAudio("next");return};// Evita repetir lectura del mismo tag o el tag RE (repetido)
   // Se agrega el tag a la pila, que funciona como cola, primero en entrar, primero en salir
-  reproducirAudio("next");
-  pila.push(tag);
+  //reproducirAudio("next");
+  reproducirAudioParaTag(tag);
+   pila.push(tag);
   ultimoTag = tag;
   const carta = cartasPoker[tag];
+  
   const valor = obtenerValorCarta(carta);
   suma += valor;
   console.log("Carta:", carta, "Valor:", valor, "Suma parcial:", suma);
@@ -79,6 +81,7 @@ function mostrarResumen() {
       ? `Carta Alta: ${resultado.cartaAltaEtiqueta}`
        : resultado.descripcion;
   // Construir resultado HTML
+  /*Se comenta la parte visual para enfocarse en la parte de audio.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
   resultadoHTML += `<p>La suma total es: ${suma}</p>`;
   resultadoHTML += `<p>Pares: ${pares}, Impares: ${impares}</p>`;
   resultadoHTML += `<p>Cantidad por palo:</p>`;
@@ -86,7 +89,7 @@ function mostrarResumen() {
   resultadoHTML += `<p>Mejor jugada de póker: ${mostrarDescripcion}</p>`;
   resultadoHTML += `<p>${resultado.cartas.join(', ')}</p>`;
   document.getElementById("resultado").innerHTML = resultadoHTML;
-
+*/
   // Planificar audios con timings controlados
   let delay = 0;
 
@@ -96,15 +99,33 @@ function mostrarResumen() {
   };
 
   reproducirSecuencial(() => reproducirAudioCompuesto(suma), 4000);
+  reproducirSecuencial(() => reproducirAudioCompuesto(suma), 4000);
   reproducirSecuencial(() => reproducirAudioEnPoker("pares"));
+  reproducirSecuencial(() => reproducirAudioCompuesto(pares), 2000);
+    reproducirSecuencial(() => reproducirAudioEnPoker("pares"));
   reproducirSecuencial(() => reproducirAudioCompuesto(pares), 2000);
   reproducirSecuencial(() => reproducirAudioEnPoker("impares"));
   reproducirSecuencial(() => reproducirAudioCompuesto(impares), 2000);
-  reproducirSecuencial(() => reproducirAudioEnPoker("palos"), 3000);
-  reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.T), 4000);
-  reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.C), 4000);
-  reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.P), 4000);
-  reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.D), 4000);
+    reproducirSecuencial(() => reproducirAudioEnPoker("impares"));
+  reproducirSecuencial(() => reproducirAudioCompuesto(impares), 2000);
+  reproducirSecuencial(() => reproducirAudioEnPoker("palos"), 2000);
+      reproducirSecuencial(() => reproducirAudioEnPoker("T"));
+  reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.T), 2000);
+  reproducirSecuencial(() => reproducirAudioEnPoker("T"));
+
+    reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.T), 4000);
+        reproducirSecuencial(() => reproducirAudioEnPoker("C"));
+  reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.C), 2000);
+    reproducirSecuencial(() => reproducirAudioEnPoker("C"));
+    reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.C), 4000);
+        reproducirSecuencial(() => reproducirAudioEnPoker("P"));
+  reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.P), 2000);
+    reproducirSecuencial(() => reproducirAudioEnPoker("P"));
+    reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.P), 4000);
+        reproducirSecuencial(() => reproducirAudioEnPoker("D"));
+  reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.D), 2000);
+    reproducirSecuencial(() => reproducirAudioEnPoker("D"));
+    reproducirSecuencial(() => reproducirAudioCompuesto(cantidadPorPalos.D), 4000);
   reproducirSecuencial(() => reproducirAudioEnPoker("mejorjugada"), 2000);
   reproducirSecuencial(() => {
   if (resultado.descripcion) {
@@ -118,6 +139,16 @@ function mostrarResumen() {
 
   reproducirSecuencial(() => anunciarDetalleJugada(resultado), 500);
 
+    reproducirSecuencial(() => {
+  if (resultado.descripcion) {
+    const nombre = resultado.descripcion.replace(/\s+/g, '').toLowerCase();
+    console.log("Reproduciendo jugada de póker:", nombre);
+    reproducirAudioEnPoker(nombre);
+  } else {
+    console.warn("⚠️ No hay descripción de jugada para reproducir.");
+  }
+}, 1000);
+  reproducirSecuencial(() => anunciarDetalleJugada(resultado), 500);
 }
 
 function reiniciarPerdonenMiInmodestia() {
