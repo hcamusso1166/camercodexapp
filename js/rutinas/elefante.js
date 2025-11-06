@@ -36,8 +36,9 @@ function guardarTag(tag) {
       // Mostrar posiciones y luego los audios de la pila de cartas
       // Espera de 5 segundos (5000 ms)
       setTimeout(function() {
-        // Mostrar posiciones y luego los audios de la pila de cartas
-        mostrarPosiciones();
+        // emitir los audios de la pila de cartas. La mostrada en pantalla se deshabilitò para evitar distracciones 
+        //mostrarPosiciones();
+        reproducirAudioPosiciones();
       }, cadencia);
     } else {
       if (tag === lectura || pila.includes(tag)) {

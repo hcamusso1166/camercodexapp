@@ -64,6 +64,7 @@ actualizarIconoConexionBLE("desconectado");
   const checkBtn = document.getElementById("checkBluetoothBtn");
   const bleMessages = document.getElementById("ble-messages");
 
+
   // ✅ Al iniciar la rutina, actualizar el icono del Estado BLE
   const estadoBLEIcon = document.getElementById('estadoBLEIcon');
   // 🔍 Si no está disponible Web Bluetooth, mostrar bloqueo directamente
@@ -410,25 +411,14 @@ const sensorCharacteristic = '19b10001-e8f2-537e-4f6c-d104768a1214';
 const batteryCharacteristic = '9b04030c-2f33-42b2-9fc5-a97a44a1145d';
 
 let bleServer, bleServiceFound, sensorCharacteristicFound, batteryCharacteristicFound;
-/* llevar a los js de cada rutina
-let mapaCartas = {};
-let cartasPoker = {};
+// Estado extraído de CamerPacket v1 (último paquete recibido)
+let camerVersion    = 0;
+let camerEventType  = 0;
+let camerAntennaId  = 0;
+let camerFlags      = 0;
+let camerSeq        = 0;
 
-fetch('../audios/cartas.json')
-  .then(res => res.json())
-  .then(data => {
-    mapaCartas = data;
-    console.log("Mapa de cartas Archivos Audios cargado correctamente");
-  })
-  .catch(err => console.error("Error cargando cartas.json", err));
-fetch('../audios/cartasPoker.json')
-  .then(res => res.json())
-  .then(data => {
-    cartasPoker = data;
-    console.log("Mapa de cartas Poker para texto  cargado correctamente");
-  })
-  .catch(err => console.error("Error cargando cartasPoker.json", err));
-*/
+
 // Función que limpia los TAGs y valores anteriores
 function limpiarDatos() {
   if (retrievedValue) retrievedValue.innerHTML = '';
@@ -543,7 +533,7 @@ function onDisconnected(event) {
 
 }
 //al recibir la informacion desde el MrCamerDevv1.0, se ejecuta esta función
-
+/* Funcion sin CamerPacketv1
 function handleCharacteristicChange(event) {
   const valor = new TextDecoder().decode(event.target.value).trim();
   const mvalor = valor[0] + valor[1];
@@ -606,7 +596,117 @@ function handleCharacteristicChange(event) {
   }
   timestampContainer.innerHTML = getDateTime(); 
 }
+*/
+// al recibir la informacion desde el MrCamerDev1.0, se ejecuta esta función
+function handleCharacteristicChange(event) {
+  const dataView = event.target.value;        // DataView de Web Bluetooth
+  const len = dataView.byteLength;
 
+  let valor  = "";
+  let mvalor = "";
+  let color  = "";
+  let dorso  = "";
+
+  // Reset/actualización de metadatos CamerPacket
+  camerVersion   = 0;
+  camerEventType = 0;
+  camerAntennaId = 0;
+  camerFlags     = 0;
+  camerSeq       = 0;
+
+  if (len >= 10) {
+    // ===== CamerPacket v1 =====
+    camerVersion   = dataView.getUint8(0);         // version
+    camerEventType = dataView.getUint8(1);         // eventType
+    camerAntennaId = dataView.getUint8(2);         // antennaId
+
+    const c0 = dataView.getUint8(3);
+    const c1 = dataView.getUint8(4);
+    const c2 = dataView.getUint8(5);
+    const c3 = dataView.getUint8(6);
+
+    camerFlags = dataView.getUint8(7);             // flags
+    camerSeq   = dataView.getUint16(8, false);     // seq (big-endian)
+
+    const carta0 = String.fromCharCode(c0);
+    const carta1 = String.fromCharCode(c1);
+    const carta2 = String.fromCharCode(c2);
+    const carta3 = String.fromCharCode(c3);
+
+    // Mantener compatibilidad con las rutinas:
+    valor  = carta0 + carta1 + carta2 + carta3;    // "mvalor+color+dorso"
+    mvalor = carta0 + carta1;                      // código de carta
+    color  = carta2;                               // color/categoría
+    dorso  = carta3;                               // dorso/variante
+
+  } else {
+    // ===== Modo compatibilidad antiguo (payload corto en texto) =====
+    const text = new TextDecoder().decode(dataView).trim();
+
+    if (text.length > 0) {
+      valor  = text;
+      mvalor = (text.length >= 2) ? (text[0] + text[1]) : text[0] || "";
+      color  = (text.length >= 3) ? text[2] : "";
+      dorso  = (text.length >= 4) ? text[3] : "";
+    }
+  }
+
+  console.log("BLE RX:",
+    { valor, mvalor, color, dorso, len,
+      camerVersion, camerEventType, camerAntennaId, camerFlags, camerSeq }
+  );
+
+  const path = window.location.pathname;
+
+  // === Acciones por rutina (SIN CAMBIOS) ===
+  const accionesPorRuta = [
+    { match: "fueraDeEsteMundo.html",     accion: () => reproducirAudioColor(color) },
+    { match: "elefantes.html",            accion: () => guardarTag(mvalor) },
+    { match: "momias.html",               accion: () => reproducirColor(mvalor) },
+    { match: "pegriloso.html",            accion: () => guardarTagPegriloso(mvalor) },
+    { match: "theboss.html",              accion: () => guardarTagTheBoss(mvalor) },
+    { match: "pruebaDeFuego.html",        accion: () => guardarTagPruebaDeFuego(mvalor) },
+    { match: "oraculo.html",              accion: () => reproducirAudioParaTag(mvalor) },
+    { match: "manoPoker.html",            accion: () => guardarTagMano(mvalor) },
+    { match: "ojosVendados.html",         accion: () => reproducirOjosVendados(mvalor) },
+    { match: "dadaSimple.html",           accion: () => reproducirAudioParaTag(mvalor, color, dorso) },
+    { match: "dadoR.html",                accion: () => reproducirAudioParaTag(mvalor) },
+    { match: "coleccionista.html",        accion: () => guardarTag(mvalor) },
+    { match: "rapidoNumeroso.html",       accion: () => sumarTag(mvalor) },
+    { match: "voluntadPrestada.html",     accion: () => tagVoluntadPrestada(valor) },
+    { match: "tegMagico.html",            accion: () => guardarTagTeg(mvalor) },
+    { match: "perdonenMiInmodestia.html", accion: () => guardarTag(mvalor) },
+  ];
+
+  for (const entrada of accionesPorRuta) {
+    if (path.includes(entrada.match)) {
+      entrada.accion();
+      break; // solo una acción por rutina
+    }
+  }
+
+  // === Bloque de UI / texto en pantalla (SIN CAMBIOS, pero usando mvalor) ===
+  if (path.includes("momias.html")) {
+    retrievedValue.innerHTML = 'Color: ' + mvalor;
+  } else if (path.includes("coleccionista.html")) {
+    const textCarta = cartasTexto[mvalor]; 
+    retrievedValue.innerHTML = textCarta;
+  } else if (path.includes("dadoR.html")) {
+    const textCarta = mapaTexto[mvalor]; 
+    retrievedValue.innerHTML = textCarta;
+  } else if (path.includes("tegMagico.html")) {
+    const textCarta = mapaTEGTexto[mvalor]; 
+    retrievedValue.innerHTML = textCarta;
+  } else {
+    const textCarta = cartasPoker[mvalor]; 
+    retrievedValue.innerHTML = textCarta;
+  }
+
+  if (timestampContainer) {
+    timestampContainer.innerHTML = getDateTime();
+  }
+}
+// Al recibir el nivel de batería desde el dispositivo BLE
 function handleBatteryChange(event) {
   const valor = new TextDecoder().decode(event.target.value).trim();
   const nivel = parseInt(valor, 10);

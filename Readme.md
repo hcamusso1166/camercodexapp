@@ -1,4 +1,3 @@
-
 # Camer Codex
 
 **Tecnología Secreta para Ilusionistas** 🪄
@@ -7,15 +6,118 @@
 
 ## ¿Qué es Camer Codex?
 
-*Camer Codex* es un sistema mágico-tecnológico diseñado para ilusionistas modernos. Es una aplicación web progresiva (PWA) que permite conectar dispositivos Bluetooth BLE (como lectores RFID) para activar rutinas mágicas, reproducir audios secretos y gestionar acciones ocultas desde un dispositivo móvil o PC.
+*Camer Codex* es un sistema mágico-tecnológico diseñado para ilusionistas modernos.  
+Combina microcontroladores ESP32 con comunicación **BLE** y **ESP-NOW**, lectores **RFID** y una **PWA** progresiva capaz de reproducir audios, registrar lecturas y orquestar rutinas mágicas en tiempo real.
 
 ---
 
 ## 📦 Versión Actual
 
-**v1.0 - Vainilla**
-Sub versión: **v1.17.0 - Rápido y Numeroso**
+**v1.0 – Vainilla**  
+Subversión: **v1.20.0 – CamerPacket v1 Integration**
+
 ---
+
+## ⚙️ Nuevo módulo de comunicación: *CamerPacket v1*
+
+Desde esta versión, **todo el ecosistema (Sender + Receiver + PWA)** utiliza un formato de paquete unificado:  
+
+### 🎫 Estructura del paquete (CamerPacket v1)
+
+| Offset | Tamaño | Campo | Tipo | Descripción |
+|:--:|:--:|:--:|:--:|:--|
+| 0 | 1 | version | uint8 | Versión de protocolo (0x01) |
+| 1 | 1 | eventType | uint8 | Evento (0x00=new, 0x01=repeat, 0x02=removed, 0x03=error) |
+| 2 | 1 | antennaId | uint8 | ID de antena (1 .. 5) |
+| 3 | 4 | card | char[4] | Código ASCII de la carta/tag |
+| 7 | 1 | flags | uint8 | Bits de estado |
+| 8 | 2 | seq | uint16 | Número de secuencia (big-endian) |
+
+**Total:** 10 bytes  
+
+### 🧩 Ventajas
+
+- Protocolo único BLE + NOW.  
+- Tamaño compacto (10 bytes).  
+- Incluye versión, evento, antena, flags y secuencia.  
+- Compatible con rutinas previas: `mvalor`, `color`, `dorso` siguen intactos.  
+
+---
+
+## 🔧 Componentes actualizados
+
+### 🛰️ MrCamerDev_QSender_OLED_BLE v1.0-multi5
+- Soporte para 5 antenas RFID independientes.  
+- Envío simultáneo por **ESP-NOW** y **BLE**.  
+- Banner de versión automático con macros de compilación.  
+- LED integrado (GPIO 2 en NodeMCU ESP-32 S).  
+- Transmite CamerPacket v1 (10 bytes).  
+
+### 📡 MrCamerDev_QReceiver_CamerPacket_v1
+- Interpreta CamerPacket v1 por ESP-NOW.  
+- Muestra hasta 5 cartas en OLED 128×32 con render incremental.  
+- Mantiene compatibilidad con rutinas existentes.  
+- Log serial detallado (V, EVT, ANT, CARD, SEQ).  
+
+### 📱 PWA / main.js
+- Nueva función `handleCharacteristicChange()` compatible CamerPacket v1.  
+- Extrae `carta[0..3]` → `valor`, `mvalor`, `color`, `dorso`.  
+- Variables globales para metadatos:
+  ```js
+  camerVersion, camerEventType, camerAntennaId, camerFlags, camerSeq
+  ```
+- Rutinas sin modificaciones: todas continúan operativas.  
+- Soporte de retro-compatibilidad con payload texto antiguo.  
+
+
+## 🌟 Características principales
+
+- Comunicación bidireccional ESP-NOW + BLE.  
+- Lectura de tags RFID multiantena.  
+- Reproducción de audios asociados a cartas o colores.  
+- Visualización OLED y diagnóstico BLE.  
+- Instalación PWA (Android / PC) y funcionamiento offline.  
+
+---
+
+## 🧪 Tecnologías utilizadas
+
+- **ESP32 (NodeMCU ESP-32 S)** + ESP-IDF 3.3.2  
+- **HTML5 + JavaScript (Web Bluetooth API)**  
+- **CSS + PWA (manifest + service worker)**  
+- **Vercel Hosting**
+
+---
+
+## 🧩 Estructura de proyecto (Camer Codex)
+
+```
+/index.html                 ← Menú principal
+/js/main.js                 ← Lógica BLE y CamerPacket v1
+/js/rutinas/*.js            ← Rutinas individuales
+/stable/                    ← Firmware ESP32 validados
+/dev/                       ← Versiones experimentales CamerPacket
+/css/                       ← Estilos globales
+/icons/                      ← Recursos visuales
+/audios/                    ← MP3 por carta y efectos
+/README.md                  ← Este archivo
+```
+
+---
+
+## 🪄 Autor
+
+*Camer Codex* es el sistema mágico-tecnológico creado por **Mr. Camer**.  
+Asistencia conceptual y desarrollo técnico por **Coperfil** (IA mágica).
+
+---
+
+## 📝 Licencia
+
+Uso exclusivo para espectáculos y desarrollo privado.  
+Requiere autorización expresa del autor para ser modificado o distribuido.
+
+
 
 ## 🎭 Rutinas mágicas disponibles (17)
 
@@ -92,79 +194,6 @@ Sub versión: **v1.17.0 - Rápido y Numeroso**
 
   ** Rutina 25. Lectura Simple - Continua**
 
-## 🌟 Características principales
-
-- Conexión Bluetooth BLE con lectores externos.
-- Lectura de tags RFID con disparo de efectos mágicos.
-- Visualización de lecturas en pantalla.
-- Reproducción de audios asociados (cartas, colores, acciones).
-- Diagnóstico BLE y permisos integrados.
-- Indicador gráfico de nivel de batería en tiempo real.
-- Control de LED (ON/OFF) desde la interfaz.
-- Funciona como PWA en Android y escritorio.
-- Soporte offline completo una vez instalada.
-- Diseño optimizado para móvil y PC.
-
----
-
-## 🧪 Tecnologías utilizadas
-
-- HTML5 + JavaScript (Web Bluetooth API)
-- CSS puro
-- BLE sobre ESP32 con GATT personalizado
-- PWA: manifest.json + service worker
-- Vercel (hosting)
-
----
-## 🧩 Estructura del proyecto
-
-/index.html              ← Menú principal
-/rutinas/                ← 1 HTML por rutina
-/js/                     ← main.js, config.js y lógica BLE
-/js/rutinas/*.js         ← JS específico por rutina
-/css/                    ← Estilos globales
-/icons/                  ← SVGs de botones e íconos
-/audios/                 ← MP3 por carta
-/audios/audios_especiales/ ← Audios para colores, acciones, efectos especiales
-/manifest.json           ← Metadata PWA
-/service-worker.js       ← Cache y soporte offline
-/README.md               ← Este archivo
-/CHANGELOG.md            ← Registro de versiones
-/BLE-troubleshooting.md  ← Guía técnica de compatibilidad BLE
-
-## 🖥️ Modo de uso en PC
-
-1. Clonar el proyecto o abrir con Live Server (VS Code).
-2. Acceder a `index.html` desde navegador Chrome.
-3. Conectar el dispositivo BLE compatible.
-4. Visualizar lecturas y disparar efectos asociados.
-
----
-
-## 📱 Modo de uso en Android
-
-1. Ingresar desde Chrome a la URL pública (ej: `https://camercodexapp.vercel.app`).
-2. Instalar la app desde el botón "📲 Instalar Camer Codex".
-3. Una vez instalada, funcionará incluso sin conexión a Internet ni Datos.
-4. Usar botón de diagnóstico para revisar compatibilidad BLE.
-
----
-
-## 🧰 Diagnóstico integrado
-
-- Revisión de Web Bluetooth API.
-- Revisión de estado BLE.
-- Permisos de ubicación y compatibilidad.
-- Panel ocultable para reiniciar chequeos.
-
----
-
-## 🪄 Autor
-
-*Camer Codex* es el sistema mágico-tecnológico desarrollado por **Mr. Camer**  
-Asistencia conceptual, desarrollo y documentación por **Coperfil** (IA mágica)
-
----
 
 ## 📝 Licencia
 
