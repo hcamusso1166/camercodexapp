@@ -31,24 +31,24 @@ function actualizarIconoConexionBLE(estado) {
   }
 }
 
-function actualizarIconoBateria(nivel) {
+function actualizarIconoBateria(voltaje) {
   const icon = document.getElementById('batteryIcon');
   if (!icon) return;
 
-  let src = "../icons/battery_unknown_16_D9D9D9.svg"; // valor por defecto
+  let src = "../icons/battery_unknown_16_D9D9D9.svg"; // por defecto
 
-  if (nivel >= 4.5) {
+  if (voltaje >= 4.5) {
     src = "../icons/battery_full_16_D9D9D9.svg";
-  } else if (nivel >= 4) {
+  } else if (voltaje >= 4.0) {
     src = "../icons/battery_4_bar_16_D9D9D9.svg";
-  } else if (nivel >= 3.7) {
+  } else if (voltaje >= 3.7) {
     src = "../icons/battery_2_bar_16_D9D9D9.svg";
   } else {
     src = "../icons/battery_alert_16_D9D9D9.svg";
   }
 
   icon.src = src;
-  icon.alt = `Batería: ${nivel}%`;
+  icon.alt = `Batería: ${voltaje.toFixed(2)} V`;
   icon.title = icon.alt;
 }
 
@@ -404,7 +404,7 @@ const accionMagoMensaje = document.getElementById('accionMagoMensaje');
 
 const timestampContainer = document.getElementById('timestamp');
 
-const deviceName = 'MrCamerDev1.0';
+const deviceName = 'MrCDev10';
 const bleService = '19b10000-e8f2-537e-4f6c-d104768a1214';
 const ledCharacteristic = '19b10002-e8f2-537e-4f6c-d104768a1214';
 const sensorCharacteristic = '19b10001-e8f2-537e-4f6c-d104768a1214';
@@ -532,7 +532,7 @@ function onDisconnected(event) {
   actualizarAccion("Conectar el dispositivo BLE");
 
 }
-//al recibir la informacion desde el MrCamerDevv1.0, se ejecuta esta función
+//al recibir la informacion desde el MrCDev10, se ejecuta esta función
 /* Funcion sin CamerPacketv1
 function handleCharacteristicChange(event) {
   const valor = new TextDecoder().decode(event.target.value).trim();
@@ -708,14 +708,14 @@ function handleCharacteristicChange(event) {
 }
 // Al recibir el nivel de batería desde el dispositivo BLE
 function handleBatteryChange(event) {
-  const valor = new TextDecoder().decode(event.target.value).trim();
-  const nivel = parseInt(valor, 10);
+  const texto = new TextDecoder().decode(event.target.value).trim();
+  const nivel = parseFloat(texto);   // ⚡ usamos parseFloat
 
   if (!isNaN(nivel)) {
-    console.log("🔋 Nivel de batería recibido:",  "valor " + valor);
-    actualizarIconoBateria(valor);
+    console.log("🔋 Nivel de batería recibido:", nivel, "V (texto crudo:", texto + ")");
+    actualizarIconoBateria(nivel);  // ⚡ ahora pasamos el número
   } else {
-    console.warn("⚠️ Nivel de batería no reconocido:", valor);
+    console.warn("⚠️ Nivel de batería no reconocido:", texto);
   }
 }
 
