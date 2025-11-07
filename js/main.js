@@ -404,7 +404,7 @@ const accionMagoMensaje = document.getElementById('accionMagoMensaje');
 
 const timestampContainer = document.getElementById('timestamp');
 
-const deviceName = 'MrCDev10';
+const deviceName = 'MrCamerDev1.0';
 const bleService = '19b10000-e8f2-537e-4f6c-d104768a1214';
 const ledCharacteristic = '19b10002-e8f2-537e-4f6c-d104768a1214';
 const sensorCharacteristic = '19b10001-e8f2-537e-4f6c-d104768a1214';
@@ -532,7 +532,7 @@ function onDisconnected(event) {
   actualizarAccion("Conectar el dispositivo BLE");
 
 }
-//al recibir la informacion desde el MrCDev10, se ejecuta esta función
+//al recibir la informacion desde el MrCamerDev1.0, se ejecuta esta función
 /* Funcion sin CamerPacketv1
 function handleCharacteristicChange(event) {
   const valor = new TextDecoder().decode(event.target.value).trim();
