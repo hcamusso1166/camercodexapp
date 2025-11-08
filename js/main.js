@@ -614,42 +614,39 @@ function handleCharacteristicChange(event) {
   camerFlags     = 0;
   camerSeq       = 0;
 
-  if (len >= 10) {
-    // ===== CamerPacket v1 =====
-    camerVersion   = dataView.getUint8(0);         // version
-    camerEventType = dataView.getUint8(1);         // eventType
-    camerAntennaId = dataView.getUint8(2);         // antennaId
-
-    const c0 = dataView.getUint8(3);
-    const c1 = dataView.getUint8(4);
-    const c2 = dataView.getUint8(5);
-    const c3 = dataView.getUint8(6);
-
-    camerFlags = dataView.getUint8(7);             // flags
-    camerSeq   = dataView.getUint16(8, false);     // seq (big-endian)
-
-    const carta0 = String.fromCharCode(c0);
-    const carta1 = String.fromCharCode(c1);
-    const carta2 = String.fromCharCode(c2);
-    const carta3 = String.fromCharCode(c3);
-
-    // Mantener compatibilidad con las rutinas:
-    valor  = carta0 + carta1 + carta2 + carta3;    // "mvalor+color+dorso"
-    mvalor = carta0 + carta1;                      // código de carta
-    color  = carta2;                               // color/categoría
-    dorso  = carta3;                               // dorso/variante
-
-  } else {
-    // ===== Modo compatibilidad antiguo (payload corto en texto) =====
-    const text = new TextDecoder().decode(dataView).trim();
-
-    if (text.length > 0) {
-      valor  = text;
-      mvalor = (text.length >= 2) ? (text[0] + text[1]) : text[0] || "";
-      color  = (text.length >= 3) ? text[2] : "";
-      dorso  = (text.length >= 4) ? text[3] : "";
-    }
+  if (len < 10) {
+    console.warn("Payload CamerPacketv1.0 incompleto o inválido (len=", len, ")");
+    return; // Ignoramos payloads que no cumplen con CamerPacketv1.0
   }
+
+// ===== CamerPacket v1 =====
+  camerVersion   = dataView.getUint8(0);         // version
+  camerEventType = dataView.getUint8(1);         // eventType
+  camerAntennaId = dataView.getUint8(2);         // antennaId
+
+  if (camerVersion !== 1) {
+    console.warn("Versión CamerPacket no soportada:", camerVersion);
+    return; // Solo aceptamos CamerPacketv1.0
+  }
+  const c0 = dataView.getUint8(3);
+  const c1 = dataView.getUint8(4);
+  const c2 = dataView.getUint8(5);
+  const c3 = dataView.getUint8(6);
+
+  camerFlags = dataView.getUint8(7);             // flags
+  camerSeq   = dataView.getUint16(8, false);     // seq (big-endian)
+
+  const carta0 = String.fromCharCode(c0);
+  const carta1 = String.fromCharCode(c1);
+  const carta2 = String.fromCharCode(c2);
+  const carta3 = String.fromCharCode(c3);
+
+  // Mantener compatibilidad con las rutinas:
+  valor  = carta0 + carta1 + carta2 + carta3;    // "mvalor+color+dorso"
+  mvalor = carta0 + carta1;                      // código de carta
+  color  = carta2;                               // color/categoría
+  dorso  = carta3;                               // dorso/variante
+
 
   console.log("BLE RX:",
     { valor, mvalor, color, dorso, len,
