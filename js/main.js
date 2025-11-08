@@ -424,6 +424,9 @@ function limpiarDatos() {
   if (retrievedValue) retrievedValue.innerHTML = '';
   if (latestValueSent) latestValueSent.innerHTML = '';
   if (timestampContainer) timestampContainer.innerHTML = '';
+    if (typeof resetLecturaQSlots === 'function') {
+    resetLecturaQSlots();
+  }
   console.log("Datos limpiados");
 }
 
@@ -673,6 +676,7 @@ function handleCharacteristicChange(event) {
     { match: "voluntadPrestada.html",     accion: () => tagVoluntadPrestada(valor) },
     { match: "tegMagico.html",            accion: () => guardarTagTeg(mvalor) },
     { match: "perdonenMiInmodestia.html", accion: () => guardarTag(mvalor) },
+    { match: "lecturaQ.html",             accion: () => registrarLecturaQ({ mvalor, antennaId: camerAntennaId }) },
   ];
 
   for (const entrada of accionesPorRuta) {
@@ -686,16 +690,18 @@ function handleCharacteristicChange(event) {
   if (path.includes("momias.html")) {
     retrievedValue.innerHTML = 'Color: ' + mvalor;
   } else if (path.includes("coleccionista.html")) {
-    const textCarta = cartasTexto[mvalor]; 
+    const textCarta = cartasTexto[mvalor];
     retrievedValue.innerHTML = textCarta;
   } else if (path.includes("dadoR.html")) {
-    const textCarta = mapaTexto[mvalor]; 
+    const textCarta = mapaTexto[mvalor];
     retrievedValue.innerHTML = textCarta;
   } else if (path.includes("tegMagico.html")) {
-    const textCarta = mapaTEGTexto[mvalor]; 
+    const textCarta = mapaTEGTexto[mvalor];
     retrievedValue.innerHTML = textCarta;
+  } else if (path.includes("lecturaQ.html")) {
+    // La vista específica de LecturaQ se gestiona desde su rutina dedicada.
   } else {
-    const textCarta = cartasPoker[mvalor]; 
+    const textCarta = cartasPoker[mvalor];
     retrievedValue.innerHTML = textCarta;
   }
 
@@ -789,7 +795,10 @@ function disconnectDevice() {
           if (accionMagoMensaje) {
             accionMagoMensaje.textContent = "Conectar el dispositivo BLE";
           }
-
+          if (typeof resetLecturaQSlots === 'function') {
+            resetLecturaQSlots();
+          }
+          
         })
         .catch(error => {
           console.log("An error occurred:", error);
