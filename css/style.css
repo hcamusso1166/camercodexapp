@@ -208,12 +208,12 @@ button {
   background: rgba(12, 12, 12, 0.55);
   border: 1px solid rgba(243, 177, 63, 0.3);
   border-radius: 12px;
-  padding: 0.65rem 0.75rem;
+  padding: 0.4rem 0.6rem;
   text-align: left;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  min-height: 100px;
+  min-height: 50px;
 }
 
 .slot-header {
@@ -241,7 +241,7 @@ button {
 
 .slot-card {
   font-family: 'Roboto Mono', monospace;
-  font-size: 1.2rem;
+  font-size: 3rem;
   color: #f0f0f0;
   transition: color 0.3s ease;
 }
@@ -288,7 +288,7 @@ button {
   background-color: #1a1a2e;
   border: 1px solid #2c2c3a;
   border-radius: 12px;
-  padding: 20px;
+  padding: 10px;
   box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.4);
   color: #f0f0f0;
   text-align: center;
@@ -668,7 +668,7 @@ text-align: center;
 
 /* Tarjeta secundaria: Acción */
 #accionMagoCard {
-  padding: 5px;
+  padding: 2px;
   font-size: 1em;
 }
 
