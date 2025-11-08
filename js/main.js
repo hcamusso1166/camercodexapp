@@ -658,7 +658,7 @@ function handleCharacteristicChange(event) {
 
   const path = window.location.pathname;
 
-  // === Acciones por rutina (SIN CAMBIOS) ===
+  // === Acciones por rutina  ===
   const accionesPorRuta = [
     { match: "fueraDeEsteMundo.html",     accion: () => reproducirAudioColor(color) },
     { match: "elefantes.html",            accion: () => guardarTag(mvalor) },

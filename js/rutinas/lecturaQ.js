@@ -13,7 +13,6 @@ let lecturaQInactivityTimer = null;
 
 const slotElements = {
   card: [],
-  description: [],
   time: [],
 };
 
@@ -27,7 +26,6 @@ if (document.readyState === "loading") {
 function inicializarLecturaQ() {
   for (let i = 1; i <= LECTURA_Q_SLOT_COUNT; i += 1) {
     slotElements.card[i] = document.getElementById(`slotCard${i}`);
-    slotElements.description[i] = document.getElementById(`slotDesc${i}`);
     slotElements.time[i] = document.getElementById(`slotTime${i}`);
   }
 
@@ -55,23 +53,20 @@ function refrescarSlotsLecturaQ() {
 function actualizarVistaSlotLecturaQ(slot) {
   const estado = lecturaQState[slot - 1];
   const cardEl = slotElements.card[slot];
-  const descEl = slotElements.description[slot];
   const timeEl = slotElements.time[slot];
 
-  if (!cardEl || !descEl || !timeEl) {
+  if (!cardEl || !timeEl) {
     return;
   }
 
   if (estado && estado.description) {
     cardEl.textContent = estado.code || "—";
-    descEl.textContent = estado.description;
     timeEl.textContent = estado.lastUpdated
       ? formatearHoraLecturaQ(estado.lastUpdated)
       : "";
     cardEl.classList.add("slot-card--filled");
   } else {
     cardEl.textContent = "—";
-    descEl.textContent = "Sin datos";
     timeEl.textContent = "";
     cardEl.classList.remove("slot-card--filled");
   }

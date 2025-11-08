@@ -193,39 +193,55 @@ button {
 }
 .slots-container {
   display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-top: 1rem;
+}
+
+@media (min-width: 960px) {
+  .slots-container {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 .slot {
   background: rgba(12, 12, 12, 0.55);
   border: 1px solid rgba(243, 177, 63, 0.3);
   border-radius: 12px;
-  padding: 0.75rem;
+  padding: 0.65rem 0.75rem;
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  min-height: 120px;
+  gap: 0.35rem;
+  min-height: 100px;
 }
 
 .slot-header {
-  font-size: 0.9rem;
-  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #f3b13f;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.slot-time {
+  font-size: 0.75rem;
+  color: #a0a0a0;
 }
 
 .slot-body {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
 }
 
 .slot-card {
   font-family: 'Roboto Mono', monospace;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   color: #f0f0f0;
   transition: color 0.3s ease;
 }
@@ -234,17 +250,9 @@ button {
   color: #f3b13f;
 }
 
-.slot-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  font-size: 0.85rem;
-  color: #bebebe;
-}
-
-.slot-time {
-  font-size: 0.75rem;
-  color: #888;
+.slot--placeholder {
+  opacity: 0.45;
+  border-style: dashed;
 }
 .ble-diagnostic {
   margin: 5px;
