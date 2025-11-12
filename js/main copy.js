@@ -403,8 +403,7 @@ const bleStateContainer = document.getElementById('bleState');
 const accionMagoMensaje = document.getElementById('accionMagoMensaje');
 
 const timestampContainer = document.getElementById('timestamp');
-// Determinar la vista actual una sola vez para evitar cálculos repetidos
-const currentView = window.location.pathname.split('/').pop() || "";
+
 const deviceName = 'MrCamerDev1.0';
 const bleService = '19b10000-e8f2-537e-4f6c-d104768a1214';
 const ledCharacteristic = '19b10002-e8f2-537e-4f6c-d104768a1214';
@@ -603,17 +602,14 @@ function handleCharacteristicChange(event) {
 */
 // al recibir la informacion desde el MrCamerDev1.0, se ejecuta esta función
 function handleCharacteristicChange(event) {
-  //const dataView = event.target.value;        // DataView de Web Bluetooth
-  //const len = dataView.byteLength;
-  const dataView = event.target.value;
-  if (!dataView) {
-    return;
-  }
-  //let valor  = "";
-  //let mvalor = "";
-  //let color  = "";
-  //let dorso  = "";
-const len = dataView.byteLength;
+  const dataView = event.target.value;        // DataView de Web Bluetooth
+  const len = dataView.byteLength;
+
+  let valor  = "";
+  let mvalor = "";
+  let color  = "";
+  let dorso  = "";
+
   // Reset/actualización de metadatos CamerPacket
   camerVersion   = 0;
   camerEventType = 0;
@@ -635,20 +631,15 @@ const len = dataView.byteLength;
     console.warn("Versión CamerPacket no soportada:", camerVersion);
     return; // Solo aceptamos CamerPacketv1.0
   }
-  //const c0 = dataView.getUint8(3);
-  //const c1 = dataView.getUint8(4);
-  //const c2 = dataView.getUint8(5);
-  //const c3 = dataView.getUint8(6);
-  const payloadChars = String.fromCharCode(
-    dataView.getUint8(3),
-    dataView.getUint8(4),
-    dataView.getUint8(5),
-    dataView.getUint8(6)
-  );
+  const c0 = dataView.getUint8(3);
+  const c1 = dataView.getUint8(4);
+  const c2 = dataView.getUint8(5);
+  const c3 = dataView.getUint8(6);
+
   camerFlags = dataView.getUint8(7);             // flags
   camerSeq   = dataView.getUint16(8, false);     // seq (big-endian)
 
-  /*const carta0 = String.fromCharCode(c0);
+  const carta0 = String.fromCharCode(c0);
   const carta1 = String.fromCharCode(c1);
   const carta2 = String.fromCharCode(c2);
   const carta3 = String.fromCharCode(c3);
@@ -657,17 +648,14 @@ const len = dataView.byteLength;
   valor  = carta0 + carta1 + carta2 + carta3;    // "mvalor+color+dorso"
   mvalor = carta0 + carta1;                      // código de carta
   color  = carta2;                               // color/categoría
-  dorso  = carta3;                               // dorso/variante*/
-  const mvalor = payloadChars.slice(0, 2);
-  const color  = payloadChars[2];
-  const dorso  = payloadChars[3];
-  const valor  = payloadChars;
+  dorso  = carta3;                               // dorso/variante
+
 
   console.log("BLE RX:",
     { valor, mvalor, color, dorso, len,
       camerVersion, camerEventType, camerAntennaId, camerFlags, camerSeq }
   );
-/*
+
   const path = window.location.pathname;
 
   // === Acciones por rutina  ===
@@ -697,58 +685,7 @@ const len = dataView.byteLength;
       break; // solo una acción por rutina
     }
   }
-*/
-// === Acciones por rutina (ordenadas para ejecución inmediata) ===
-  switch (currentView) {
-    case "fueraDeEsteMundo.html":
-      reproducirAudioColor(color);
-      break;
-    case "elefantes.html":
-    case "coleccionista.html":
-    case "perdonenMiInmodestia.html":
-      guardarTag(mvalor);
-      break;
-    case "momias.html":
-      reproducirColor(mvalor);
-      break;
-    case "pegriloso.html":
-      guardarTagPegriloso(mvalor);
-      break;
-    case "theboss.html":
-      guardarTagTheBoss(mvalor);
-      break;
-    case "pruebaDeFuego.html":
-      guardarTagPruebaDeFuego(mvalor);
-      break;
-    case "oraculo.html":
-    case "dadoR.html":
-      reproducirAudioParaTag(mvalor);
-      break;
-    case "manoPoker.html":
-      guardarTagMano(mvalor);
-      break;
-    case "ojosVendados.html":
-      reproducirOjosVendados(mvalor);
-      break;
-    case "dadaSimple.html":
-      reproducirAudioParaTag(mvalor, color, dorso);
-      break;
-    case "rapidoNumeroso.html":
-      sumarTag(mvalor);
-      break;
-    case "voluntadPrestada.html":
-      tagVoluntadPrestada(valor);
-      break;
-    case "tegMagico.html":
-      guardarTagTeg(mvalor);
-      break;
-    case "lecturaQ.html":
-      registrarLecturaQ({ mvalor, antennaId: camerAntennaId });
-      break;
-    default:
-      break;
-  }
-  /*
+
   // === Bloque de UI / texto en pantalla (SIN CAMBIOS, pero usando mvalor) ===
   if (path.includes("momias.html")) {
     retrievedValue.innerHTML = 'Color: ' + mvalor;
@@ -765,29 +702,7 @@ const len = dataView.byteLength;
     // La vista específica de LecturaQ se gestiona desde su rutina dedicada.
   } else {
     const textCarta = cartasPoker[mvalor];
-    retrievedValue.innerHTML = textCarta;*/
-    // === Bloque de UI / texto en pantalla (sin cambios funcionales) ===
-  if (retrievedValue) {
-    switch (currentView) {
-      case "momias.html":
-        retrievedValue.innerHTML = 'Color: ' + mvalor;
-        break;
-      case "coleccionista.html":
-        retrievedValue.innerHTML = cartasTexto[mvalor];
-        break;
-      case "dadoR.html":
-        retrievedValue.innerHTML = mapaTexto[mvalor];
-        break;
-      case "tegMagico.html":
-        retrievedValue.innerHTML = mapaTEGTexto[mvalor];
-        break;
-      case "lecturaQ.html":
-        // La vista específica de LecturaQ se gestiona desde su rutina dedicada.
-        break;
-      default:
-        retrievedValue.innerHTML = cartasPoker[mvalor];
-        break;
-    }
+    retrievedValue.innerHTML = textCarta;
   }
 
   if (timestampContainer) {
