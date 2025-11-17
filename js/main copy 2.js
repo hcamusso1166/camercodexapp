@@ -405,41 +405,6 @@ const accionMagoMensaje = document.getElementById('accionMagoMensaje');
 const timestampContainer = document.getElementById('timestamp');
 // Determinar la vista actual una sola vez para evitar cálculos repetidos
 const currentView = window.location.pathname.split('/').pop() || "";
-const ANTENNA_ID_MIN = 1;
-const ANTENNA_ID_MAX = 6;
-
-const ROUTINE_ANTENNA_TYPES = Object.freeze({
-  PRIMARY_ONLY: "primaryOnly",      // Solo procesa antennaId = 1
-  SECONDARY_ONLY: "secondaryOnly",  // Solo procesa antennaId = 2..6
-  ALL: "all"                         // Procesa antennaId = 1..6
-});
-
-const ROUTINE_ANTENNA_POLICIES = Object.freeze({
-  "lecturaQ.html": ROUTINE_ANTENNA_TYPES.SECONDARY_ONLY,
-  // Agregar aquí rutinas adicionales cuando necesiten soportar otras antenas
-});
-
-function getAntennaPolicyForView(viewName) {
-  return ROUTINE_ANTENNA_POLICIES[viewName] || ROUTINE_ANTENNA_TYPES.PRIMARY_ONLY;
-}
-
-function isAntennaIdInRange(antennaId) {
-  return antennaId >= ANTENNA_ID_MIN && antennaId <= ANTENNA_ID_MAX;
-}
-
-function shouldProcessAntennaForPolicy(antennaId, policy) {
-  switch (policy) {
-    case ROUTINE_ANTENNA_TYPES.PRIMARY_ONLY:
-      return antennaId === 1;
-    case ROUTINE_ANTENNA_TYPES.SECONDARY_ONLY:
-      return antennaId >= 2 && antennaId <= ANTENNA_ID_MAX;
-    case ROUTINE_ANTENNA_TYPES.ALL:
-      return isAntennaIdInRange(antennaId);
-    default:
-      return antennaId === 1;
-  }
-}
-
 const deviceName = 'MrCamerDev1.0';
 const bleService = '19b10000-e8f2-537e-4f6c-d104768a1214';
 const ledCharacteristic = '19b10002-e8f2-537e-4f6c-d104768a1214';
@@ -669,15 +634,6 @@ const len = dataView.byteLength;
   if (camerVersion !== 1) {
     console.warn("Versión CamerPacket no soportada:", camerVersion);
     return; // Solo aceptamos CamerPacketv1.0
-  }
-    if (!isAntennaIdInRange(camerAntennaId)) {
-    console.warn("antennaId fuera de rango:", camerAntennaId);
-    return;
-  }
-
-  const antennaPolicy = getAntennaPolicyForView(currentView);
-  if (!shouldProcessAntennaForPolicy(camerAntennaId, antennaPolicy)) {
-    return;
   }
   //const c0 = dataView.getUint8(3);
   //const c1 = dataView.getUint8(4);

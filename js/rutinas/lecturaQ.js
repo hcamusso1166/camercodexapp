@@ -1,5 +1,12 @@
 let cartasPokerLecturaQ = {};
 const LECTURA_Q_SLOT_COUNT = 5;
+const LECTURA_Q_ANTENNA_SLOT_MAP = {
+  2: 1,
+  3: 2,
+  4: 3,
+  5: 4,
+  6: 5,
+};
 const LECTURA_Q_INACTIVITY_MS = 30000;
 
 const lecturaQState = Array.from({ length: LECTURA_Q_SLOT_COUNT }, () => ({
@@ -181,12 +188,13 @@ function programarRecordatorioLecturaQ() {
 }
 
 function registrarLecturaQ({ mvalor, antennaId }) {
-  if (!antennaId || antennaId < 1 || antennaId > LECTURA_Q_SLOT_COUNT) {
+if (!antennaId || !LECTURA_Q_ANTENNA_SLOT_MAP[antennaId]) {
     console.warn("LecturaQ: antennaId fuera de rango", antennaId);
     return;
   }
 
-  const estado = lecturaQState[antennaId - 1];
+  const slotIndex = LECTURA_Q_ANTENNA_SLOT_MAP[antennaId];
+  const estado = lecturaQState[slotIndex - 1];
   const { code, description } = obtenerDescripcionCartaLecturaQ(mvalor);
 
   estado.mvalor = mvalor;
@@ -194,7 +202,7 @@ function registrarLecturaQ({ mvalor, antennaId }) {
   estado.description = description;
   estado.lastUpdated = new Date();
 
-  actualizarVistaSlotLecturaQ(antennaId);
+  actualizarVistaSlotLecturaQ(slotIndex);
   anunciarSlotsLecturaQ();
   programarRecordatorioLecturaQ();
 }
