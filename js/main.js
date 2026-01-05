@@ -406,7 +406,7 @@ const timestampContainer = document.getElementById('timestamp');
 // Determinar la vista actual una sola vez para evitar cálculos repetidos
 const currentView = window.location.pathname.split('/').pop() || "";
 const ANTENNA_ID_MIN = 1;
-const ANTENNA_ID_MAX = 6;
+const ANTENNA_ID_MAX = 9;
 
 const ROUTINE_ANTENNA_TYPES = Object.freeze({
   PRIMARY_ONLY: "primaryOnly",      // Solo procesa antennaId = 1
@@ -430,7 +430,7 @@ function isAntennaIdInRange(antennaId) {
 function shouldProcessAntennaForPolicy(antennaId, policy) {
   switch (policy) {
     case ROUTINE_ANTENNA_TYPES.PRIMARY_ONLY:
-      return antennaId === 1;
+      return antennaId === 1 || antennaId === 9; // incluir 9 como caso especial si es necesario para algunas rutinas, estuche azul
     case ROUTINE_ANTENNA_TYPES.SECONDARY_ONLY:
       return antennaId >= 2 && antennaId <= ANTENNA_ID_MAX;
     case ROUTINE_ANTENNA_TYPES.ALL:
@@ -666,7 +666,7 @@ const len = dataView.byteLength;
   camerEventType = dataView.getUint8(1);         // eventType
   camerAntennaId = dataView.getUint8(2);         // antennaId
 
-  if (camerVersion !== 1) {
+  if (camerVersion !== 1 ) {
     console.warn("Versión CamerPacket no soportada:", camerVersion);
     return; // Solo aceptamos CamerPacketv1.0
   }
@@ -677,6 +677,7 @@ const len = dataView.byteLength;
 
   const antennaPolicy = getAntennaPolicyForView(currentView);
   if (!shouldProcessAntennaForPolicy(camerAntennaId, antennaPolicy)) {
+    console.log(`Ignorando antennaId ${camerAntennaId} según política ${antennaPolicy} para la vista ${currentView}`);
     return;
   }
   //const c0 = dataView.getUint8(3);
