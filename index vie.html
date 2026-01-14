@@ -13,9 +13,52 @@
     </head>
 <body>
 
-    <header>Camer Codex <sup>&reg;</sup></header>
+        <header>
+      Camer Codex <sup>&reg;</sup>
+      <div class="status-icons">
+        <img id="estadoConexionBLE" src="icons/bluetooth_disabled_16_D9D9D9.svg" alt="Conexión BLE" title="Conexión BLE">
+        <img id="estadoBLEIcon" src="icons/block_16_D9D9D9.svg" alt="Estado BLE" title="Estado BLE">
+        <img id="batteryIcon" src="icons/battery_unknown_16_D9D9D9.svg" alt="Estado batería" title="Batería desconocida">
+      </div>
+    </header>
     <div class="slogan">Tecnología Secreta para Ilusionistas</div>
-    <div class="menu"> 
+    
+    <div class="connection-guard">
+      <div class="card dark-card compacto" id="connectionGateCard">
+        <h3>Conectar MrCamerDev1.0</h3>
+        <p class="gray-label" id="preConnectionStatus">Conectá el lector antes de ver el menú de rutinas.</p>
+        <div class="button-row">
+          <button id="connectBleButton" class="button-primary connectButton">
+            <img src="icons/bluetooth.svg" alt="Bluetooth Icon" id="icon-left">
+            Conectar
+          </button>
+          <button id="disconnectBleButton" class="button-primary disconnectButton">
+            <img src="icons/bluetooth_disabled.svg" alt="Disconnect Bluetooth Icon" id="icon-left">
+            Desconectar
+          </button>
+        </div>
+        <p class="gray-label">Estado BLE: <strong><span id="bleState" style="color:#d13a30;">Desconectado</span></strong></p>
+        <button id="checkBluetoothBtn" class="button-primary ocultaBLE">
+          <img src="icons/search.svg" alt="Check Bluetooth Icon" id="icon-left">
+          Estado BLE
+        </button>
+        <div id="ble-messages" class="ble-diagnostic inicialmente-oculto ocultaBLE">
+          <p class="ble-ok">
+            <img src="icons/check_F3B13F.svg" alt="Check Icon" id="icon-small">
+            Web Bluetooth disponible.
+          </p>
+          <p class="ble-warning">
+            <img src="icons/warning_F3B13F.svg" alt="Warning Icon" id="icon-small">
+            Se pedirá permiso.
+          </p>
+        </div>
+        <p class="helper-text" id="preConnectionHelper">La vinculación se mantiene mientras navegás por las rutinas (sin salir de la app).</p>
+      </div>
+    </div>
+
+    <div id="menuLockMessage" class="menu-lock-message">Conectá MrCamerDev1.0 para habilitar el menú.</div>
+
+    <div class="menu locked" id="routinesMenu"> 
     <div class="rutinas-container">
       <div class="rutina-card"><button onclick="location.href='rutinas/fueraDeEsteMundo.html'">1. Fuera de Este Mundo</button></div>
       <div class="rutina-card"><button onclick="location.href='rutinas/pegriloso.html'">2. Un Juego "Pegriloso"</button></div>
@@ -40,13 +83,12 @@
 
       <div class="rutina-card"><button onclick="location.href='rutinas/dadaSimple.html'">25. Lectura Simple - Continua</button></div>
       <div class="rutina-card"><button onclick="location.href='rutinas/lecturaQ.html'">26. LecturaQ</button></div>
-      <div class="rutina-card"><button onclick="location.href='rutinas/controlFrecuencia.html'">50. Control de frecuencia</button></div>
     </div>
 
 <!-- Paginación -->
 <div class="pagination">
-    <button class="page-btn"><img src="../icons/arrow_circle_left.svg" alt="Home" ></button>
-    <button class="page-btn"><img src="../icons/arrow_circle_right.svg" alt="Home" ></button>
+    <button class="page-btn"><img src="icons/arrow_circle_left.svg" alt="Home" ></button>
+    <button class="page-btn"><img src="icons/arrow_circle_right.svg" alt="Home" ></button>
 </div>
 </div>
 

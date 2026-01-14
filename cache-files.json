@@ -287,6 +287,7 @@
   "/js/info/estadoBLE-check.js",
   "/js/main.js",
   "/js/rutinas/lecturaQ.js",
+  "/js/rutinas/controlFrecuencia.js",
   "/js/rutinas/coleccionista.js",
   "/js/rutinas/dadaSimple.js",
   "/js/rutinas/dadoR.js",
@@ -320,5 +321,6 @@
   "/rutinas/rapidoNumeroso.html",
   "/rutinas/tegMagico.html",
   "/rutinas/theboss.html",
-  "/rutinas/voluntadPrestada.html"
+  "/rutinas/voluntadPrestada.html",
+  "/rutinas/controlFrecuencia.html"
 ]

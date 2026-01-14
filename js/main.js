@@ -778,6 +778,9 @@ const len = dataView.byteLength;
     case "dadaSimple.html":
       reproducirAudioParaTag(mvalor, color, dorso);
       break;
+    case "controlFrecuencia.html":
+      registrarControlFrecuencia(mvalor);
+      break;
     case "rapidoNumeroso.html":
       sumarTag(mvalor);
       break;
