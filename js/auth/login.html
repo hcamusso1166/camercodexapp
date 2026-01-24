@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Camer Codex® | Acceso</title>
+</head>
+<body>
+  <h1>Acceso</h1>
+
+  <div>
+    <input id="email" type="email" placeholder="Email" autocomplete="email" />
+  </div>
+  <div>
+    <input id="password" type="password" placeholder="Contraseña" autocomplete="current-password" />
+  </div>
+
+  <button id="btnLogin">Entrar</button>
+  <button id="btnSignup">Crear cuenta</button>
+
+  <p id="msg"></p>
+
+  <script type="module">
+    import { supabase } from "../js/auth/supabaseClient.js";
+
+    const $ = (id) => document.getElementById(id);
+    const msg = (t) => ($("msg").textContent = t || "");
+
+    const params = new URLSearchParams(location.search);
+    const returnTo = params.get("returnTo") || "/";
+
+    $("btnLogin").onclick = async () => {
+      msg("Ingresando...");
+      const email = $("email").value.trim();
+      const password = $("password").value;
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) return msg("Error: " + error.message);
+
+      location.replace(returnTo);
+    };
+
+    $("btnSignup").onclick = async () => {
+      msg("Creando cuenta...");
+      const email = $("email").value.trim();
+      const password = $("password").value;
+
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) return msg("Error: " + error.message);
+
+      msg("Cuenta creada. Si no te redirige, iniciá sesión.");
+      // Si tu proyecto NO requiere confirmación por email, ya queda logueado:
+      const { data } = await supabase.auth.getSession();
+      if (data?.session?.user) location.replace(returnTo);
+    };
+  </script>
+</body>
+</html>
