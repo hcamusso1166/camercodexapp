@@ -29,10 +29,13 @@
       border: 1px solid #333;
       border-radius: 12px;
       padding: 16px;
-      height: 55vh;
+      height: 45vh;
       overflow: auto;
       background: #0c0c1d;
       color: #f0f0f0;
+    }
+    .license-hint {
+      margin: 8px 0 12px;
     }
     .license-actions {
       margin-top: 12px;
@@ -72,7 +75,7 @@
       Para utilizar Camer Codex®, necesitás leer y aceptar esta licencia.
     </p>
     <p class="muted">Versión: <span id="v"></span></p>
-
+    <p class="muted license-hint" id="hint">Desplazate hasta el final para habilitar la aceptación.</p>
     <div class="license-box" id="scrollBox">
       <pre style="white-space: pre-wrap; margin: 0;">
 
@@ -180,16 +183,12 @@ El uso de cualquiera de los elementos de la Plataforma Camer Codex® implica la 
 **Camer Codex® – Tecnología, Magia y Secreto Protegido**
 </pre>
     </div>
-
     <div class="license-actions">
       <label>
         <input type="checkbox" id="chk" disabled />
         He leído y acepto la Licencia de Uso y Confidencialidad.
       </label>
-
       <button id="btn" disabled>Aceptar y continuar</button>
-
-      <span class="muted" id="hint">Desplazate hasta el final para habilitar la aceptación.</span>
     </div>
   </main>
 
@@ -229,10 +228,10 @@ El uso de cualquiera de los elementos de la Plataforma Camer Codex® implica la 
 
     const accepted = localStorage.getItem("cc_license_accepted") === "1";
     const acceptedVersion = localStorage.getItem("cc_license_version") || "";
-    if (accepted && acceptedVersion === LICENSE_VERSION) {
-      const back = localStorage.getItem("cc_license_return_to");
+    const back = localStorage.getItem("cc_license_return_to");
+    if (accepted && acceptedVersion === LICENSE_VERSION && back) {
       localStorage.removeItem("cc_license_return_to");
-      location.replace(back || "/index.html");
+      location.replace(back);
     }
   </script>
 </body>
