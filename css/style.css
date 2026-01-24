@@ -101,6 +101,27 @@ main h3 {
   margin-top: auto;
   padding: 5px 0 0;
 }
+.legal-link {
+  margin-top: 6px;
+  font-size: 0.9em;
+  color: #ccc;
+}
+.legal-link a {
+  color: #f3b13f;
+  text-decoration: none;
+}
+.legal-link a:hover {
+  text-decoration: underline;
+}
+.legal-status {
+  margin-left: 6px;
+}
+.legal-status.is-accepted {
+  color: #8fd18f;
+}
+.legal-status.is-pending {
+  color: #f3b13f;
+}
 /* 4. Mostrar el botón solo en dispositivos móviles */
 #installBtn {
   background-color: #0c0c0c;

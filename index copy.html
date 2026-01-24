@@ -10,19 +10,6 @@
         <link rel="manifest" href="manifest.json">
 
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-        <script>
-            (function () {
-                const LICENSE_VERSION = "1.0";
-                const accepted = localStorage.getItem("cc_license_accepted") === "1";
-                const acceptedVersion = localStorage.getItem("cc_license_version") || "";
-                const onLicensePage = location.pathname.includes("/legal/licencia.html");
-
-                if (!onLicensePage && (!accepted || acceptedVersion !== LICENSE_VERSION)) {
-                    localStorage.setItem("cc_license_return_to", location.href);
-                    location.replace("/legal/licencia.html");
-                }
-            })();
-        </script>
     </head>
 <body>
 
@@ -69,33 +56,9 @@
     <div class="install-container">
         <button id="installBtn" disabled>📲 Instalar Camer Codex</button>
     </div>
-        <div class="legal-link">
-        <a href="legal/licencia.html">Legal / Licencia</a>
-        <span id="licenseStatus" class="legal-status"></span>
-    </div>
     <!-- footer.html -->
     <footer>v <span id="appVersion"></span></footer>  
     <script src="js/config.js"></script>
     <script src="js/main.js"></script>
-        <script>
-        (function () {
-            const LICENSE_VERSION = "1.0";
-            const accepted = localStorage.getItem("cc_license_accepted") === "1";
-            const acceptedVersion = localStorage.getItem("cc_license_version") || "";
-            const statusEl = document.getElementById("licenseStatus");
-
-            if (!statusEl) {
-                return;
-            }
-
-            if (accepted && acceptedVersion === LICENSE_VERSION) {
-                statusEl.textContent = "• Términos aceptados";
-                statusEl.classList.add("is-accepted");
-            } else {
-                statusEl.textContent = "• Términos no aceptados";
-                statusEl.classList.add("is-pending");
-            }
-        })();
-    </script>
 </body>
 </html>
