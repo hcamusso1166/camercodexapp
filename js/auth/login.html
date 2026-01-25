@@ -31,6 +31,7 @@
 
   <button id="btnLogin">Entrar</button>
   <button id="btnSignup">Crear cuenta</button>
+  <button id="btnGoogle" type="button">Continuar con Google</button>
 
   <p id="msg"></p>
 
@@ -71,6 +72,18 @@
       msg("Cuenta creada. Si no te redirige, iniciá sesión.");
       const { data } = await supabase.auth.getSession();
       if (data?.session?.user) location.replace(returnTo);
+    };
+
+    $("btnGoogle").onclick = async () => {
+      msg("Redirigiendo a Google...");
+      const redirectTo = new URL("/js/auth/login.html", location.origin);
+      redirectTo.searchParams.set("returnTo", returnTo);
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: redirectTo.toString() },
+      });
+      if (error) msg("Error: " + error.message);
     };
   </script>
 </body>
