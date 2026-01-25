@@ -21,7 +21,7 @@
   <p id="msg"></p>
 
   <script type="module">
-    import { supabase } from "../js/auth/supabaseClient.js";
+    import { supabase } from "/js/auth/supabaseClient.js";
 
     const $ = (id) => document.getElementById(id);
     const msg = (t) => ($("msg").textContent = t || "");
@@ -49,7 +49,6 @@
       if (error) return msg("Error: " + error.message);
 
       msg("Cuenta creada. Si no te redirige, iniciá sesión.");
-      // Si tu proyecto NO requiere confirmación por email, ya queda logueado:
       const { data } = await supabase.auth.getSession();
       if (data?.session?.user) location.replace(returnTo);
     };

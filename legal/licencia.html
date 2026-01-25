@@ -156,7 +156,7 @@ El uso de cualquiera de los elementos de la Plataforma Camer Codex® implica la 
     </div>
   </main>
 
-  <script>
+    <script type="module">
     const LICENSE_VERSION = "1.0";
     document.getElementById("v").textContent = LICENSE_VERSION;
 
@@ -166,36 +166,65 @@ El uso de cualquiera de los elementos de la Plataforma Camer Codex® implica la 
     const hint = document.getElementById("hint");
 
     function nearBottom(el) {
-      return el.scrollTop + el.clientHeight >= el.scrollHeight - 10;
+      return el.scrollTop + el.clientHeight >= el.scrollHeight - 40;
     }
 
-    box.addEventListener("scroll", () => {
-      if (nearBottom(box)) {
-        chk.disabled = false;
-        hint.textContent = "Marcá el checkbox para aceptar.";
+    function enableAcceptance() {
+      if (!chk.disabled) {
+        return;
       }
-    });
+      chk.disabled = false;
+      hint.textContent = "Marcá el checkbox para aceptar.";
+    }
+
+    function checkScrollUnlock() {
+      if (nearBottom(box)) {
+        enableAcceptance();
+      }
+    }
+
+     async function getRequireAuth() {
+      const module = await import("/js/auth/authGuard.js").catch(() => null);
+      return module?.requireAuth || null;
+    }
+
+    async function routeAfterLicense(returnTo) {
+      const requireAuth = await getRequireAuth();
+      if (!requireAuth) {
+        location.replace(returnTo);
+        return;
+      }
+
+      const result = await requireAuth({ returnTo });
+      if (result.ok) {
+        location.replace(returnTo);
+      }
+    }
+
+    box.addEventListener("scroll", checkScrollUnlock);
+    window.addEventListener("load", checkScrollUnlock);
+    checkScrollUnlock();
 
     chk.addEventListener("change", () => {
       btn.disabled = !chk.checked;
     });
 
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", async () => {
       localStorage.setItem("cc_license_accepted", "1");
       localStorage.setItem("cc_license_version", LICENSE_VERSION);
       localStorage.setItem("cc_license_accepted_at", new Date().toISOString());
 
-      const back = localStorage.getItem("cc_license_return_to");
+      const back = localStorage.getItem("cc_license_return_to") || "/index.html";
       localStorage.removeItem("cc_license_return_to");
-      location.replace(back || "/index.html");
+      await routeAfterLicense(back);
     });
 
     const accepted = localStorage.getItem("cc_license_accepted") === "1";
     const acceptedVersion = localStorage.getItem("cc_license_version") || "";
-    const back = localStorage.getItem("cc_license_return_to");
-    if (accepted && acceptedVersion === LICENSE_VERSION && back) {
+    const back = localStorage.getItem("cc_license_return_to") || "/index.html";
+    if (accepted && acceptedVersion === LICENSE_VERSION) {
       localStorage.removeItem("cc_license_return_to");
-      location.replace(back);
+      await routeAfterLicense(back);
     }
   </script>
 </body>
