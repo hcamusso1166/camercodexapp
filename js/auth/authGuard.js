@@ -12,7 +12,7 @@ export async function requireAuth({ returnTo = "/" } = {}) {
     return { ok: true, user: session.user };
   }
 
-  const url = new URL("/auth/login.html", window.location.origin);
+  const url = new URL("/js/auth/login.html", window.location.origin);
   url.searchParams.set("returnTo", returnTo);
   window.location.replace(url.toString());
   return { ok: false, user: null };

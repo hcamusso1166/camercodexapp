@@ -4,6 +4,20 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Camer Codex® | Acceso</title>
+  <script>
+    (function () {
+      const LICENSE_VERSION = "1.0";
+      const accepted = localStorage.getItem("cc_license_accepted") === "1";
+      const acceptedVersion = localStorage.getItem("cc_license_version") || "";
+
+      if (!accepted || acceptedVersion !== LICENSE_VERSION) {
+        const params = new URLSearchParams(location.search);
+        const returnTo = params.get("returnTo") || "/";
+        localStorage.setItem("cc_license_return_to", returnTo);
+        location.replace("/legal/licencia.html");
+      }
+    })();
+  </script>
 </head>
 <body>
   <h1>Acceso</h1>
@@ -28,6 +42,12 @@
 
     const params = new URLSearchParams(location.search);
     const returnTo = params.get("returnTo") || "/";
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (sessionData?.session?.user) {
+      location.replace(returnTo);
+    }
+
 
     $("btnLogin").onclick = async () => {
       msg("Ingresando...");

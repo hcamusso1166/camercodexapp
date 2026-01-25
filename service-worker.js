@@ -1,4 +1,4 @@
-const CACHE_NAME = 'camer-codex-cache-v2';
+const CACHE_NAME = 'camer-codex-cache-v5';
 const MANIFEST_URL = '/cache-files.json';
 //const CARTAS_URL = '/audios/cartas.json';
 
