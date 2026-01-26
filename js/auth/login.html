@@ -64,6 +64,10 @@
       border-color: transparent;
     }
 
+    .is-hidden {
+      display: none;
+    }
+
     .login-actions {
       display: grid;
       gap: 10px;
@@ -169,8 +173,9 @@
         <label for="password">Contraseña</label>
         <input id="password" type="password" placeholder="Tu clave" autocomplete="current-password" />
       </div>
-        <div class="login-field">
-        <label for="confirmPassword">Confirmar contraseña (registro)</label>
+      <div class="login-field is-hidden" id="confirm-password-field">
+        <label for="confirmPassword">Confirmar contraseña</label>
+        <input id="confirmPassword" type="password" placeholder="Repetí tu clave" autocomplete="new-password" />
         <input id="confirmPassword" type="password" placeholder="Repetí tu clave" autocomplete="new-password" />
       </div>
     </div>
@@ -190,7 +195,6 @@
 
     <div class="login-footer">Tecnología Secreta para Ilusionistas.</div>
   </main>
-
   <script type="module">
     import { supabase } from "/js/auth/supabaseClient.js";
 
@@ -199,19 +203,28 @@
 
     const params = new URLSearchParams(location.search);
     const returnTo = params.get("returnTo") || "/";
+const confirmPasswordField = $("confirm-password-field");
+    const confirmPasswordInput = $("confirmPassword");
+
+    const toggleConfirmPassword = (show) => {
+      confirmPasswordField.classList.toggle("is-hidden", !show);
+      confirmPasswordInput.value = "";
+    };
 
     const { data: sessionData } = await supabase.auth.getSession();
     if (sessionData?.session?.user) {
       location.replace(returnTo);
     }
 
+    toggleConfirmPassword(false);
 
     $("btnLogin").onclick = async () => {
+      toggleConfirmPassword(false);
       msg("Ingresando...");
       const email = $("email").value.trim();
       const password = $("password").value;
 
-            if (!$("email").checkValidity()) {
+      if (!$("email").checkValidity()) {
         return msg("Ingresá un email válido.");
       }
       if (!password) {
@@ -225,10 +238,16 @@
     };
 
     $("btnSignup").onclick = async () => {
+            if (confirmPasswordField.classList.contains("is-hidden")) {
+        toggleConfirmPassword(true);
+        msg("Confirmá tu contraseña para crear la cuenta.");
+        return;
+      }
+
       msg("Creando cuenta...");
       const email = $("email").value.trim();
       const password = $("password").value;
-      const confirmPassword = $("confirmPassword").value;
+      const confirmPassword = confirmPasswordInput.value;
 
       if (!$("email").checkValidity()) {
         return msg("Ingresá un email válido.");
