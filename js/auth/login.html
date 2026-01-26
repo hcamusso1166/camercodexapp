@@ -176,7 +176,6 @@
       <div class="login-field is-hidden" id="confirm-password-field">
         <label for="confirmPassword">Confirmar contraseña</label>
         <input id="confirmPassword" type="password" placeholder="Repetí tu clave" autocomplete="new-password" />
-        <input id="confirmPassword" type="password" placeholder="Repetí tu clave" autocomplete="new-password" />
       </div>
     </div>
 
@@ -185,13 +184,14 @@
       <button class="login-btn secondary" id="btnSignup">Crear cuenta</button>
     </div>
 
+    <p id="msg" role="status" aria-live="polite"></p>
+
     <div class="login-separator">o</div>
 
     <button class="login-btn secondary" id="btnGoogle" type="button">Continuar con Google</button>
 
     <a class="login-link" href="/auth/reset.html">¿Olvidaste tu contraseña?</a>
 
-    <p id="msg" role="status" aria-live="polite"></p>
 
     <div class="login-footer">Tecnología Secreta para Ilusionistas.</div>
   </main>
@@ -203,8 +203,9 @@
 
     const params = new URLSearchParams(location.search);
     const returnTo = params.get("returnTo") || "/";
-const confirmPasswordField = $("confirm-password-field");
+     const confirmPasswordField = $("confirm-password-field");
     const confirmPasswordInput = $("confirmPassword");
+    let isSignupMode = false;
 
     const toggleConfirmPassword = (show) => {
       confirmPasswordField.classList.toggle("is-hidden", !show);
@@ -219,6 +220,7 @@ const confirmPasswordField = $("confirm-password-field");
     toggleConfirmPassword(false);
 
     $("btnLogin").onclick = async () => {
+      isSignupMode = false;
       toggleConfirmPassword(false);
       msg("Ingresando...");
       const email = $("email").value.trim();
@@ -238,7 +240,8 @@ const confirmPasswordField = $("confirm-password-field");
     };
 
     $("btnSignup").onclick = async () => {
-            if (confirmPasswordField.classList.contains("is-hidden")) {
+      if (!isSignupMode) {
+        isSignupMode = true;
         toggleConfirmPassword(true);
         msg("Confirmá tu contraseña para crear la cuenta.");
         return;
@@ -262,7 +265,7 @@ const confirmPasswordField = $("confirm-password-field");
       const { error } = await supabase.auth.signUp({ email, password });
       if (error) return msg("Error: " + error.message);
 
-      msg("Cuenta creada. Si no te redirige, iniciá sesión.");
+      msg("Confirmá tu email mediante el correo que te llegue de Camer Codex ®");
       const { data } = await supabase.auth.getSession();
       if (data?.session?.user) location.replace(returnTo);
     };
