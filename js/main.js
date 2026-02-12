@@ -143,9 +143,14 @@ if (estadoBLEIcon && navigator.bluetooth) {
   }
 
 if (window.bleManager) {
-    window.bleManager.ensureConnected().catch(() => {});
+    if (typeof window.bleManager.ensureConnected === 'function') {
+      window.bleManager.ensureConnected().catch(() => {});
+    } else {
+      console.warn('bleManager.ensureConnected no está disponible en esta versión.');
+    }
 
-    window.bleManager.onStatus((status) => {
+    if (typeof window.bleManager.onStatus === 'function') {
+      window.bleManager.onStatus((status) => {
       if (status.type === 'connected') {
         if (bleStateContainer) {
           bleStateContainer.innerHTML = status.name || 'Device connected';
@@ -166,7 +171,10 @@ if (window.bleManager) {
         actualizarIconoBateria(status.level);
       }
     });
-
+    } else {
+      console.warn('bleManager.onStatus no está disponible en esta versión.');
+    }
+    
     window.addEventListener('blemanager:characteristicvaluechanged', (evt) => {
       const dataView = evt.detail?.value;
       if (dataView) {
