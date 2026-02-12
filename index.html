@@ -63,8 +63,24 @@
 </div>
 </div>
 
+    <div class="content">
+      <div class="card dark-card compacto">
+        <h3>Dispositivo Bluetooth (BLE)</h3>
+        <div class="button-row">
+          <button id="connectBleButton" class="button-primary connectButton">
+            <img src="icons/bluetooth.svg" alt="Bluetooth Icon" id="icon-left">
+            Conectar
+          </button>
+          <button id="disconnectBleButton" class="button-primary disconnectButton">
+            <img src="icons/bluetooth_disabled.svg" alt="Disconnect Bluetooth Icon" id="icon-left">
+            Desconectar
+          </button>
+          <p class="gray-label">BLE state: <strong><span id="bleState" style="color:#d13a30;">Disconnected</span></strong></p>
+        </div>
+      </div>
+    </div>
 
-
+    
     <!-- Botón de instalación PWA -->
     <div class="install-container">
         <button id="installBtn" disabled>📲 Instalar Camer Codex</button>
@@ -76,6 +92,7 @@
     <!-- footer.html -->
     <footer>v <span id="appVersion"></span></footer>  
     <script src="js/config.js"></script>
+    <script src="js/core/bleManager.js"></script>
     <script src="js/main.js"></script>
         <script>
         (function () {

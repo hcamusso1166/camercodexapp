@@ -142,40 +142,6 @@ if (estadoBLEIcon && navigator.bluetooth) {
     disconnectButton.addEventListener('click', disconnectDevice);
   }
 
-if (window.bleManager) {
-    window.bleManager.ensureConnected().catch(() => {});
-
-    window.bleManager.onStatus((status) => {
-      if (status.type === 'connected') {
-        if (bleStateContainer) {
-          bleStateContainer.innerHTML = status.name || 'Device connected';
-          bleStateContainer.style.color = '#24af37';
-        }
-        actualizarIconoConexionBLE('conectado');
-        limpiarDatos();
-        actualizarAccion('Leer carta');
-
-        const path = window.location.pathname;
-        if (path.includes('pegriloso.html')) actualizarAccion('Registrar Bala de Plata');
-        if (path.includes('elefantes.html')) actualizarAccion('Leer carta y REPETIR la lectura de la PRIMERA carta para finalizar la dada');
-        if (path.includes('momias.html')) actualizarAccion('Acercar Sarcófago para descubrir el color');
-        if (path.includes('dadoR.html')) actualizarAccion('Leer dado');
-      } else if (status.type === 'disconnected') {
-        onDisconnected();
-      } else if (status.type === 'battery' && typeof status.level === 'number') {
-        actualizarIconoBateria(status.level);
-      }
-    });
-
-    window.addEventListener('blemanager:characteristicvaluechanged', (evt) => {
-      const dataView = evt.detail?.value;
-      if (dataView) {
-        handleCharacteristicChange({ target: { value: dataView } });
-      }
-    });
-  }
-
-
   if (onButton) {
     onButton.addEventListener('click', () => writeOnCharacteristic(1));
   }
@@ -509,17 +475,93 @@ function actualizarAccion(accion) {
 }
 // Connect to BLE Device
 function connectToDevice() {
-  if (!window.bleManager) {
-    console.warn('bleManager no disponible');
-    return Promise.reject(new Error('bleManager no disponible'));
-  }
   console.log('Initializing Bluetooth...');
-  return window.bleManager.connect().catch(error => {
-    console.log('Error: ', error);
-    throw error;
-  });
-}
+  navigator.bluetooth.requestDevice({
+    filters: [{ name: deviceName }],
+    optionalServices: [bleService]
+  })
+    .then(device => {
+      console.log('Device Selected:', device.name);
+      bleStateContainer.innerHTML = device.name;
 
+
+      //bleStateContainer.style.color = "#24af37";
+      // Limpiar datos antes de la nueva conexión
+      //limpiarDatos();  // Limpiar TAGs y arrays previos
+      device.addEventListener('gattserverdisconnected', onDisconnected);
+      return device.gatt.connect();
+    })
+    .then(gattServer => {
+      bleServer = gattServer;
+      console.log("Connected to GATT Server");
+      return bleServer.getPrimaryService(bleService);
+    })
+    .then(service => {
+      bleServiceFound = service;
+      console.log("Service discovered:", service.uuid);
+
+    return service.getCharacteristic(sensorCharacteristic)
+      .then(sensorChar => {
+        return Promise.all([
+          sensorChar,
+          service.getCharacteristic(batteryCharacteristic).catch(err => {
+            console.warn("⚠️ No se pudo obtener la característica de batería:", err);
+            return null; // evitar que falle toda la promesa
+          })
+        ]);
+      });
+
+    })
+.then(([sensorChar, batteryChar]) => {
+  console.log("Característica sensor descubierta:", sensorChar.uuid);
+  if (batteryChar) {
+    console.log("Característica batería descubierta:", batteryChar.uuid);
+  } else {
+    console.warn("Característica de batería no disponible.");
+  }
+
+  sensorCharacteristicFound = sensorChar;
+
+  // Reiniciar característica sensor
+  sensorChar.writeValue(new Uint8Array([0])).then(() => {
+    console.log("Característica BLE reiniciada.");
+    sensorChar.addEventListener('characteristicvaluechanged', handleCharacteristicChange);
+    sensorChar.startNotifications();
+    console.log("Notificaciones de sensor iniciadas.");
+
+    actualizarIconoConexionBLE("conectado");
+    bleStateContainer.style.color = "#24af37";
+    limpiarDatos();
+    actualizarAccion("Leer carta");
+
+    const path = window.location.pathname;
+    if (path.includes("pegriloso.html")) actualizarAccion("Registrar Bala de Plata");
+    if (path.includes("elefantes.html")) actualizarAccion("Leer carta y REPETIR la lectura de la PRIMERA carta para finalizar la dada");
+    if (path.includes("momias.html")) actualizarAccion("Acercar Sarcófago para descubrir el color");
+    if (path.includes("dadoR.html")) actualizarAccion("Leer dado");
+  });
+
+  // 🔋 Manejo de batería
+    if (batteryChar) {
+
+      batteryChar.addEventListener('characteristicvaluechanged', handleBatteryChange);
+
+      setTimeout(() => {
+      batteryChar.startNotifications().then(() => {
+        console.log("🔔 Notificaciones de batería iniciadas (con delay)");
+      }).catch(err => {
+        console.warn("❌ Error al iniciar notificaciones de batería:", err);
+      });
+      }, 150);  // esperar 150ms para garantizar que el descriptor esté activo
+    }
+})
+
+
+
+    .catch(error => {
+      console.log('Error: ', error);
+    });
+}
 
 function onDisconnected(event) {
   console.log('Device Disconnected.');
@@ -707,6 +749,7 @@ const len = dataView.byteLength;
       reproducirAudioColor(color);
       break;
     case "elefantes.html":
+    case "coleccionista.html":
     case "perdonenMiInmodestia.html":
       guardarTag(mvalor);
       break;
@@ -848,39 +891,59 @@ function reproducirAudioEnPoker(nombreArchivo) {
 }
 // Función para escribir en la característica del LED. Esta función se llama desde los botones de encendido y apagado
 function writeOnCharacteristic(value) {
-    if (!window.bleManager) {
-    window.alert('Bluetooth manager no disponible.');
-    return;
-  }
-  
-  window.bleManager.writeLed(value)
-    .then(() => {
-      if (latestValueSent) latestValueSent.innerHTML = value;
-      console.log('Value written to LEDcharacteristic:', value);
-    })
-    .catch(error => {
-      console.error('Error writing to the LED characteristic: ', error);
-      window.alert('Bluetooth is not connected. Cannot write to characteristic. \n Connect to BLE first!');
-    });
-}
+  if (bleServer && bleServer.connected) {
+    bleServiceFound.getCharacteristic(ledCharacteristic)
+      .then(characteristic => {
+        //console.log("Found the LED characteristic: ", characteristic.uuid);
+        const data = new Uint8Array([value]);
+        return characteristic.writeValue(data);
+      })
+      .then(() => {
+        if (latestValueSent) latestValueSent.innerHTML = value;
 
+        console.log("Value written to LEDcharacteristic:", value);
+      })
+      .catch(error => {
+        console.error("Error writing to the LED characteristic: ", error);
+      });
+  } else {
+    //console.error("Bluetooth is not connected. Cannot write to characteristic.");
+    window.alert("Bluetooth is not connected. Cannot write to characteristic. \n Connect to BLE first!");
+  }
+}
 
 function disconnectDevice() {
-   if (!window.bleManager) {
-    console.error('Bluetooth manager no disponible.');
-    window.alert('Bluetooth manager no disponible.');
-    return;
+  //console.log("Disconnect Device.");
+  if (bleServer && bleServer.connected) {
+    if (sensorCharacteristicFound) {
+      sensorCharacteristicFound.stopNotifications()
+        .then(() => {
+          //console.log("Notifications Stopped");
+          return bleServer.disconnect();
+        })
+        .then(() => {
+          //console.log("Device Disconnected");
+          bleStateContainer.innerHTML = "Device Disconnected";
+          bleStateContainer.style.color = "#d13a30";
+          if (accionMagoMensaje) {
+            accionMagoMensaje.textContent = "Conectar el dispositivo BLE";
+          }
+          if (typeof resetLecturaQSlots === 'function') {
+            resetLecturaQSlots();
+          }
+          
+        })
+        .catch(error => {
+          console.log("An error occurred:", error);
+        });
+    } else {
+      console.log("No characteristic found to disconnect.");
+    }
+  } else {
+    console.error("Bluetooth is not connected.");
+    window.alert("Bluetooth is not connected.");
   }
-
-  if (!window.bleManager.isConnected()) {
-    console.error('Bluetooth is not connected.');
-    window.alert('Bluetooth is not connected.');
-    return;
-  }
-
-  window.bleManager.disconnect();
 }
-
 
 function getDateTime() {
   const currentdate = new Date();
@@ -913,7 +976,7 @@ function getDateTime() {
               bleMessages.classList.remove("visible");
             }, 5000);
           }
-          if (menuDropdown) menuDropdown.classList.add("hidden");
+          menuDropdown.classList.add("hidden");
         });
              
       }
@@ -927,10 +990,6 @@ function getDateTime() {
     }
     );
 document.addEventListener('click', (e) => {
-    if (!menuDropdown || !menuToggle) {
-    return;
-  }
-
   const target = e.target;
 
   // Si el click NO es dentro del menú ni sobre el icono, cerrar menú
