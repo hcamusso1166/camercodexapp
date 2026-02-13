@@ -416,6 +416,7 @@ const ROUTINE_ANTENNA_TYPES = Object.freeze({
 
 const ROUTINE_ANTENNA_POLICIES = Object.freeze({
   "lecturaQ.html": ROUTINE_ANTENNA_TYPES.SECONDARY_ONLY,
+  "bookTestImposible.html": ROUTINE_ANTENNA_TYPES.ALL,
   // Agregar aquí rutinas adicionales cuando necesiten soportar otras antenas
 });
 
@@ -432,9 +433,9 @@ function shouldProcessAntennaForPolicy(antennaId, policy) {
     case ROUTINE_ANTENNA_TYPES.PRIMARY_ONLY:
       return antennaId === 1 || antennaId === 9; // incluir 9 como caso especial si es necesario para algunas rutinas, estuche azul
     case ROUTINE_ANTENNA_TYPES.SECONDARY_ONLY:
-      return antennaId >= 2 && antennaId <= ANTENNA_ID_MAX;
+      return antennaId >= 2 && antennaId <= 6;
     case ROUTINE_ANTENNA_TYPES.ALL:
-      return isAntennaIdInRange(antennaId);
+      return antennaId >= 1 && antennaId <= 6;
     default:
       return antennaId === 1;
   }
@@ -460,8 +461,11 @@ function limpiarDatos() {
   if (retrievedValue) retrievedValue.innerHTML = '';
   if (latestValueSent) latestValueSent.innerHTML = '';
   if (timestampContainer) timestampContainer.innerHTML = '';
-    if (typeof resetLecturaQSlots === 'function') {
+  if (typeof resetLecturaQSlots === 'function') {
     resetLecturaQSlots();
+  }
+  if (typeof resetBookTestImposible === 'function') {
+    resetBookTestImposible();
   }
   console.log("Datos limpiados");
 }
@@ -793,6 +797,9 @@ const len = dataView.byteLength;
     case "lecturaQ.html":
       registrarLecturaQ({ mvalor, antennaId: camerAntennaId });
       break;
+    case "bookTestImposible.html":
+      registrarBookTestImposible({ mvalor, antennaId: camerAntennaId });
+      break;
     default:
       break;
   }
@@ -831,6 +838,9 @@ const len = dataView.byteLength;
         break;
       case "lecturaQ.html":
         // La vista específica de LecturaQ se gestiona desde su rutina dedicada.
+        break;
+      case "bookTestImposible.html":
+        // La vista específica se gestiona desde su rutina dedicada.
         break;
       default:
         retrievedValue.innerHTML = cartasPoker[mvalor];
