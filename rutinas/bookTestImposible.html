@@ -115,7 +115,16 @@
           <img src="../icons/bluetooth_disabled.svg" alt="Disconnect Bluetooth Icon" id="icon-left">
           Desconectar
         </button>
-        <p class="gray-label">BLE state: <strong><span id="bleState" style="color:#d13a30;">Desconectado</span></strong></p>
+        <div class="gray-label">
+          BLE primario (antena 1/9):
+          <strong><span id="bleState" style="color:#d13a30;">Desconectado</span></strong>
+          <small id="blePrimaryRef"></small>
+        </div>
+        <div class="gray-label">
+          BLE multiantena (2 a 6):
+          <strong><span id="bleStateSecondary" style="color:#d13a30;">Desconectado</span></strong>
+          <small id="bleSecondaryRef"></small>
+        </div>
       </div>
     </div>
 

@@ -400,6 +400,9 @@ if (popupCloseBtn && popupModal && popupBody && menuDropdown) {
 const retrievedValue = document.getElementById('valueContainer');
 const latestValueSent = document.getElementById('valueSent');
 const bleStateContainer = document.getElementById('bleState');
+const bleStateSecondaryContainer = document.getElementById('bleStateSecondary');
+const blePrimaryRefContainer = document.getElementById('blePrimaryRef');
+const bleSecondaryRefContainer = document.getElementById('bleSecondaryRef');
 const accionMagoMensaje = document.getElementById('accionMagoMensaje');
 
 const timestampContainer = document.getElementById('timestamp');
@@ -459,6 +462,74 @@ let camerAntennaId  = 0;
 let camerFlags      = 0;
 let camerSeq        = 0;
 
+const isBookTestImposibleView = currentView === "bookTestImposible.html";
+const characteristicDeviceMap = new WeakMap();
+const bookTestConnections = [];
+
+function formatBleReference(device) {
+  if (!device) return "";
+  if (device.id) return `(ref: ${device.id})`;
+  if (device.name) return `(ref: ${device.name})`;
+  return "";
+}
+
+function setBookTestLineState(role, statusText, color, refText = "") {
+  const isPrimary = role === "primary";
+  const statusNode = isPrimary ? bleStateContainer : bleStateSecondaryContainer;
+  const refNode = isPrimary ? blePrimaryRefContainer : bleSecondaryRefContainer;
+
+  if (statusNode) {
+    statusNode.textContent = statusText;
+    statusNode.style.color = color;
+  }
+  if (refNode) {
+    refNode.textContent = refText;
+  }
+}
+
+function getRoleByAntennaId(antennaId) {
+  if (isPrimaryAntennaId(antennaId)) return "primary";
+  if (antennaId >= 2 && antennaId <= 6) return "secondary";
+  return "unknown";
+}
+
+function ensureBookTestConnectionRole(connectionInfo, antennaId) {
+  if (!isBookTestImposibleView || !connectionInfo) return;
+
+  const detectedRole = getRoleByAntennaId(antennaId);
+  if (detectedRole === "unknown" || connectionInfo.role === detectedRole) return;
+
+  connectionInfo.role = detectedRole;
+  const roleLabel = detectedRole === "primary" ? "Conectado" : "Conectado";
+  setBookTestLineState(detectedRole, roleLabel, "#24af37", formatBleReference(connectionInfo.device));
+}
+
+function getNextPendingRole() {
+  const hasPrimary = bookTestConnections.some(conn => conn.role === "primary");
+  if (!hasPrimary) return "primary";
+  const hasSecondary = bookTestConnections.some(conn => conn.role === "secondary");
+  if (!hasSecondary) return "secondary";
+  return "unknown";
+}
+
+function setPendingBookTestState(connectionInfo) {
+  const pendingRole = getNextPendingRole();
+  connectionInfo.role = pendingRole;
+
+  if (pendingRole === "unknown") return;
+
+  setBookTestLineState(
+    pendingRole,
+    "Conectado (esperando lectura)",
+    "#f3b13f",
+    formatBleReference(connectionInfo.device)
+  );
+}
+
+function onBookTestDisconnected(connectionInfo) {
+  const role = connectionInfo?.role === "secondary" ? "secondary" : "primary";
+  setBookTestLineState(role, "Desconectado", "#d13a30", "");
+}
 
 // Función que limpia los TAGs y valores anteriores
 function limpiarDatos() {
@@ -484,88 +555,108 @@ function actualizarAccion(accion) {
 // Connect to BLE Device
 function connectToDevice() {
   console.log('Initializing Bluetooth...');
+
+    if (isBookTestImposibleView && bookTestConnections.length >= 2) {
+    console.warn("Ya hay dos dispositivos conectados para Book Test Imposible.");
+    return;
+  }
+
   navigator.bluetooth.requestDevice({
     filters: [{ name: deviceName }],
     optionalServices: [bleService]
   })
     .then(device => {
       console.log('Device Selected:', device.name);
-      bleStateContainer.innerHTML = device.name;
 
+      const connectionInfo = { device, role: isBookTestImposibleView ? getNextPendingRole() : "primary" };
+      if (isBookTestImposibleView) {
+        bookTestConnections.push(connectionInfo);
+        setPendingBookTestState(connectionInfo);
+      } else if (bleStateContainer) {
+        bleStateContainer.innerHTML = device.name;
+      }
 
-      //bleStateContainer.style.color = "#24af37";
-      // Limpiar datos antes de la nueva conexión
-      //limpiarDatos();  // Limpiar TAGs y arrays previos
-      device.addEventListener('gattserverdisconnected', onDisconnected);
-      return device.gatt.connect();
+      device.addEventListener('gattserverdisconnected', () => {
+        if (isBookTestImposibleView) {
+          const index = bookTestConnections.indexOf(connectionInfo);
+          if (index >= 0) bookTestConnections.splice(index, 1);
+          onBookTestDisconnected(connectionInfo);
+          if (bookTestConnections.length === 0) {
+            actualizarIconoConexionBLE("desconectado");
+            actualizarAccion("Conectar el dispositivo BLE");
+          }
+        } else {
+          onDisconnected();
+        }
+      });
+
+      return device.gatt.connect().then(gattServer => ({ gattServer, connectionInfo }));
     })
-    .then(gattServer => {
+    .then(({ gattServer, connectionInfo }) => {
       bleServer = gattServer;
+      connectionInfo.server = gattServer;
       console.log("Connected to GATT Server");
-      return bleServer.getPrimaryService(bleService);
+      return gattServer.getPrimaryService(bleService).then(service => ({ service, connectionInfo }));
     })
-    .then(service => {
+    .then(({ service, connectionInfo }) => {
       bleServiceFound = service;
+      connectionInfo.service = service;
       console.log("Service discovered:", service.uuid);
 
-    return service.getCharacteristic(sensorCharacteristic)
-      .then(sensorChar => {
-        return Promise.all([
-          sensorChar,
-          service.getCharacteristic(batteryCharacteristic).catch(err => {
-            console.warn("⚠️ No se pudo obtener la característica de batería:", err);
-            return null; // evitar que falle toda la promesa
-          })
-        ]);
-      });
-
+      return service.getCharacteristic(sensorCharacteristic)
+        .then(sensorChar => {
+          return Promise.all([
+            sensorChar,
+            service.getCharacteristic(batteryCharacteristic).catch(err => {
+              console.warn("⚠️ No se pudo obtener la característica de batería:", err);
+              return null;
+            })
+          ]).then(([sensor, battery]) => ({ sensor, battery, connectionInfo }));
+        });
     })
-.then(([sensorChar, batteryChar]) => {
-  console.log("Característica sensor descubierta:", sensorChar.uuid);
-  if (batteryChar) {
-    console.log("Característica batería descubierta:", batteryChar.uuid);
-  } else {
-    console.warn("Característica de batería no disponible.");
-  }
+      .then(({ sensor, battery, connectionInfo }) => {
+      console.log("Característica sensor descubierta:", sensor.uuid);
+      if (battery) {
+        console.log("Característica batería descubierta:", battery.uuid);
+      } else {
+        console.warn("Característica de batería no disponible.");
+      }
 
-  sensorCharacteristicFound = sensorChar;
+      sensorCharacteristicFound = sensor;
+      connectionInfo.sensor = sensor;
+      characteristicDeviceMap.set(sensor, connectionInfo);
 
-  // Reiniciar característica sensor
-  sensorChar.writeValue(new Uint8Array([0])).then(() => {
-    console.log("Característica BLE reiniciada.");
-    sensorChar.addEventListener('characteristicvaluechanged', handleCharacteristicChange);
-    sensorChar.startNotifications();
-    console.log("Notificaciones de sensor iniciadas.");
+      sensor.writeValue(new Uint8Array([0])).then(() => {
+        console.log("Característica BLE reiniciada.");
+        sensor.addEventListener('characteristicvaluechanged', handleCharacteristicChange);
+        sensor.startNotifications();
+        console.log("Notificaciones de sensor iniciadas.");
 
-    actualizarIconoConexionBLE("conectado");
-    bleStateContainer.style.color = "#24af37";
-    limpiarDatos();
-    actualizarAccion("Leer carta");
+actualizarIconoConexionBLE("conectado");
+        if (!isBookTestImposibleView && bleStateContainer) {
+          bleStateContainer.style.color = "#24af37";
+        }
+        limpiarDatos();
+        actualizarAccion("Leer carta");
 
-    const path = window.location.pathname;
-    if (path.includes("pegriloso.html")) actualizarAccion("Registrar Bala de Plata");
-    if (path.includes("elefantes.html")) actualizarAccion("Leer carta y REPETIR la lectura de la PRIMERA carta para finalizar la dada");
-    if (path.includes("momias.html")) actualizarAccion("Acercar Sarcófago para descubrir el color");
-    if (path.includes("dadoR.html")) actualizarAccion("Leer dado");
-  });
-
-  // 🔋 Manejo de batería
-    if (batteryChar) {
-
-      batteryChar.addEventListener('characteristicvaluechanged', handleBatteryChange);
-
-      setTimeout(() => {
-      batteryChar.startNotifications().then(() => {
-        console.log("🔔 Notificaciones de batería iniciadas (con delay)");
-      }).catch(err => {
-        console.warn("❌ Error al iniciar notificaciones de batería:", err);
+        const path = window.location.pathname;
+        if (path.includes("pegriloso.html")) actualizarAccion("Registrar Bala de Plata");
+        if (path.includes("elefantes.html")) actualizarAccion("Leer carta y REPETIR la lectura de la PRIMERA carta para finalizar la dada");
+        if (path.includes("momias.html")) actualizarAccion("Acercar Sarcófago para descubrir el color");
+        if (path.includes("dadoR.html")) actualizarAccion("Leer dado");
       });
-      }, 150);  // esperar 150ms para garantizar que el descriptor esté activo
-    }
-})
-
-
-
+      
+      if (battery) {
+        battery.addEventListener('characteristicvaluechanged', handleBatteryChange);
+        setTimeout(() => {
+          battery.startNotifications().then(() => {
+            console.log("🔔 Notificaciones de batería iniciadas (con delay)");
+          }).catch(err => {
+            console.warn("❌ Error al iniciar notificaciones de batería:", err);
+          });
+        }, 150);
+      }
+    })
     .catch(error => {
       console.log('Error: ', error);
     });
@@ -573,8 +664,10 @@ function connectToDevice() {
 
 function onDisconnected(event) {
   console.log('Device Disconnected.');
-  bleStateContainer.innerHTML = "Device disconnected";
-  bleStateContainer.style.color = "#d13a30";
+  if (bleStateContainer) {
+    bleStateContainer.innerHTML = "Desconectado";
+    bleStateContainer.style.color = "#d13a30";
+  }
   actualizarIconoConexionBLE("desconectado");
   actualizarAccion("Conectar el dispositivo BLE");
 
@@ -678,7 +771,13 @@ const len = dataView.byteLength;
     console.warn("Versión CamerPacket no soportada:", camerVersion);
     return; // Solo aceptamos CamerPacketv1.0
   }
-    if (!isAntennaIdInRange(camerAntennaId)) {
+
+  const sourceConnection = characteristicDeviceMap.get(event.target);
+  if (sourceConnection) {
+    ensureBookTestConnectionRole(sourceConnection, camerAntennaId);
+  }
+
+  if (!isAntennaIdInRange(camerAntennaId)) {
     console.warn("antennaId fuera de rango:", camerAntennaId);
     return;
   }
@@ -927,25 +1026,55 @@ function writeOnCharacteristic(value) {
 }
 
 function disconnectDevice() {
-  //console.log("Disconnect Device.");
+if (isBookTestImposibleView) {
+    if (!bookTestConnections.length) {
+      console.error("Bluetooth is not connected.");
+      window.alert("Bluetooth is not connected.");
+      return;
+    }
+
+    const disconnections = bookTestConnections.map(conn => {
+      const stopPromise = conn.sensor
+        ? conn.sensor.stopNotifications().catch(() => undefined)
+        : Promise.resolve();
+
+      return stopPromise.then(() => {
+        if (conn.server?.connected) {
+          conn.server.disconnect();
+        }
+      });
+    });
+
+    Promise.all(disconnections)
+      .then(() => {
+        bookTestConnections.length = 0;
+        setBookTestLineState("primary", "Desconectado", "#d13a30", "");
+        setBookTestLineState("secondary", "Desconectado", "#d13a30", "");
+        actualizarIconoConexionBLE("desconectado");
+        actualizarAccion("Conectar el dispositivo BLE");
+      })
+      .catch(error => {
+        console.log("An error occurred:", error);
+      });
+
+    return;
+  }
+
   if (bleServer && bleServer.connected) {
     if (sensorCharacteristicFound) {
       sensorCharacteristicFound.stopNotifications()
+        .then(() => bleServer.disconnect())
         .then(() => {
-          //console.log("Notifications Stopped");
-          return bleServer.disconnect();
-        })
-        .then(() => {
-          //console.log("Device Disconnected");
-          bleStateContainer.innerHTML = "Device Disconnected";
-          bleStateContainer.style.color = "#d13a30";
+          if (bleStateContainer) {
+            bleStateContainer.innerHTML = "Desconectado";
+            bleStateContainer.style.color = "#d13a30";
+          }
           if (accionMagoMensaje) {
             accionMagoMensaje.textContent = "Conectar el dispositivo BLE";
           }
           if (typeof resetLecturaQSlots === 'function') {
             resetLecturaQSlots();
           }
-          
         })
         .catch(error => {
           console.log("An error occurred:", error);
