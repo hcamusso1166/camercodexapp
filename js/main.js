@@ -409,9 +409,9 @@ const ANTENNA_ID_MIN = 1;
 const ANTENNA_ID_MAX = 9;
 
 const ROUTINE_ANTENNA_TYPES = Object.freeze({
-  PRIMARY_ONLY: "primaryOnly",      // Solo procesa antennaId = 1
+  PRIMARY_ONLY: "primaryOnly",      // Solo procesa antennaId principal (1 o 9)
   SECONDARY_ONLY: "secondaryOnly",  // Solo procesa antennaId = 2..6
-  ALL: "all"                         // Procesa antennaId = 1..6
+  ALL: "all"                         // Procesa antennaId principal (1/9) + 2..6
 });
 
 const ROUTINE_ANTENNA_POLICIES = Object.freeze({
@@ -428,16 +428,20 @@ function isAntennaIdInRange(antennaId) {
   return antennaId >= ANTENNA_ID_MIN && antennaId <= ANTENNA_ID_MAX;
 }
 
+function isPrimaryAntennaId(antennaId) {
+  return antennaId === 1 || antennaId === 9;
+}
+
 function shouldProcessAntennaForPolicy(antennaId, policy) {
   switch (policy) {
     case ROUTINE_ANTENNA_TYPES.PRIMARY_ONLY:
-      return antennaId === 1 || antennaId === 9; // incluir 9 como caso especial si es necesario para algunas rutinas, estuche azul
+      return isPrimaryAntennaId(antennaId); // incluye 9 como caso especial si es necesario para algunas rutinas, estuche azul
     case ROUTINE_ANTENNA_TYPES.SECONDARY_ONLY:
       return antennaId >= 2 && antennaId <= 6;
     case ROUTINE_ANTENNA_TYPES.ALL:
-      return antennaId >= 1 && antennaId <= 6;
+      return isPrimaryAntennaId(antennaId) || (antennaId >= 2 && antennaId <= 6);// Procesa antennaId principal (1/9) + 2..6
     default:
-      return antennaId === 1;
+      return isPrimaryAntennaId(antennaId); //(1/9)
   }
 }
 

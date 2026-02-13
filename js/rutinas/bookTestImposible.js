@@ -183,7 +183,7 @@ function registrarBookTestImposible({ mvalor, antennaId }) {
     return;
   }
 
-  if (antennaId === 1) {
+  if (antennaId === 1 || antennaId === 9) {
     bookTestState.titulo.raw = mvalor;
     bookTestState.titulo.value = formatearTituloBookTest(normalizado);
     bookTestState.titulo.lastUpdated = new Date();
