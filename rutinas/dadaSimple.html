@@ -101,12 +101,18 @@
   // Cambiar por el año requerido para esta rutina
   const REQUIRED_MEMBERSHIP = 2026;
 
-  // Si todavía no está cacheado, membership.js usa cache local.
-  // En práctica, el menú lo habrá seteado antes. Igual, defendemos:
-  if (!CC_Membership.canAccess(REQUIRED_MEMBERSHIP)) {
-    alert("Tu membresía no habilita esta rutina.");
-    window.location.href = "/index.html"; // o /main.html según tu flujo
-  }
+  (async function enforceMembershipAccess() {
+    // Forzamos refresh de membresía desde Supabase cuando sea posible.
+    await CC_Membership.ensureMembershipMax(true);
+
+    // Log de depuración: usuario actual + licencia/membresía detectada.
+    await CC_Membership.logCurrentUserAndMembership();
+
+    if (!CC_Membership.canAccess(REQUIRED_MEMBERSHIP)) {
+      alert("Tu membresía no habilita esta rutina.");
+      window.location.href = "/index.html"; // o /main.html según tu flujo
+    }
+  })();
 </script>
 <script src="../js/config.js"></script>
 <script src="../js/main.js"></script>

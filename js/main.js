@@ -1135,6 +1135,9 @@ function getDateTime() {
 document.addEventListener('click', (e) => {
   const target = e.target;
 
+    // Hay páginas que no renderizan menú; evitar errores por null.
+  if (!menuDropdown || !menuToggle) return;
+
   // Si el click NO es dentro del menú ni sobre el icono, cerrar menú
   if (!menuDropdown.contains(target) && target !== menuToggle) {
     menuDropdown.classList.add('hidden');
