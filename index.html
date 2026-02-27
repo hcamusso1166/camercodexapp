@@ -29,34 +29,7 @@
     <header>Camer Codex <sup>&reg;</sup></header>
     <div class="slogan">Tecnología Secreta para Ilusionistas</div>
     <div class="menu"> 
-    <div class="rutinas-container">
-      <div class="rutina-card"><button onclick="location.href='rutinas/fueraDeEsteMundo.html'">1. Fuera de Este Mundo</button></div>
-      <div class="rutina-card"><button onclick="location.href='rutinas/pegriloso.html'">2. Un Juego "Pegriloso"</button></div>
-      <div class="rutina-card"><button onclick="location.href='rutinas/elefantes.html'">3. Memoria de Elefante</button></div>
-      <div class="rutina-card"><button onclick="location.href='rutinas/momias.html'">4. Momias de Camer</button></div>
-      <div class="rutina-card"><button onclick="location.href='rutinas/theboss.html'">5. The Boss</button></div>
-      <div class="rutina-card"><button onclick="location.href='rutinas/pruebaDeFuego.html'">6. Prueba de Fuego</button></div>
-      <div class="rutina-card"><button onclick="location.href='rutinas/dadaSimple.html'">7. Imposible de ver</button></div>
-      <div class="rutina-card"><button onclick="location.href='rutinas/oraculo.html'">8. El Oráculo Dorado</button></div>
-      <div class="rutina-card"><button onclick="location.href='rutinas/manoPoker.html'">9. La Mano del Destino</button></div>
-      <div class="rutina-card"><button onclick="location.href='rutinas/dadaSimple.html'">10. Hearts & Crafts</button></div>
-      <div class="rutina-card"><button onclick="location.href='rutinas/dadaSimple.html'">11. Truco, Carrera y Corazón</button></div>
-      <div class="rutina-card"><button onclick="location.href='rutinas/ojosVendados.html'">12. Con Los Ojos Vendados</button></div>
-      <div class="rutina-card"><button onclick="location.href='rutinas/dadaSimple.html'">13. El Sospechoso de Siempre</button></div>
-      <div class="rutina-card"><button onclick="location.href='rutinas/coleccionista.html'">14. El Coleccionista</button></div> 
-      <div class="rutina-card"><button onclick="location.href='rutinas/dadoR.html'">15. Dado "R"</button></div> 
-      <div class="rutina-card"><button onclick="location.href='rutinas/rapidoNumeroso.html'">16. Rápido y Numeroso</button></div> 
-      <div class="rutina-card"><button onclick="location.href='rutinas/voluntadPrestada.html'">17. Voluntad Prestada</button></div>
-      <div class="rutina-card"><button onclick="location.href='rutinas/tegMagico.html'">18. TEG Mágico </button></div>
-      <div class="rutina-card"><button onclick="location.href='rutinas/voluntadPrestada.html'">19. Me viste la Cara</button></div>
-      <div class="rutina-card"><button onclick="location.href='rutinas/perdonenMiInmodestia.html'">20. Perdonen mi Inmodestia</button></div>
-
-      <div class="rutina-card"><button onclick="location.href='rutinas/dadaSimple.html'">25. Lectura Simple - Continua</button></div>
-      <div class="rutina-card"><button onclick="location.href='rutinas/lecturaQ.html'">26. LecturaQ</button></div>
-      <div class="rutina-card"><button onclick="location.href='rutinas/bookTestImposible.html'">27. Book Test Imposible</button></div>
-      <div class="rutina-card"><button onclick="location.href='rutinas/controlFrecuencia.html'">50. Control de frecuencia</button></div>
-    </div>
-
+    <div class="rutinas-container" id="rutinasContainer"></div>
 <!-- Paginación -->
 <div class="pagination">
     <button class="page-btn"><img src="../icons/arrow_circle_left.svg" alt="Home" ></button>
@@ -102,6 +75,48 @@
     <script type="module">
         import { requireAuth } from "./js/auth/authGuard.js";
         await requireAuth({ returnTo: window.location.pathname });
+    </script>
+     <script>
+        const DEFAULT_MEMBERSHIP_REQUIRED = 2026;
+        const RUTINAS_MENU = [
+            { id: "fuera-de-este-mundo", order: 1, title: "Fuera de Este Mundo", href: "rutinas/fueraDeEsteMundo.html", membership_required: 2026 },
+            { id: "pegriloso", order: 2, title: "Un Juego \"Pegriloso\"", href: "rutinas/pegriloso.html", membership_required: 2026 },
+            { id: "elefante", order: 3, title: "Memoria de Elefante", href: "rutinas/elefantes.html", membership_required: 2026 },
+            { id: "momias", order: 4, title: "Momias de Camer", href: "rutinas/momias.html", membership_required: 2026 },
+            { id: "the-boss", order: 5, title: "The Boss", href: "rutinas/theboss.html", membership_required: 2026 },
+            { id: "prueba-de-fuego", order: 6, title: "Prueba de Fuego", href: "rutinas/pruebaDeFuego.html", membership_required: 2026 },
+            { id: "imposible-de-ver", order: 7, title: "Imposible de ver", href: "rutinas/dadaSimple.html", membership_required: 2026 },
+            { id: "oraculo-dorado", order: 8, title: "El Oráculo Dorado", href: "rutinas/oraculo.html", membership_required: 2026 },
+            { id: "mano-del-destino", order: 9, title: "La Mano del Destino", href: "rutinas/manoPoker.html", membership_required: 2026 },
+            { id: "hearts-and-crafts", order: 10, title: "Hearts & Crafts", href: "rutinas/dadaSimple.html", membership_required: 2026 },
+            { id: "truco-carrera-corazon", order: 11, title: "Truco, Carrera y Corazón", href: "rutinas/dadaSimple.html", membership_required: 2026 },
+            { id: "ojos-vendados", order: 12, title: "Con Los Ojos Vendados", href: "rutinas/ojosVendados.html", membership_required: 2026 },
+            { id: "sospechoso", order: 13, title: "El Sospechoso de Siempre", href: "rutinas/dadaSimple.html", membership_required: 2026 },
+            { id: "coleccionista", order: 14, title: "El Coleccionista", href: "rutinas/coleccionista.html", membership_required: 2026 },
+            { id: "dado-r", order: 15, title: "Dado \"R\"", href: "rutinas/dadoR.html", membership_required: 2026 },
+            { id: "rapido-numeroso", order: 16, title: "Rápido y Numeroso", href: "rutinas/rapidoNumeroso.html", membership_required: 2026 },
+            { id: "voluntad-prestada", order: 17, title: "Voluntad Prestada", href: "rutinas/voluntadPrestada.html", membership_required: 2026 },
+            { id: "teg-magico", order: 18, title: "TEG Mágico", href: "rutinas/tegMagico.html", membership_required: 2026 },
+            { id: "me-viste-la-cara", order: 19, title: "Me viste la Cara", href: "rutinas/voluntadPrestada.html", membership_required: 2026 },
+            { id: "inmodestia", order: 20, title: "Perdonen mi Inmodestia", href: "rutinas/perdonenMiInmodestia.html", membership_required: 2026 },
+            { id: "lectura-simple-continua", order: 25, title: "Lectura Simple - Continua", href: "rutinas/dadaSimple.html", membership_required: 2026 },
+            { id: "lectura-q", order: 26, title: "LecturaQ", href: "rutinas/lecturaQ.html", membership_required: 2026 },
+            { id: "book-test-imposible", order: 27, title: "Book Test Imposible", href: "rutinas/bookTestImposible.html", membership_required: 2027 },
+            { id: "control-frecuencia", order: 50, title: "Control de frecuencia", href: "rutinas/controlFrecuencia.html", membership_required: 2027 },
+        ].map((rutina) => ({
+            ...rutina,
+            membership_required: rutina.membership_required ?? DEFAULT_MEMBERSHIP_REQUIRED,
+        }));
+
+        const rutinasContainer = document.getElementById("rutinasContainer");
+
+        if (rutinasContainer) {
+            rutinasContainer.innerHTML = RUTINAS_MENU.map((rutina) => `
+                <div class="rutina-card" data-membership-required="${rutina.membership_required}">
+                    <button onclick="location.href='${rutina.href}'">${rutina.order}. ${rutina.title}</button>
+                </div>
+            `).join("");
+        }
     </script>
 </body>
 </html>
