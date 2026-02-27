@@ -30,7 +30,9 @@
     <div class="slogan">Tecnología Secreta para Ilusionistas</div>
     <div class="menu"> 
     <div class="rutinas-container" id="rutinasContainer"></div>
-<!-- Paginación -->
+
+
+    <!-- Paginación -->
 <div class="pagination">
     <button class="page-btn"><img src="../icons/arrow_circle_left.svg" alt="Home" ></button>
     <button class="page-btn"><img src="../icons/arrow_circle_right.svg" alt="Home" ></button>
@@ -76,7 +78,7 @@
         import { requireAuth } from "./js/auth/authGuard.js";
         await requireAuth({ returnTo: window.location.pathname });
     </script>
-     <script>
+    <script>
         const DEFAULT_MEMBERSHIP_REQUIRED = 2026;
         const RUTINAS_MENU = [
             { id: "fuera-de-este-mundo", order: 1, title: "Fuera de Este Mundo", href: "rutinas/fueraDeEsteMundo.html", membership_required: 2026 },

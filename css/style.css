@@ -97,6 +97,27 @@ main h3 {
 .menu button:hover {
   background-color: #d99c36;
 }
+
+.rutina-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  width: 100%;
+  text-decoration: none;
+}
+
+.locked {
+  opacity: 0.45;
+  filter: grayscale(1);
+  cursor: not-allowed;
+}
+
+.badge-locked {
+  margin-left: 8px;
+  font-size: 0.85em;
+  color: #f0f0f0;
+}
 .install-container {
   margin-top: auto;
   padding: 5px 0 0;
@@ -600,6 +621,7 @@ text-align: center;
 .rutina-card:hover {
   transform: translateY(-1px);
 }
+
 .rutina-card button {
   width: 90%;
   height: 80%; /* Ocupar buena parte del card */
