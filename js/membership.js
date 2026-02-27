@@ -19,6 +19,22 @@
     localStorage.setItem(KEY, value);
     localStorage.setItem(LEGACY_KEY, value);
   }
+ async function waitForSupabaseReady(timeoutMs) {
+    var start = Date.now();
+    var timeout = Number(timeoutMs);
+    if (!Number.isFinite(timeout) || timeout <= 0) timeout = 2000;
+
+    while (Date.now() - start < timeout) {
+      if (window.supabase && window.supabase.auth) {
+        return true;
+      }
+      await new Promise(function (resolve) {
+        setTimeout(resolve, 100);
+      });
+    }
+
+    return !!(window.supabase && window.supabase.auth);
+  }
 
   async function getAuthenticatedUser() {
     if (!window.supabase || !window.supabase.auth) {
@@ -73,6 +89,9 @@
     if (!forceRefresh && cached != null && cached > 0) {
       window.CC_MEMBERSHIP_MAX = cached;
       return cached;
+    }
+    if (!window.supabase || !window.supabase.auth) {
+      await waitForSupabaseReady(2000);
     }
 
     if (!window.supabase || !window.supabase.auth) {
