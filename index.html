@@ -110,15 +110,122 @@
             membership_required: rutina.membership_required ?? DEFAULT_MEMBERSHIP_REQUIRED,
         }));
 
-        const rutinasContainer = document.getElementById("rutinasContainer");
+        function getMembershipApi() {
+            if (window.CC_Membership) return window.CC_Membership;
 
-        if (rutinasContainer) {
-            rutinasContainer.innerHTML = RUTINAS_MENU.map((rutina) => `
-                <div class="rutina-card" data-membership-required="${rutina.membership_required}">
-                    <button onclick="location.href='${rutina.href}'">${rutina.order}. ${rutina.title}</button>
-                </div>
-            `).join("");
+            const fallbackApi = {
+                async ensureMembershipMax() {
+                    return this.getMax();
+                },
+                getMax() {
+                    const value = Number(localStorage.getItem("cc_membership_max"));
+                    return Number.isFinite(value) ? value : DEFAULT_MEMBERSHIP_REQUIRED;
+                },
+                canAccess(required) {
+                    return this.getMax() >= required;
+                },
+            };
+
+            window.CC_Membership = fallbackApi;
+            return fallbackApi;
         }
+
+        function normalizeMembershipYear(value) {
+            if (typeof value === "number" && Number.isFinite(value)) return value;
+            if (typeof value === "string") {
+                const parsed = Number(value);
+                if (Number.isFinite(parsed)) return parsed;
+            }
+            if (value && typeof value === "object") {
+                const candidates = [
+                    value.max,
+                    value.membership_max,
+                    value.membership,
+                    value.year,
+                    value.level,
+                ];
+                for (const candidate of candidates) {
+                    const parsed = Number(candidate);
+                    if (Number.isFinite(parsed)) return parsed;
+                }
+            }
+            return DEFAULT_MEMBERSHIP_REQUIRED;
+        }
+
+        async function resolveAccess({ membershipApi, required, max }) {
+            try {
+                const result = await membershipApi.canAccess(required);
+                if (typeof result === "boolean") {
+                    if (!result && normalizeMembershipYear(max) >= required) {
+                        console.warn("[Membership] canAccess devolvió false con max suficiente. Se aplica fallback por max.");
+                        return true;
+                    }
+                    return result;
+                }
+            } catch (error) {
+                console.warn("[Membership] canAccess falló, aplicando fallback por max:", error);
+            }
+            return normalizeMembershipYear(max) >= required;
+        }
+
+        async function renderRutinasMenu() {
+            const CC_Membership = getMembershipApi();
+            await CC_Membership.ensureMembershipMax();
+            const maxRaw = CC_Membership.getMax();
+            const max = normalizeMembershipYear(maxRaw);
+            console.log("Membership max:", max);
+
+            const rutinasContainer = document.getElementById("rutinasContainer");
+            if (!rutinasContainer) return;
+
+            rutinasContainer.innerHTML = "";
+
+            for (const rutina of RUTINAS_MENU) {
+                const required = rutina.membership_required ?? DEFAULT_MEMBERSHIP_REQUIRED;
+                const enabled = await resolveAccess({ membershipApi: CC_Membership, required, max });
+
+                const card = document.createElement("div");
+                card.className = "rutina-card";
+                card.dataset.membershipRequired = String(required);
+
+                const button = document.createElement("button");
+                button.type = "button";
+                button.textContent = `${rutina.order}. ${rutina.title}`;
+
+                if (!enabled) {
+                    card.classList.add("locked");
+                    button.classList.add("locked");
+                    button.title = `Requiere membresía ${required}`;
+                    button.setAttribute("aria-label", `${rutina.title}. Requiere membresía ${required}`);
+
+                    const requiredText = document.createElement("span");
+                    requiredText.className = "required-membership-text";
+                    requiredText.textContent = `Requiere membresía ${required}`;
+
+                    const badge = document.createElement("span");
+                    badge.className = "badge-locked";
+                    badge.textContent = `🔒 ${required}`;
+
+                    button.appendChild(badge);
+                    button.addEventListener("click", (ev) => {
+                        ev.preventDefault();
+                        alert(`Rutina bloqueada. Requiere membresía ${required}.`);
+                    });
+
+                    card.appendChild(button);
+                    card.appendChild(requiredText);
+                } else {
+                    button.addEventListener("click", () => {
+                        location.href = rutina.href;
+                    });
+                    card.appendChild(button);
+                }
+
+                rutinasContainer.appendChild(card);
+            }
+        }
+
+        renderRutinasMenu();
     </script>
 </body>
 </html>
