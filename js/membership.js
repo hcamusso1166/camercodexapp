@@ -75,7 +75,14 @@
       return cached;
     }
 
-      try {
+    if (!window.supabase || !window.supabase.auth) {
+      var fallbackWithoutSupabase = cached != null ? cached : 0;
+      console.info("[Membership] Supabase no está listo en esta vista; se usa membership_max local:", fallbackWithoutSupabase);
+      window.CC_MEMBERSHIP_MAX = fallbackWithoutSupabase;
+      return fallbackWithoutSupabase;
+    }
+
+    try {
       var v = await fetchMax();
       setCached(v);
       window.CC_MEMBERSHIP_MAX = v;

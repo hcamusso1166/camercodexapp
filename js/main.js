@@ -5,7 +5,7 @@ function actualizarIconoConexionBLE(estado) {
   const icon = document.getElementById('estadoConexionBLE');
   
   if (!icon) {
-    console.warn("No se encontró el ícono de conexión BLE.");
+    console.info("[BLE] Ícono de conexión no presente en esta vista; se omite actualización visual.");
     return;
   }
   
@@ -215,17 +215,26 @@ if ('serviceWorker' in navigator && window.isSecureContext) {
   navigator.serviceWorker.register('/service-worker.js')
     .then(async reg => {
       console.log("✅ Service Worker registrado:", reg);
-      if ('sync' in reg) {
-        try {
-          await reg.sync.register('sync-cache');
-        } catch (err) {
-          console.warn('No se pudo registrar sync:', err);
-        }
-      }
+      await registerSyncWhenReady(reg);
     })
         .catch(err => console.warn("❌ Error al registrar SW:", err));
 } else {
   console.warn('Service Worker no disponible en este contexto');
+}
+
+async function registerSyncWhenReady(registration) {
+  if (!registration || !('sync' in registration)) {
+    return;
+  }
+
+  try {
+    const activeRegistration = registration.active
+      ? registration
+      : await navigator.serviceWorker.ready;
+    await activeRegistration.sync.register('sync-cache');
+  } catch (err) {
+    console.warn('No se pudo registrar sync:', err);
+  }
 }
 
 async function ensurePersistence() {
@@ -255,13 +264,7 @@ ensurePersistence();
 
 window.addEventListener('online', () => {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.ready.then(reg => {
-      if ('sync' in reg) {
-        reg.sync.register('sync-cache').catch(err =>
-          console.warn('No se pudo registrar sync:', err)
-        );
-      }
-    });
+    navigator.serviceWorker.ready.then(reg => registerSyncWhenReady(reg));
   }
 });
 
