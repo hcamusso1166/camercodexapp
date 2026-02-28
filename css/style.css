@@ -640,12 +640,18 @@ text-align: center;
 }
 /* Estilo para pantallas móviles */
 @media (max-width: 768px) {
+  .menu {
+    gap: 2px;
+  }
   .rutinas-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr); /* 2 columnas */
-    grid-template-rows: repeat(10, auto); /* 10 filas */
-    gap: 3px; /* Menor separación para aprovechar pantalla */
-    padding: 2px;
+    grid-template-rows: repeat(12, minmax(0, 1fr)); /* 12 filas */
+    gap: 2px; /* Tarjetas más pegadas */
+    padding: 0;
+    width: 100%;
+    height: calc(100dvh - 245px);
+    overflow: hidden;
   }
 
   .rutina-card {
@@ -653,25 +659,21 @@ text-align: center;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border-radius: 12px;
+    border-radius: 6px;
     aspect-ratio: auto;
     width: 100%;
-    min-height: 62px;
+    min-height: 0;
     padding: 2px 1px;
   }
 
-  .rutina-card.locked {
-    min-height: 74px;
-  }
-
   .rutina-card button {
-    height: auto;
-    min-height: 38px;
-    width: 96%;
-    margin: 0;
-    padding: 2px 4px;
-    font-size: 0.7em;
-    line-height: 1.15;
+    height: 90%;
+    min-height: 0;
+    width: 90%;
+    margin: 2px;
+    padding: 4px 4px;
+    font-size: 0.8em;
+    line-height: 1.05;
     border-radius: 8px;
   }
 
@@ -681,8 +683,8 @@ text-align: center;
   }
 
   .required-membership-text {
-    font-size: 0.54em;
-    line-height: 1.1;
+    font-size: 0.5em;
+    line-height: 1;
     margin-top: 0;
   }
   
@@ -691,9 +693,9 @@ text-align: center;
   }
 
   .page-btn {
-    width: 42px;
-    height: 42px;
-    margin: 6px;
+    width: 38px;
+    height: 38px;
+    margin: 4px;
   }
 }
 
@@ -743,7 +745,7 @@ text-align: center;
 /* Solo en pantallas muy pequeñas (por ejemplo, ≤ 360px) pasamos a 1 columna */
 @media (max-width: 360px) {
   .rutinas-container {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 /* Prioridades visuales para rutinas */
