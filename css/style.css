@@ -604,17 +604,21 @@ text-align: center;
 .rutinas-container {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(4, minmax(0, 1fr));
   gap: 5px;
   padding: 5px;
-  max-width: 100%;
+  width: min(100%, 1500px);
+  height: calc(100dvh - 205px);
+  max-height: 760px;
 }
 /* Cada tarjeta de rutina */
 .rutina-card {
   background-color: #1a1a1a;
   text-align: center;
   transition: transform 0.3s ease;
-  padding: 5px;
-  aspect-ratio: 1;
+  padding: 4px;
+  aspect-ratio: auto;
+  min-height: 0;
 }
 .rutina-card:hover {
   transform: translateY(-1px);
@@ -622,21 +626,42 @@ text-align: center;
 
 .rutina-card button {
   width: 90%;
-  height: 80%; /* Ocupar buena parte del card */
+  height: 78%; /* Ocupar buena parte del card */
   font-size: 0.8em;
   font-weight: 700;
-  padding: 5px;
-  margin: 5px;
+  padding: 4px;
+  margin: 3px;
+  line-height: 1.08;
 }
 
 .required-membership-text {
   display: block;
   width: 90%;
-  font-size: 0.62em;
+  font-size: 0.58em;
   line-height: 1.2;
   color: #cfcfcf;
-  margin: 2px auto 0;
+  margin: 1px auto 0;
   overflow-wrap: anywhere;
+}
+
+@media (min-width: 769px) and (max-width: 1400px) {
+  .rutinas-container {
+    height: calc(100dvh - 198px);
+  }
+
+  .rutina-card button {
+    font-size: 0.72em;
+  }
+
+  .required-membership-text {
+    font-size: 0.53em;
+  }
+
+  .page-btn {
+    width: 44px;
+    height: 44px;
+    margin: 6px;
+  }
 }
 /* Estilo para pantallas móviles */
 @media (max-width: 768px) {
