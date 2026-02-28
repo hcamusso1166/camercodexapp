@@ -644,7 +644,8 @@ text-align: center;
     display: grid;
     grid-template-columns: repeat(2, 1fr); /* 2 columnas */
     grid-template-rows: repeat(10, auto); /* 10 filas */
-    gap: 5px; /* Ajustamos el espacio entre tarjetas */
+    gap: 3px; /* Menor separación para aprovechar pantalla */
+    padding: 2px;
   }
 
   .rutina-card {
@@ -655,20 +656,23 @@ text-align: center;
     border-radius: 12px;
     aspect-ratio: auto;
     width: 100%;
-    min-height: 72px;
-    padding: 4px 2px;
+    min-height: 62px;
+    padding: 2px 1px;
   }
 
   .rutina-card.locked {
-    min-height: 86px;
+    min-height: 74px;
   }
 
   .rutina-card button {
     height: auto;
-    min-height: 44px;
-    margin: 1px;
-    padding: 4px;
-    font-size: 0.75em;
+    min-height: 38px;
+    width: 96%;
+    margin: 0;
+    padding: 2px 4px;
+    font-size: 0.7em;
+    line-height: 1.15;
+    border-radius: 8px;
   }
 
   .badge-locked {
@@ -677,9 +681,19 @@ text-align: center;
   }
 
   .required-membership-text {
-    font-size: 0.58em;
+    font-size: 0.54em;
     line-height: 1.1;
     margin-top: 0;
+  }
+  
+  .pagination {
+    margin-top: 3px;
+  }
+
+  .page-btn {
+    width: 42px;
+    height: 42px;
+    margin: 6px;
   }
 }
 
