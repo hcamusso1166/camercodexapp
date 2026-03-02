@@ -330,6 +330,12 @@ const popupCloseBtn = document.getElementById('popupCloseBtn');
 const estadoBLEbtn = document.getElementById("verEstadoBLE");
 if (menuDropdown) {
   menuDropdown.addEventListener('click', (e) => {
+        if (e.target.matches('a[data-action="check-updates"]')) {
+      e.preventDefault();
+      verificarActualizaciones();
+      return;
+    }
+
     if (e.target.matches('a[data-popup]')) {
       e.preventDefault();
       const popupId = e.target.getAttribute('data-popup');
@@ -378,6 +384,70 @@ if (popupId === "estadoBLE") {
     if (typeof initEstadoBLE === "function") {
       initEstadoBLE();
     }
+  }
+}
+
+async function obtenerVersionRemota() {
+  const configUrl = new URL('/js/config.js', window.location.origin);
+  configUrl.searchParams.set('t', Date.now().toString());
+
+  const response = await fetch(configUrl.toString(), {
+    cache: 'no-store',
+  });
+
+  if (!response.ok) {
+    throw new Error('No se pudo consultar la versión publicada.');
+  }
+
+  const configJs = await response.text();
+  const appVersionMatch = configJs.match(/const\s+appVersion\s*=\s*["']([^"']+)["']/);
+
+  if (!appVersionMatch) {
+    throw new Error('No se encontró appVersion en config remoto.');
+  }
+
+  return appVersionMatch[1].trim();
+}
+
+async function limpiarCacheYRecargar() {
+  if ('caches' in window) {
+    const cacheNames = await caches.keys();
+    await Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
+  }
+
+  if ('serviceWorker' in navigator) {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(registrations.map((registration) => registration.unregister()));
+  }
+
+  window.location.replace(`${window.location.pathname}?cache_bust=${Date.now()}`);
+}
+
+async function verificarActualizaciones() {
+  if (!popupBody || !popupModal || !menuDropdown) return;
+
+  menuDropdown.classList.add('hidden');
+  popupModal.classList.remove('hidden');
+  popupBody.innerHTML = '<p>Revisando actualizaciones...</p>';
+
+  if (!navigator.onLine) {
+    popupBody.innerHTML = '<p>Sin conexión a internet. Conéctate y vuelve a intentar.</p>';
+    return;
+  }
+
+  try {
+    const versionLocal = typeof appVersion === 'string' ? appVersion.trim() : '';
+    const versionRemota = await obtenerVersionRemota();
+
+    if (versionLocal && versionLocal !== versionRemota) {
+      popupBody.innerHTML = `<p>Hay una nueva versión disponible.</p><p>Local: <strong>${versionLocal}</strong></p><p>Remota: <strong>${versionRemota}</strong></p><p>Limpiando caché y recargando...</p>`;
+      await limpiarCacheYRecargar();
+      return;
+    }
+
+    popupBody.innerHTML = `<p>Tu app ya está actualizada.</p><p>Versión actual: <strong>${versionLocal || versionRemota}</strong></p>`;
+  } catch (error) {
+    popupBody.innerHTML = `<p>No fue posible verificar actualizaciones: ${error.message}</p>`;
   }
 }
 

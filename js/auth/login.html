@@ -245,6 +245,25 @@ let serialValidated = false;
         .replace(/\s+/g, "")
         .replace(/-/g, ":");
 
+    const formatSerialFromRaw = (value) => {
+      const cleanHex = (value || "")
+        .toUpperCase()
+        .replace(/[^0-9A-F]/g, "")
+        .slice(0, 12);
+
+      const parts = cleanHex.match(/.{1,2}/g) || [];
+      const masked = parts.join(":");
+      const needsTrailingColon = cleanHex.length > 0 && cleanHex.length % 2 === 0 && cleanHex.length < 12;
+
+      return needsTrailingColon ? `${masked}:` : masked;
+    };
+
+    const getMaskedCursorPosition = (hexCount) => {
+      if (hexCount <= 0) return 0;
+      const safeCount = Math.min(hexCount, 12);
+      return safeCount + Math.floor(safeCount / 2);
+    };
+
     const getPendingSignup = () => {
       const pendingSerial = localStorage.getItem(PENDING_SERIAL_KEY) || "";
       const pendingEmail = localStorage.getItem(PENDING_EMAIL_KEY) || "";
@@ -333,7 +352,7 @@ let serialValidated = false;
       if (isSignupMode) {
         subtitle.textContent = serialValidated
           ? "Serial validado. Completá tu registro con Email o Google."
-          : "Primero validá el Serial Number de tu MrCamerDev1.0 ®.";
+          : "Validá el Serial Number de tu MrCamerDev1.0 ®.";
         forgotPasswordLink.classList.add("is-hidden");
         serialField.classList.remove("is-hidden");
         validateSerialButton.classList.toggle("is-hidden", serialValidated);
@@ -488,9 +507,20 @@ if (data?.session?.user) {
       });
       if (error) msg("Error: " + error.message);
     };
-    
+    serialInput.addEventListener("input", (event) => {
+      const target = event.target;
+      const cursor = target.selectionStart ?? target.value.length;
+      const hexBeforeCursor = (target.value.slice(0, cursor).match(/[0-9A-F]/gi) || []).length;
+
+      const maskedValue = formatSerialFromRaw(target.value);
+      target.value = maskedValue;
+
+      const nextCursor = Math.min(getMaskedCursorPosition(hexBeforeCursor), maskedValue.length);
+      target.setSelectionRange(nextCursor, nextCursor);
+    });
+
     serialInput.addEventListener("blur", () => {
-      serialInput.value = normalizeSerial(serialInput.value);
+      serialInput.value = formatSerialFromRaw(normalizeSerial(serialInput.value));
     });
   </script>
 </body>
