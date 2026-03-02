@@ -363,8 +363,67 @@ function renderUpdateStatus(messageHtml) {
     window.alert(messageHtml.replace(/<[^>]*>/g, ' '));
     return;
   }
+
+  popupBody.classList.add('update-flow');
   popupBody.innerHTML = messageHtml;
   popupModal.classList.remove('hidden');
+}
+
+function sanitizarHtml(texto) {
+  if (typeof texto !== 'string') return '';
+  const temporal = document.createElement('div');
+  temporal.textContent = texto;
+  return temporal.innerHTML;
+}
+
+function mostrarConfirmacionActualizacion({ titulo, mensaje, confirmar = 'Aceptar', cancelar = 'Cancelar' }) {
+  if (!popupBody || !popupModal) {
+    const fallback = [titulo, mensaje].filter(Boolean).join('\n');
+    return Promise.resolve(window.confirm(fallback));
+  }
+
+  const tituloHtml = titulo ? `<p><strong>${sanitizarHtml(titulo)}</strong></p>` : '';
+  const mensajeHtml = mensaje ? `<p>${sanitizarHtml(mensaje)}</p>` : '';
+
+  popupBody.classList.add('update-flow');
+  popupBody.innerHTML = `
+    ${tituloHtml}
+    ${mensajeHtml}
+    <div class="update-confirm-actions">
+      <button type="button" class="update-confirm-btn update-confirm-btn--secondary" data-update-confirm="cancel">${sanitizarHtml(cancelar)}</button>
+      <button type="button" class="update-confirm-btn update-confirm-btn--primary" data-update-confirm="ok">${sanitizarHtml(confirmar)}</button>
+    </div>
+  `;
+  popupModal.classList.remove('hidden');
+
+  return new Promise((resolve) => {
+    const resolver = (value) => {
+      popupBody.removeEventListener('click', onBodyClick);
+      if (popupCloseBtn) {
+        popupCloseBtn.removeEventListener('click', onCloseClick);
+      }
+      resolve(value);
+    };
+
+    const onBodyClick = (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const action = target.getAttribute('data-update-confirm');
+      if (action === 'ok') {
+        resolver(true);
+      }
+      if (action === 'cancel') {
+        resolver(false);
+      }
+    };
+
+    const onCloseClick = () => resolver(false);
+
+    popupBody.addEventListener('click', onBodyClick);
+    if (popupCloseBtn) {
+      popupCloseBtn.addEventListener('click', onCloseClick, { once: true });
+    }
+  });
 }
 
 function consumeUpdateFeedback() {
@@ -441,7 +500,12 @@ async function verificarActualizaciones() {
     return;
   }
 
-   const confirmCheck = window.confirm('¿Deseas revisar si hay una actualización disponible?');
+  const confirmCheck = await mostrarConfirmacionActualizacion({
+    titulo: 'Actualizaciones',
+    mensaje: '¿Deseas revisar si hay una actualización disponible?',
+    confirmar: 'Revisar',
+    cancelar: 'Cancelar',
+  });
   if (!confirmCheck) {
     renderUpdateStatus('<p>Verificación cancelada por el mago.</p>');
     return;
@@ -452,14 +516,17 @@ async function verificarActualizaciones() {
   try {
     const versionCacheada = getCachedAppVersion();
     const versionRemota = await obtenerVersionRemota();
-const localLicense = extractLicenseLevel(versionCacheada);
+    const localLicense = extractLicenseLevel(versionCacheada);
     const remoteLicense = extractLicenseLevel(versionRemota);
 
     if (versionCacheada && versionCacheada !== versionRemota) {
       if (localLicense !== null && remoteLicense !== null && localLicense !== remoteLicense) {
-        const confirmLicenseUpdate = window.confirm(
-          `Se detectó un cambio en el nivel de licencia (${localLicense} → ${remoteLicense}). ¿Deseas actualizar la app ahora?`
-        );
+        const confirmLicenseUpdate = await mostrarConfirmacionActualizacion({
+          titulo: 'Nueva licencia detectada',
+          mensaje: `Se detectó un cambio en el nivel de licencia (${localLicense} → ${remoteLicense}). ¿Deseas actualizar la app ahora?`,
+          confirmar: 'Actualizar',
+          cancelar: 'Ahora no',
+        });
 
         if (!confirmLicenseUpdate) {
           renderUpdateStatus(
@@ -468,9 +535,12 @@ const localLicense = extractLicenseLevel(versionCacheada);
           return;
         }
       } else {
-        const confirmUpdate = window.confirm(
-          `Hay una nueva versión disponible (${versionCacheada} → ${versionRemota}). ¿Deseas actualizar ahora?`
-        );
+        const confirmUpdate = await mostrarConfirmacionActualizacion({
+          titulo: 'Nueva versión disponible',
+          mensaje: `Hay una nueva versión disponible (${versionCacheada} → ${versionRemota}). ¿Deseas actualizar ahora?`,
+          confirmar: 'Actualizar',
+          cancelar: 'Ahora no',
+        });
         if (!confirmUpdate) {
           renderUpdateStatus(
             `<p>Actualización cancelada por el mago.</p><p>Versión actual: <strong>${versionCacheada}</strong></p><p>Versión disponible: <strong>${versionRemota}</strong></p>`
@@ -511,6 +581,7 @@ async function abrirPopup(popupId) {
       throw new Error("No se encontró contenido principal <main> en el archivo.");
     }
 
+    popupBody.classList.remove('update-flow');
     popupBody.innerHTML = mainElement.innerHTML;
     menuDropdown.classList.add('hidden');
     popupModal.classList.remove("hidden");
@@ -536,6 +607,7 @@ async function abrirPopup(popupId) {
   }
 }
   } catch (error) {
+    popupBody.classList.remove('update-flow');
     popupBody.innerHTML = `<p>Error cargando contenido: ${error.message}</p>`;
     popupModal.classList.remove("hidden");
   }
@@ -547,6 +619,7 @@ consumeUpdateFeedback();
 if (popupCloseBtn && popupModal && popupBody && menuDropdown) {
   popupCloseBtn.addEventListener('click', () => {
     popupModal.classList.add('hidden');
+    popupBody.classList.remove('update-flow');
     popupBody.innerHTML = '';          // Limpiar contenido del popup
     menuDropdown.classList.add('hidden');  // Cerrar menú
   });
