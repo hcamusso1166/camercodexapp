@@ -73,6 +73,7 @@
     .login-actions {
       display: grid;
       gap: 10px;
+      margin-top: 16px;
     }
 
     .login-btn {
@@ -168,13 +169,21 @@
   <main class="login-shell" aria-labelledby="login-title">
     <h1 class="login-title" id="login-title">Acceso</h1>
     <p class="login-subtitle">Ingresá con tu cuenta para desbloquear el arsenal secreto.</p>
+    <div class="login-actions">
+      <button class="login-btn secondary" id="btnGoogle" type="button">Continuar con Google</button>
+    </div>
+    <div> ---------------</div>
 
-    <div class="login-form">
-      <div class="login-field">
-        <label for="email">Email</label>
-        <input id="email" type="email" placeholder="tu@email.com" autocomplete="email" />
-      </div>
-      <div class="login-field is-hidden" id="password-field">
+<div class="login-form">
+  <div class="login-field is-hidden" id="serial-field">
+    <label for="serialNumber">Serial Number del dispositivo MrCamerDev1.0 ®</label>
+    <input id="serialNumber" type="text" placeholder="AA:BB:CC:DD:EE:FF" autocomplete="off" spellcheck="false" />
+  </div>
+  <div class="login-field">
+    <label for="email">Email</label>
+    <input id="email" type="email" placeholder="tu@email.com" autocomplete="email" />
+  </div>
+  <div class="login-field is-hidden" id="password-field">
         <label for="password">Contraseña</label>
         <input id="password" type="password" placeholder="Tu clave" autocomplete="current-password" />
       </div>
@@ -183,13 +192,10 @@
         <input id="confirmPassword" type="password" placeholder="Repetí tu clave" autocomplete="new-password" />
       </div>
     </div>
-
-    <div class="login-actions">
-      <button class="login-btn" id="btnLogin">Continuar con Email</button>
-      <button class="login-btn secondary" id="btnGoogle" type="button">Continuar con Google</button>
+    <div class="login-actions "></div>
+      <button class="login-btn secondary" id="btnLogin">Continuar con Email</button>
+      <button class="login-btn is-hidden" id="btnValidateSerial" type="button">Validar Serial Number</button>
     </div>
-
-
     <p id="msg" role="status" aria-live="polite"></p>
 
     <a class="login-link" href="/auth/reset.html">¿Olvidaste tu contraseña?</a>
@@ -209,15 +215,108 @@
     const returnTo = params.get("returnTo") || "/";
     const passwordField = $("password-field");
     const passwordInput = $("password");
+    const serialField = $("serial-field");
+    const serialInput = $("serialNumber");
+    const validateSerialButton = $("btnValidateSerial");
     const confirmPasswordField = $("confirm-password-field");
     const confirmPasswordInput = $("confirmPassword");
     const subtitle = document.querySelector(".login-subtitle");
     const forgotPasswordLink = document.querySelector(".login-link");
     const loginButton = $("btnLogin");
     const googleButton = $("btnGoogle");
+    const emailField = $("email").closest(".login-field");
+    const signupButton = $("btnSignup");
     let isSignupMode = false;
     let emailLoginStep = false;
+let serialValidated = false;
+    let validatedSerial = "";
 
+    const SERIAL_REGEX = /^[0-9A-F]{2}(:[0-9A-F]{2}){5}$/;
+    const PENDING_SERIAL_KEY = "cc_signup_pending_serial";
+    const PENDING_EMAIL_KEY = "cc_signup_pending_email";
+
+    const normalizeSerial = (value) =>
+      (value || "")
+        .trim()
+        .toUpperCase()
+        .replace(/\s+/g, "")
+        .replace(/-/g, ":");
+
+    const getPendingSignup = () => {
+      const pendingSerial = localStorage.getItem(PENDING_SERIAL_KEY) || "";
+      const pendingEmail = localStorage.getItem(PENDING_EMAIL_KEY) || "";
+      return { pendingSerial, pendingEmail };
+    };
+
+    const clearPendingSignup = () => {
+      localStorage.removeItem(PENDING_SERIAL_KEY);
+      localStorage.removeItem(PENDING_EMAIL_KEY);
+    };
+
+    const storePendingSignup = ({ serial, email = "" }) => {
+      localStorage.setItem(PENDING_SERIAL_KEY, serial);
+      localStorage.setItem(PENDING_EMAIL_KEY, email.toLowerCase());
+    };
+
+    const assignDeviceToCurrentUser = async (serialToAssign) => {
+      const serial = normalizeSerial(serialToAssign);
+      const { error } = await supabase.rpc("assign_mrcamerdev_device", {
+        p_serial_number: serial,
+      });
+
+      if (error) {
+        msg("No se pudo asignar el dispositivo. Escribinos a Mister Camer: hcamusso@gmail.com.");
+        return false;
+      }
+
+      clearPendingSignup();
+      return true;
+    };
+
+    const validateSerialAvailability = async () => {
+      const serial = normalizeSerial(serialInput.value);
+      serialInput.value = serial;
+
+      if (!SERIAL_REGEX.test(serial)) {
+        msg("Formato inválido. Usá AA:BB:CC:DD:EE:FF.");
+        return false;
+      }
+
+      msg("Validando serial...");
+      const { data, error } = await supabase.rpc("validate_mrcamerdev_serial_for_signup", {
+        p_serial_number: serial,
+      });
+
+      if (error) {
+        msg("No pudimos validar el serial. Contactá a Mister Camer: hcamusso@gmail.com.");
+        return false;
+      }
+
+      if (!data?.is_valid) {
+        msg("El dispositivo no existe o ya está asignado. Contactá a Mister Camer: hcamusso@gmail.com.");
+        return false;
+      }
+
+      serialValidated = true;
+      validatedSerial = normalizeSerial(data.normalized_serial || serial);
+      storePendingSignup({ serial: validatedSerial });
+      setModeUI();
+      msg("Serial validado. Ahora completá tu registro con Email o Google.");
+      $("email").focus();
+      return true;
+    };
+
+    const tryAssignPendingDevice = async (session) => {
+      const user = session?.user;
+      if (!user?.email) return;
+
+      const { pendingSerial, pendingEmail } = getPendingSignup();
+      if (!pendingSerial) return;
+
+      if (pendingEmail && pendingEmail !== user.email.toLowerCase()) return;
+
+      await assignDeviceToCurrentUser(pendingSerial);
+    };
     const togglePasswordFields = (showPassword, showConfirm) => {
       passwordField.classList.toggle("is-hidden", !showPassword);
       confirmPasswordField.classList.toggle("is-hidden", !showConfirm);
@@ -227,22 +326,41 @@
 
     const setModeUI = () => {
       if (isSignupMode) {
-        subtitle.textContent = "Ingresa los datos requeridos";
+        subtitle.textContent = serialValidated
+          ? "Serial validado. Completá tu registro con Email o Google."
+          : "Primero validá el Serial Number de tu MrCamerDev1.0 ®.";
         forgotPasswordLink.classList.add("is-hidden");
-        loginButton.textContent = "Crear Cuenta con tu Email";
+        serialField.classList.remove("is-hidden");
+        validateSerialButton.classList.toggle("is-hidden", serialValidated);
+        emailField.classList.toggle("is-hidden", !serialValidated);
+        passwordField.classList.toggle("is-hidden", !serialValidated);
+        confirmPasswordField.classList.toggle("is-hidden", !serialValidated);
+        loginButton.classList.toggle("is-hidden", !serialValidated);
+        googleButton.classList.toggle("is-hidden", !serialValidated);
         googleButton.textContent = "Crear Cuenta con Google";
+        loginButton.textContent = "Crear Cuenta con tu Email";
+        signupButton.textContent = "Volver al acceso";
         return;
       }
 
       subtitle.textContent = "Ingresá con tu cuenta para desbloquear el arsenal secreto.";
       forgotPasswordLink.classList.remove("is-hidden");
-      loginButton.textContent = "Continuar con Email";
+      serialField.classList.add("is-hidden");
+      validateSerialButton.classList.add("is-hidden");
+      emailField.classList.remove("is-hidden");
+      loginButton.classList.remove("is-hidden");
+      googleButton.classList.remove("is-hidden");
+      confirmPasswordField.classList.add("is-hidden");
+      signupButton.textContent = "Crear cuenta";
       googleButton.textContent = "Continuar con Google";
+      loginButton.textContent = "Continuar con Email";
+
     };
 
 
     const { data: sessionData } = await supabase.auth.getSession();
     if (sessionData?.session?.user) {
+      await tryAssignPendingDevice(sessionData.session);
       location.replace(returnTo);
     }
 
@@ -253,46 +371,34 @@
       const email = $("email").value.trim();
       const password = $("password").value;
 
-      if (!$("email").checkValidity()) {
-        return msg("Ingresá un email válido.");
-      }
 
-      if (!emailLoginStep) {
-        emailLoginStep = true;
-        isSignupMode = false;
-        setModeUI();
-        togglePasswordFields(true, false);
-        msg("Ingresá tu contraseña para continuar.");
-        passwordInput.focus();
-        return;
-      }
-
-      isSignupMode = false;
-      msg("Ingresando...");
-      if (!password) {
-        return msg("Ingresá tu contraseña.");
-      }
-
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) return msg("Error: " + error.message);
-
-      location.replace(returnTo);
-    };
-
-    $("btnSignup").onclick = async () => {
       if (!isSignupMode) {
-        isSignupMode = true;
-        emailLoginStep = true;
-        setModeUI();
-        togglePasswordFields(true, true);
-        msg("Ingresa los datos requeridos");
-        passwordInput.focus();
+        if (!$("email").checkValidity()) {
+          return msg("Ingresá un email válido.");
+        }
+
+        if (!emailLoginStep) {
+          emailLoginStep = true;
+          setModeUI();
+          togglePasswordFields(true, false);
+          msg("Ingresá tu contraseña para continuar.");
+          passwordInput.focus();
+          return;
+        }
+
+        msg("Ingresando...");
+        if (!password) {
+          return msg("Ingresá tu contraseña.");
+        }
+
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) return msg("Error: " + error.message);
+
+        location.replace(returnTo);
         return;
       }
 
       msg("Creando cuenta...");
-      const email = $("email").value.trim();
-      const password = $("password").value;
       const confirmPassword = confirmPasswordInput.value;
 
       if (!$("email").checkValidity()) {
@@ -304,16 +410,61 @@
       if (password !== confirmPassword) {
         return msg("La confirmación no coincide.");
       }
-
+      if (!serialValidated || !validatedSerial) {
+        return msg("Primero validá el Serial Number del dispositivo.");
+      }
       const { error } = await supabase.auth.signUp({ email, password });
       if (error) return msg("Error: " + error.message);
 
+      storePendingSignup({ serial: validatedSerial, email });
       msg("Confirmá tu email mediante el correo que te llegue de Camer Codex ®");
       const { data } = await supabase.auth.getSession();
-      if (data?.session?.user) location.replace(returnTo);
+if (data?.session?.user) {
+        await assignDeviceToCurrentUser(validatedSerial);
+        location.replace(returnTo);
+      }
+    };
+
+    $("btnSignup").onclick = async () => {
+      if (!isSignupMode) {
+        isSignupMode = true;
+        emailLoginStep = false;
+        serialValidated = false;
+        validatedSerial = "";
+        $("email").value = "";
+        passwordInput.value = "";
+        confirmPasswordInput.value = "";
+        setModeUI();
+        msg("Ingresá y validá el serial para continuar con la creación de cuenta.");
+        serialInput.focus();
+        return;
+      }
+
+      isSignupMode = false;
+      emailLoginStep = false;
+      serialValidated = false;
+      validatedSerial = "";
+      serialInput.value = "";
+      passwordInput.value = "";
+      confirmPasswordInput.value = "";
+      setModeUI();
+      togglePasswordFields(false, false);
+      msg("Modo acceso activado.");
+    };
+
+    validateSerialButton.onclick = async () => {
+      await validateSerialAvailability();
     };
 
     $("btnGoogle").onclick = async () => {
+      if (isSignupMode && (!serialValidated || !validatedSerial)) {
+        return msg("Primero validá el Serial Number del dispositivo.");
+      }
+
+      if (isSignupMode) {
+        storePendingSignup({ serial: validatedSerial });
+      }
+
       msg("Redirigiendo a Google...");
       const redirectTo = new URL("/js/auth/login.html", location.origin);
       redirectTo.searchParams.set("returnTo", returnTo);
@@ -324,6 +475,10 @@
       });
       if (error) msg("Error: " + error.message);
     };
+    
+    serialInput.addEventListener("blur", () => {
+      serialInput.value = normalizeSerial(serialInput.value);
+    });
   </script>
 </body>
 </html>
