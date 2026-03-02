@@ -7,6 +7,10 @@
   <link rel="stylesheet" type="text/css" href="/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --accept-color: #f3b13f;
+    }
+
     body {
       display: block;
       align-items: stretch;
@@ -43,14 +47,32 @@
       gap: 12px;
       align-items: center;
       flex-wrap: wrap;
+       }
+    .license-actions label {
+      color: #9ea3ad;
+      font-weight: 400;
+      font-size: 14px;
+      transition: color .2s ease;
+    }
+    .license-actions input[type="checkbox"] {
+      accent-color: #9ea3ad;
+      transition: accent-color .2s ease;
+    }
+    .license-actions input[type="checkbox"]:disabled {
+      opacity: 1;
+    }
+    .license-actions.is-ready label {
       color: #f0f0f0;
+    }
+    .license-actions.is-ready input[type="checkbox"] {
+      accent-color: #f0f0f0;
     }
     .license-actions button {
       padding: 10px 14px;
       border-radius: 10px;
       border: 0;
       cursor: pointer;
-      background-color: #f3b13f;
+      background-color: var(--accept-color);
       color: #0c0c1d;
       font-weight: 500;
     }
@@ -196,7 +218,7 @@ El incumplimiento de esta Licencia, incluyendo la violación de confidencialidad
 **Camer Codex® – Tecnología, Magia y Secreto Protegido**
 </pre>
     </div>
-    <div class="license-actions">
+    <div class="license-actions" id="licenseActions">
       <label>
         <input type="checkbox" id="chk" disabled />
         He leído y acepto la Licencia de Uso y Confidencialidad.
@@ -213,6 +235,7 @@ El incumplimiento de esta Licencia, incluyendo la violación de confidencialidad
     const chk = document.getElementById("chk");
     const btn = document.getElementById("btn");
     const hint = document.getElementById("hint");
+    const licenseActions = document.getElementById("licenseActions");
 
     function nearBottom(el) {
       return el.scrollTop + el.clientHeight >= el.scrollHeight - 40;
@@ -223,6 +246,7 @@ El incumplimiento de esta Licencia, incluyendo la violación de confidencialidad
         return;
       }
       chk.disabled = false;
+      licenseActions.classList.add("is-ready");
       hint.textContent = "Marcá el checkbox para aceptar.";
     }
 
