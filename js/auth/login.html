@@ -398,7 +398,8 @@ let serialValidated = false;
 
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) return msg("Error: " + error.message);
-
+        const { data: postLoginSession } = await supabase.auth.getSession();
+        await tryAssignPendingDevice(postLoginSession?.session);
         location.replace(returnTo);
         return;
       }
@@ -419,7 +420,14 @@ let serialValidated = false;
         return msg("Primero validá el Serial Number del dispositivo.");
       }
       const { error } = await supabase.auth.signUp({ email, password });
-      if (error) return msg("Error: " + error.message);
+      if (error) {
+        const errorMessage = (error.message || "").toLowerCase();
+        if (errorMessage.includes("email rate limit exceeded")) {
+          storePendingSignup({ serial: validatedSerial, email });
+          return msg("Superaste el límite de correos de confirmación. Esperá unos minutos e intentá de nuevo, o usá \"Olvidé mi contraseña\" si ya tenías cuenta.");
+        }
+        return msg("Error: " + error.message);
+      }
 
       storePendingSignup({ serial: validatedSerial, email });
       msg("Confirmá tu email mediante el correo que te llegue de Camer Codex ®");
