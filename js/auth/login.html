@@ -15,6 +15,7 @@
 
     .login-shell {
       width: min(420px, 100%);
+      box-sizing: border-box;
       background: #0c0c0c;
       border: 1px solid rgba(243, 177, 63, 0.25);
       border-radius: 16px;
@@ -51,6 +52,7 @@
 
     .login-field input {
       width: 100%;
+      box-sizing: border-box;
       padding: 12px 14px;
       border-radius: 10px;
       border: 1px solid rgba(243, 177, 63, 0.3);
@@ -208,6 +210,10 @@
     const passwordInput = $("password");
     const confirmPasswordField = $("confirm-password-field");
     const confirmPasswordInput = $("confirmPassword");
+    const subtitle = document.querySelector(".login-subtitle");
+    const forgotPasswordLink = document.querySelector(".login-link");
+    const loginButton = $("btnLogin");
+    const googleButton = $("btnGoogle");
     let isSignupMode = false;
     let emailLoginStep = false;
 
@@ -218,6 +224,21 @@
       if (!showConfirm) confirmPasswordInput.value = "";
     };
 
+    const setModeUI = () => {
+      if (isSignupMode) {
+        subtitle.textContent = "Ingresa los datos requeridos";
+        forgotPasswordLink.classList.add("is-hidden");
+        loginButton.textContent = "Crear Cuenta con tu Email";
+        googleButton.textContent = "Crear Cuenta con Google";
+        return;
+      }
+
+      subtitle.textContent = "Ingresá con tu cuenta para desbloquear el arsenal secreto.";
+      forgotPasswordLink.classList.remove("is-hidden");
+      loginButton.textContent = "Continuar con Email";
+      googleButton.textContent = "Continuar con Google";
+    };
+
 
     const { data: sessionData } = await supabase.auth.getSession();
     if (sessionData?.session?.user) {
@@ -225,6 +246,7 @@
     }
 
     togglePasswordFields(false, false);
+    setModeUI();
 
     $("btnLogin").onclick = async () => {
       const email = $("email").value.trim();
@@ -237,6 +259,7 @@
       if (!emailLoginStep) {
         emailLoginStep = true;
         isSignupMode = false;
+        setModeUI();
         togglePasswordFields(true, false);
         msg("Ingresá tu contraseña para continuar.");
         passwordInput.focus();
@@ -259,8 +282,9 @@
       if (!isSignupMode) {
         isSignupMode = true;
         emailLoginStep = true;
+        setModeUI();
         togglePasswordFields(true, true);
-        msg("Confirmá tu contraseña para crear la cuenta.");
+        msg("Ingresa los datos requeridos");
         passwordInput.focus();
         return;
       }
