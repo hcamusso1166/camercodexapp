@@ -100,14 +100,6 @@
       background: rgba(243, 177, 63, 0.12);
     }
 
-    .login-separator {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: #7b7b7b;
-      font-size: 0.85rem;
-      margin: 16px 0 10px;
-    }
 
     .login-link {
       display: inline-block;
@@ -121,12 +113,22 @@
       text-decoration: underline;
     }
 
-    .login-separator::before,
-    .login-separator::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: rgba(243, 177, 63, 0.2);
+.login-signup {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #d4d4d4;
+      text-align: center;
+    }
+
+    .login-signup button {
+      margin-left: 6px;
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: #f3b13f;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
     }
 
     #msg {
@@ -169,7 +171,7 @@
         <label for="email">Email</label>
         <input id="email" type="email" placeholder="tu@email.com" autocomplete="email" />
       </div>
-      <div class="login-field">
+      <div class="login-field is-hidden" id="password-field">
         <label for="password">Contraseña</label>
         <input id="password" type="password" placeholder="Tu clave" autocomplete="current-password" />
       </div>
@@ -180,17 +182,16 @@
     </div>
 
     <div class="login-actions">
-      <button class="login-btn" id="btnLogin">Entrar</button>
-      <button class="login-btn secondary" id="btnSignup">Crear cuenta</button>
+      <button class="login-btn" id="btnLogin">Continuar con Email</button>
+      <button class="login-btn secondary" id="btnGoogle" type="button">Continuar con Google</button>
     </div>
+
 
     <p id="msg" role="status" aria-live="polite"></p>
 
-    <div class="login-separator">o</div>
-
-    <button class="login-btn secondary" id="btnGoogle" type="button">Continuar con Google</button>
-
     <a class="login-link" href="/auth/reset.html">¿Olvidaste tu contraseña?</a>
+
+    <p class="login-signup">¿No tenés una cuenta?<button id="btnSignup" type="button">Crear cuenta</button></p>
 
 
     <div class="login-footer">Tecnología Secreta para Ilusionistas.</div>
@@ -203,32 +204,47 @@
 
     const params = new URLSearchParams(location.search);
     const returnTo = params.get("returnTo") || "/";
-     const confirmPasswordField = $("confirm-password-field");
+    const passwordField = $("password-field");
+    const passwordInput = $("password");
+    const confirmPasswordField = $("confirm-password-field");
     const confirmPasswordInput = $("confirmPassword");
     let isSignupMode = false;
+    let emailLoginStep = false;
 
-    const toggleConfirmPassword = (show) => {
-      confirmPasswordField.classList.toggle("is-hidden", !show);
-      confirmPasswordInput.value = "";
+    const togglePasswordFields = (showPassword, showConfirm) => {
+      passwordField.classList.toggle("is-hidden", !showPassword);
+      confirmPasswordField.classList.toggle("is-hidden", !showConfirm);
+      if (!showPassword) passwordInput.value = "";
+      if (!showConfirm) confirmPasswordInput.value = "";
     };
+
 
     const { data: sessionData } = await supabase.auth.getSession();
     if (sessionData?.session?.user) {
       location.replace(returnTo);
     }
 
-    toggleConfirmPassword(false);
+    togglePasswordFields(false, false);
 
     $("btnLogin").onclick = async () => {
-      isSignupMode = false;
-      toggleConfirmPassword(false);
-      msg("Ingresando...");
       const email = $("email").value.trim();
       const password = $("password").value;
 
       if (!$("email").checkValidity()) {
         return msg("Ingresá un email válido.");
       }
+
+      if (!emailLoginStep) {
+        emailLoginStep = true;
+        isSignupMode = false;
+        togglePasswordFields(true, false);
+        msg("Ingresá tu contraseña para continuar.");
+        passwordInput.focus();
+        return;
+      }
+
+      isSignupMode = false;
+      msg("Ingresando...");
       if (!password) {
         return msg("Ingresá tu contraseña.");
       }
@@ -242,8 +258,10 @@
     $("btnSignup").onclick = async () => {
       if (!isSignupMode) {
         isSignupMode = true;
-        toggleConfirmPassword(true);
+        emailLoginStep = true;
+        togglePasswordFields(true, true);
         msg("Confirmá tu contraseña para crear la cuenta.");
+        passwordInput.focus();
         return;
       }
 
