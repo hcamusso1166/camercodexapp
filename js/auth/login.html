@@ -169,16 +169,19 @@
   <main class="login-shell" aria-labelledby="login-title">
     <h1 class="login-title" id="login-title">Acceso</h1>
     <p class="login-subtitle">Ingresá con tu cuenta para desbloquear el arsenal secreto.</p>
+<div class="login-form">
+      <div class="login-field is-hidden" id="serial-field">
+    <input id="serialNumber" type="text" placeholder="AA:BB:CC:DD:EE:FF" autocomplete="off" spellcheck="false" />
+  </div>
+</div>
+
     <div class="login-actions">
       <button class="login-btn secondary" id="btnGoogle" type="button">Continuar con Google</button>
     </div>
     <div> ---------------</div>
 
 <div class="login-form">
-  <div class="login-field is-hidden" id="serial-field">
-    <label for="serialNumber">Serial Number del dispositivo MrCamerDev1.0 ®</label>
-    <input id="serialNumber" type="text" placeholder="AA:BB:CC:DD:EE:FF" autocomplete="off" spellcheck="false" />
-  </div>
+
   <div class="login-field">
     <label for="email">Email</label>
     <input id="email" type="email" placeholder="tu@email.com" autocomplete="email" />
@@ -292,13 +295,15 @@ let serialValidated = false;
         return false;
       }
 
-      if (!data?.is_valid) {
+      const validationResult = Array.isArray(data) ? data[0] : data;
+
+      if (!validationResult?.is_valid) {
         msg("El dispositivo no existe o ya está asignado. Contactá a Mister Camer: hcamusso@gmail.com.");
         return false;
       }
 
       serialValidated = true;
-      validatedSerial = normalizeSerial(data.normalized_serial || serial);
+      validatedSerial = normalizeSerial(validationResult.normalized_serial || serial);
       storePendingSignup({ serial: validatedSerial });
       setModeUI();
       msg("Serial validado. Ahora completá tu registro con Email o Google.");
