@@ -328,6 +328,52 @@ const popupModal = document.getElementById('popupModal');
 const popupBody = document.getElementById('popupBody');
 const popupCloseBtn = document.getElementById('popupCloseBtn');
 const estadoBLEbtn = document.getElementById("verEstadoBLE");
+const APP_VERSION_CACHE_KEY = 'cc_cached_app_version';
+const UPDATE_FEEDBACK_KEY = 'cc_update_feedback';
+
+function getCachedAppVersion() {
+  const stored = localStorage.getItem(APP_VERSION_CACHE_KEY);
+  if (stored && typeof stored === 'string') {
+    return stored.trim();
+  }
+
+  const localVersion = typeof appVersion === 'string' ? appVersion.trim() : '';
+  if (localVersion) {
+    localStorage.setItem(APP_VERSION_CACHE_KEY, localVersion);
+  }
+  return localVersion;
+}
+
+function setCachedAppVersion(version) {
+  if (version && typeof version === 'string') {
+    localStorage.setItem(APP_VERSION_CACHE_KEY, version.trim());
+  }
+}
+
+function extractLicenseLevel(versionText) {
+  if (!versionText || typeof versionText !== 'string') return null;
+  const levelMatch = versionText.match(/membres(?:i|í)a\s*(\d+)/i);
+  if (!levelMatch) return null;
+  const parsed = Number(levelMatch[1]);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function renderUpdateStatus(messageHtml) {
+  if (!popupBody || !popupModal) {
+    window.alert(messageHtml.replace(/<[^>]*>/g, ' '));
+    return;
+  }
+  popupBody.innerHTML = messageHtml;
+  popupModal.classList.remove('hidden');
+}
+
+function consumeUpdateFeedback() {
+  const feedback = localStorage.getItem(UPDATE_FEEDBACK_KEY);
+  if (!feedback) return;
+  localStorage.removeItem(UPDATE_FEEDBACK_KEY);
+  renderUpdateStatus(`<p>${feedback}</p>`);
+}
+
 if (menuDropdown) {
   menuDropdown.addEventListener('click', (e) => {
         if (e.target.matches('a[data-action="check-updates"]')) {
@@ -342,6 +388,109 @@ if (menuDropdown) {
       abrirPopup(popupId);
     }
   });
+}
+
+async function obtenerVersionRemota() {
+  const configUrl = new URL('/js/config.js', window.location.origin);
+  configUrl.searchParams.set('t', Date.now().toString());
+
+  const response = await fetch(configUrl.toString(), {
+    cache: 'no-store',
+  });
+
+  if (!response.ok) {
+    throw new Error('No se pudo consultar la versión publicada.');
+  }
+
+  const configJs = await response.text();
+  const appVersionMatch = configJs.match(/const\s+appVersion\s*=\s*["']([^"']+)["']/);
+
+  if (!appVersionMatch) {
+    throw new Error('No se encontró appVersion en config remoto.');
+  }
+
+  return appVersionMatch[1].trim();
+}
+
+async function limpiarCacheYRecargar(versionRemota) {
+  if ('caches' in window) {
+    const cacheNames = await caches.keys();
+    await Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
+  }
+
+  if ('serviceWorker' in navigator) {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(registrations.map((registration) => registration.unregister()));
+  }
+
+    if (versionRemota) {
+    setCachedAppVersion(versionRemota);
+  }
+
+  localStorage.setItem(UPDATE_FEEDBACK_KEY, '✅ La app se actualizó correctamente.');
+  window.location.replace(`${window.location.pathname}?cache_bust=${Date.now()}`);
+}
+
+async function verificarActualizaciones() {
+  if (!menuDropdown) return;
+
+  menuDropdown.classList.add('hidden');
+
+  if (!navigator.onLine) {
+    renderUpdateStatus('<p>Sin conexión a internet. Conéctate y vuelve a intentar.</p>');
+    return;
+  }
+
+   const confirmCheck = window.confirm('¿Deseas revisar si hay una actualización disponible?');
+  if (!confirmCheck) {
+    renderUpdateStatus('<p>Verificación cancelada por el mago.</p>');
+    return;
+  }
+
+  renderUpdateStatus('<p>Revisando actualizaciones...</p>');
+
+  try {
+    const versionCacheada = getCachedAppVersion();
+    const versionRemota = await obtenerVersionRemota();
+const localLicense = extractLicenseLevel(versionCacheada);
+    const remoteLicense = extractLicenseLevel(versionRemota);
+
+    if (versionCacheada && versionCacheada !== versionRemota) {
+      if (localLicense !== null && remoteLicense !== null && localLicense !== remoteLicense) {
+        const confirmLicenseUpdate = window.confirm(
+          `Se detectó un cambio en el nivel de licencia (${localLicense} → ${remoteLicense}). ¿Deseas actualizar la app ahora?`
+        );
+
+        if (!confirmLicenseUpdate) {
+          renderUpdateStatus(
+            `<p>Actualización cancelada por el mago.</p><p>Versión actual: <strong>${versionCacheada}</strong></p><p>Versión disponible: <strong>${versionRemota}</strong></p>`
+          );
+          return;
+        }
+      } else {
+        const confirmUpdate = window.confirm(
+          `Hay una nueva versión disponible (${versionCacheada} → ${versionRemota}). ¿Deseas actualizar ahora?`
+        );
+        if (!confirmUpdate) {
+          renderUpdateStatus(
+            `<p>Actualización cancelada por el mago.</p><p>Versión actual: <strong>${versionCacheada}</strong></p><p>Versión disponible: <strong>${versionRemota}</strong></p>`
+          );
+          return;
+        }
+      }
+
+      renderUpdateStatus(
+        `<p>Actualización aprobada.</p><p>Versión actual: <strong>${versionCacheada}</strong></p><p>Versión nueva: <strong>${versionRemota}</strong></p><p>Instalando actualización...</p>`
+      );
+      await limpiarCacheYRecargar(versionRemota);
+      return;
+    }
+
+    setCachedAppVersion(versionRemota);
+    renderUpdateStatus(`<p>La app se encuentra actualizada a su última versión.</p><p>Versión actual: <strong>${versionRemota}</strong></p>`);
+  } catch (error) {
+    renderUpdateStatus(`<p>No fue posible verificar actualizaciones.</p><p>Detalle: ${error.message}</p>`);
+  }
 }
 
 
@@ -368,7 +517,7 @@ async function abrirPopup(popupId) {
 
     // Cargar el script solo para estadoBLE y solo una vez
     // En abrirPopup, tras insertar el contenido y agregar el script:
-if (popupId === "estadoBLE") {
+  if (popupId === "estadoBLE") {
   if (!document.getElementById("estadoBLE-check-script")) {
     const script = document.createElement("script");
     script.id = "estadoBLE-check-script";
@@ -386,77 +535,14 @@ if (popupId === "estadoBLE") {
     }
   }
 }
-
-async function obtenerVersionRemota() {
-  const configUrl = new URL('/js/config.js', window.location.origin);
-  configUrl.searchParams.set('t', Date.now().toString());
-
-  const response = await fetch(configUrl.toString(), {
-    cache: 'no-store',
-  });
-
-  if (!response.ok) {
-    throw new Error('No se pudo consultar la versión publicada.');
-  }
-
-  const configJs = await response.text();
-  const appVersionMatch = configJs.match(/const\s+appVersion\s*=\s*["']([^"']+)["']/);
-
-  if (!appVersionMatch) {
-    throw new Error('No se encontró appVersion en config remoto.');
-  }
-
-  return appVersionMatch[1].trim();
-}
-
-async function limpiarCacheYRecargar() {
-  if ('caches' in window) {
-    const cacheNames = await caches.keys();
-    await Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
-  }
-
-  if ('serviceWorker' in navigator) {
-    const registrations = await navigator.serviceWorker.getRegistrations();
-    await Promise.all(registrations.map((registration) => registration.unregister()));
-  }
-
-  window.location.replace(`${window.location.pathname}?cache_bust=${Date.now()}`);
-}
-
-async function verificarActualizaciones() {
-  if (!popupBody || !popupModal || !menuDropdown) return;
-
-  menuDropdown.classList.add('hidden');
-  popupModal.classList.remove('hidden');
-  popupBody.innerHTML = '<p>Revisando actualizaciones...</p>';
-
-  if (!navigator.onLine) {
-    popupBody.innerHTML = '<p>Sin conexión a internet. Conéctate y vuelve a intentar.</p>';
-    return;
-  }
-
-  try {
-    const versionLocal = typeof appVersion === 'string' ? appVersion.trim() : '';
-    const versionRemota = await obtenerVersionRemota();
-
-    if (versionLocal && versionLocal !== versionRemota) {
-      popupBody.innerHTML = `<p>Hay una nueva versión disponible.</p><p>Local: <strong>${versionLocal}</strong></p><p>Remota: <strong>${versionRemota}</strong></p><p>Limpiando caché y recargando...</p>`;
-      await limpiarCacheYRecargar();
-      return;
-    }
-
-    popupBody.innerHTML = `<p>Tu app ya está actualizada.</p><p>Versión actual: <strong>${versionLocal || versionRemota}</strong></p>`;
-  } catch (error) {
-    popupBody.innerHTML = `<p>No fue posible verificar actualizaciones: ${error.message}</p>`;
-  }
-}
-
   } catch (error) {
     popupBody.innerHTML = `<p>Error cargando contenido: ${error.message}</p>`;
     popupModal.classList.remove("hidden");
   }
 
 }
+
+consumeUpdateFeedback();
 
 if (popupCloseBtn && popupModal && popupBody && menuDropdown) {
   popupCloseBtn.addEventListener('click', () => {
