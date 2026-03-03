@@ -26,7 +26,23 @@
     </head>
 <body>
 
-    <header>Camer Codex <sup>&reg;</sup></header>
+    <header>Camer Codex <sup>&reg;</sup>
+        <div class="menu-icon">
+            <img src="icons/more_vert_16_D9D9D9.svg" alt="Menú" id="menuToggle">
+            <div id="menuDropdown" class="menu-dropdown hidden">
+                <a href="#" data-popup="ayuda">Ayuda</a>
+                <a href="#" data-popup="acerca">Acerca de</a>
+                <a href="#" data-action="check-updates">Actualizaciones</a>
+                <a href="#" data-popup="estadoBLE">Web Bluetooth</a>
+            </div>
+        </div>
+        <div id="popupModal" class="popup-modal hidden">
+            <div class="popup-content">
+                <button id="popupCloseBtn">X</button>
+                <div id="popupBody"></div>
+            </div>
+        </div>
+    </header>
     <div class="slogan">Tecnología Secreta para Ilusionistas</div>
     <div class="menu"> 
     <div class="rutinas-container" id="rutinasContainer"></div>
