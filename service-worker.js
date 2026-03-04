@@ -87,7 +87,7 @@ self.addEventListener('fetch', (event) => {
 const { request } = event;
   const rangeHeader = request.headers.get('range');
 
-  const url = new URL(request.url);
+    const url = new URL(request.url);
   const isSameOrigin = url.origin === self.location.origin;
   const isHtmlRequest =
     request.mode === 'navigate' ||
