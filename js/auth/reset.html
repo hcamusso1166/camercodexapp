@@ -122,7 +122,7 @@
 
     <div class="reset-actions">
       <button class="reset-btn" id="btnReset">Enviar link</button>
-      <a class="reset-btn secondary" href="/auth/login.html">Volver al acceso</a>
+      <a class="reset-btn secondary" href="/js/auth/login.html">Volver al acceso</a>
     </div>
 
     <p id="msg" role="status" aria-live="polite"></p>
@@ -142,7 +142,7 @@
         return msg("Ingresá un email válido.");
       }
 
-      const redirectTo = new URL("/auth/update-password.html", location.origin);
+      const redirectTo = new URL("/js/auth/update-password.html", location.origin);
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectTo.toString(),
       });
