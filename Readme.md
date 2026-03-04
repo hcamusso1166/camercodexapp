@@ -1,88 +1,108 @@
 
-# Ars Camer v1.0 Vainilla
+# Camer Codex v1.0 Vainilla
 
 **Tecnología Secreta para Ilusionistas** 🎩
 
 ---
 
-## ¿Qué es Ars Camer?
+## ¿Qué es Camer Codex?
 
-**Ars Camer** es una aplicación web progresiva (PWA) diseñada para ilusionistas modernos que integran tecnología en sus rutinas. El sistema permite la interacción entre un lector RFID (conectado vía Bluetooth BLE) y una app web que responde con acciones mágicas como la reproducción de audios.
+** Camer Codex ® ** es una aplicación web progresiva (PWA) diseñada para ilusionistas modernos que integran tecnología en sus rutinas. 
+La plataforma integra:
+- Conexión Bluetooth BLE con hardware dedicado.
+- Lectura de tags RFID para disparar acciones escénicas.
+- Gestión de acceso por cuenta (Supabase Auth).
+- Control de rutinas según nivel de membresía/licencia.
 
 ---
 
 ## 🔖 Versión
 
-**v1.0** – Base funcional estable.
+- **Versión base:** `v1.0` (estable)
+- **Deployment:** Vercel
+- **Modo de uso:** Web + instalación PWA (Android/Chrome)
 
 ---
 
-## ⚙️ Funcionalidades actuales
+## Funcionalidades principales
 
-- Lectura de tags RFID vía dispositivo BLE
-- Reproducción asociada de audios MP3 (uno por cada tag)
-- Visualización de lectura y estado del dispositivo
-- Botón de conexión / desconexión BLE
-- Diagnóstico interactivo de compatibilidad (BLE, permisos, ubicación)
-- Instalación como aplicación PWA en dispositivos Android
-- Funciona offline una vez instalada
+- Lectura de tags RFID vía dispositivo BLE.
+- Reproducción asociada de audios MP3 por rutina/tag.
+- Estado de conexión y diagnóstico BLE integrado.
+- Funcionamiento offline una vez instalada como PWA.
+- Control de acceso legal/licencia previo al uso.
 
 ---
 
-## 🧪 Tecnologías utilizadas
+## Autenticación con Supabase
 
-- JavaScript (Web Bluetooth API)
-- HTML5 + CSS
-- Progressive Web App (PWA)
-- Deploy en Vercel
+El sistema utiliza **Supabase Auth** para proteger el acceso y administrar sesiones.
 
----
+### Métodos de acceso
 
-## 🖥️ Uso en PC
+1. **Login con Email + contraseña**
+2. **Login con Google (OAuth)**
+3. Recuperación y actualización de contraseña (flujo de reset)
 
-1. Cloná el proyecto o descargá el ZIP
-2. Abrí la carpeta en VS Code
-3. Usá la extensión **Live Server**
-4. Abrí `index.html` en el navegador Chrome
-5. Permití el acceso BLE cuando se solicite
-6. Conectá el dispositivo BLE para comenzar
+### Registro de cuenta
 
----
-
-## 📱 Uso en Android (modo PWA)
-
-1. Accedé a la URL pública del proyecto (ej: `https://arscamerapp.vercel.app`) usando **Google Chrome**
-2. Si se cumplen los requisitos, aparecerá la opción “Agregar a pantalla principal”
-   - También podés usar el botón 📲 *Instalar Ars Camer*
-3. Una vez instalada, la app funciona **sin conexión**
-4. Diagnóstico automático de BLE disponible al iniciar
+Durante el alta de un nuevo usuario, la plataforma permite:
+- **Registro con Email**, o
+- **Registro con Google**
+En ambos casos, el flujo está vinculado con validaciones de licencia/dispositivo para habilitar correctamente el acceso a las funciones protegidas.
 
 ---
 
-## 🧰 Diagnóstico integrado
+## Registro del dispositivo **MrCamerDev1.0 ®**
+La cuenta se relaciona con el ecosistema físico del sistema mediante serial/licencia del dispositivo **MrCamerDev1.0 ®**.
 
-- Verifica compatibilidad BLE, permisos de ubicación, y APIs disponibles
-- Se muestra al iniciar y puede reactivarse manualmente desde el botón
-- No interfiere con el funcionamiento del show
-
+Este proceso permite:
+- Verificar autenticidad del hardware asociado.
+- Vincular el dispositivo a la cuenta del licenciatario.
+- Habilitar registro inicial de usuario bajo condiciones de licencia válidas.
 ---
 
-## 🧭 Próximas versiones (v1.1 y siguientes)
+## Sistema de membresías
 
-- Reproducción de audios vía BLE directamente en dispositivo
-- Configuración de perfiles mágicos (barajas, sonidos, rutinas)
-- Animaciones, diseño nocturno y mejoras en interfaz
-- Envío de señales secretas al performer
+La plataforma incorpora un esquema de **membresías** para gestionar el acceso a contenidos y rutinas.
 
+### ¿Cómo funciona?
+
+- Cada rutina puede requerir un nivel mínimo de membresía.
+- El nivel activo de la cuenta determina qué módulos se desbloquean.
+- El sistema puede informar cuando una rutina requiere una membresía superior.
+> Importante: la membresía administra acceso a contenidos, pero **no reemplaza** los términos de la licencia legal del producto.
 ---
 
-## 🪄 Autor
+## Legal / Licencia
+Antes de utilizar la plataforma, el usuario debe leer y aceptar la sección **Legal / Licencia**.
 
-Este proyecto forma parte del sistema de apoyo tecnológico para espectáculos mágicos desarrollado por **Mr. Camer**.  
-Asistencia técnica y mágica por **Coperfil**, su asesor IA.
+Puntos clave:
+- Uso personal, no exclusivo, intransferible y revocable.
+- Protección de propiedad intelectual, método, rutinas y contenidos.
+- Restricciones explícitas para copia, ingeniería inversa, difusión no autorizada o cesión a terceros no licenciados.
+- Condiciones de confidencialidad y sanciones por incumplimiento.
 
+Documento legal disponible en:
+- `legal/licencia.html`
 ---
 
-## 📝 Licencia
+## Uso rápido en desarrollo (PC)
+1. Clonar o descargar el repositorio.
+2. Abrir en VS Code.
+3. Ejecutar con **Live Server** (u otro servidor estático).
+4. Abrir en Chrome/Edge compatible con Web Bluetooth.
+5. Conceder permisos solicitados (BLE/ubicación si aplica).
+---
 
-Este proyecto puede ser adaptado y extendido por el autor o colaboradores autorizados.
+## Uso en Android (PWA)
+1. Abrir la URL pública en **Google Chrome**.
+2. Instalar desde “Agregar a pantalla principal” o botón de instalación.
+3. Iniciar sesión con cuenta válida (Email o Google).
+4. Vincular/usar el entorno con licencia y dispositivo registrado.
+---
+
+## Autoría
+
+Proyecto creado para el ecosistema artístico-tecnológico de **Mr. Camer**.
+Con soporte técnico y evolución funcional para shows profesionales.
