@@ -1,4 +1,4 @@
-const CACHE_NAME = 'camer-codex-cache-v5';
+const CACHE_NAME = 'camer-codex-cache-v6';
 const MANIFEST_URL = '/cache-files.json';
 //const CARTAS_URL = '/audios/cartas.json';
 
@@ -87,6 +87,29 @@ self.addEventListener('fetch', (event) => {
 const { request } = event;
   const rangeHeader = request.headers.get('range');
 
+    const url = new URL(request.url);
+  const isSameOrigin = url.origin === self.location.origin;
+  const isHtmlRequest =
+    request.mode === 'navigate' ||
+    (request.headers.get('accept') || '').includes('text/html');
+
+  // Para HTML priorizamos red para evitar servir vistas obsoletas desde caché.
+  if (isSameOrigin && isHtmlRequest) {
+    event.respondWith(
+      (async () => {
+        const cache = await caches.open(CACHE_NAME);
+        try {
+          const networkResponse = await fetch(request);
+          cache.put(url.pathname, networkResponse.clone());
+          return networkResponse;
+        } catch (err) {
+          return (await cache.match(url.pathname)) || cache.match('/index.html');
+        }
+      })()
+    );
+    return;
+  }
+
   // Manejo de peticiones con Rangos (audio/video)
   if (rangeHeader) {
     const url = new URL(request.url);
@@ -132,8 +155,7 @@ const { request } = event;
 
     event.respondWith(
       (async () => {
-      const url = new URL(request.url);
-      const cacheKey = url.origin === self.location.origin ? url.pathname : request.url;
+      const cacheKey = isSameOrigin ? url.pathname : request.url;
       const cache = await caches.open(CACHE_NAME);
       const cachedResponse = await cache.match(cacheKey);
       if (cachedResponse) {
