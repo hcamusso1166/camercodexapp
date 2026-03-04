@@ -438,7 +438,16 @@ let serialValidated = false;
       if (!serialValidated || !validatedSerial) {
         return msg("Primero validá el Serial Number del dispositivo.");
       }
-      const { error } = await supabase.auth.signUp({ email, password });
+// 1) Armamos un callback SIEMPRE al mismo origen donde el usuario está (pre o prod)
+    const emailRedirectTo = new URL("/js/auth/login.html", location.origin);
+    emailRedirectTo.searchParams.set("returnTo", returnTo);
+
+// 2) Pasamos el redirect a Supabase para que el email confirme y vuelva acá
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: emailRedirectTo.toString() },
+    });
       if (error) {
         const errorMessage = (error.message || "").toLowerCase();
         if (errorMessage.includes("email rate limit exceeded")) {
