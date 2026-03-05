@@ -81,7 +81,7 @@ function mostrarResumen() {
       ? `Carta Alta: ${resultado.cartaAltaEtiqueta}`
        : resultado.descripcion;
   // Construir resultado HTML
-  /*Se comenta la parte visual para enfocarse en la parte de audio.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
   resultadoHTML += `<p>La suma total es: ${suma}</p>`;
   resultadoHTML += `<p>Pares: ${pares}, Impares: ${impares}</p>`;
   resultadoHTML += `<p>Cantidad por palo:</p>`;
@@ -89,7 +89,7 @@ function mostrarResumen() {
   resultadoHTML += `<p>Mejor jugada de póker: ${mostrarDescripcion}</p>`;
   resultadoHTML += `<p>${resultado.cartas.join(', ')}</p>`;
   document.getElementById("resultado").innerHTML = resultadoHTML;
-*/
+
   // Planificar audios con timings controlados
   let delay = 0;
 
