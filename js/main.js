@@ -449,6 +449,8 @@ if (menuDropdown) {
   });
 }
 
+registerBleAdminMenuActions();
+
 async function obtenerVersionRemota() {
   const configUrl = new URL('/js/config.js', window.location.origin);
   configUrl.searchParams.set('t', Date.now().toString());
@@ -640,6 +642,11 @@ const accionMagoMensaje = document.getElementById('accionMagoMensaje');
 const timestampContainer = document.getElementById('timestamp');
 // Determinar la vista actual una sola vez para evitar cálculos repetidos
 const currentView = window.location.pathname.split('/').pop() || "";
+const STEALTH_ROUTINES = Object.freeze(new Set(['bookTestImposible.html']));
+
+function isStealthRoutineView(viewName) {
+  return STEALTH_ROUTINES.has(viewName);
+}
 const ANTENNA_ID_MIN = 1;
 const ANTENNA_ID_MAX = 9;
 
@@ -686,6 +693,22 @@ const ledCharacteristic = '19b10002-e8f2-537e-4f6c-d104768a1214';
 const sensorCharacteristic = '19b10001-e8f2-537e-4f6c-d104768a1214';
 const batteryCharacteristic = '9b04030c-2f33-42b2-9fc5-a97a44a1145d';
 
+const BLE_MODES = Object.freeze({
+  BLE_ONLY: 'BLE_ONLY',
+  DUAL: 'DUAL',
+  STEALTH_ESPNOW: 'STEALTH_ESPNOW',
+  PAIR_TP: 'PAIR_TP',
+});
+
+const BLE_CTRL_COMMANDS = Object.freeze({
+  GET_MODE: 'GET_MODE',
+  GET_TP_MAC: 'GET_TP_MAC',
+  CLR_TP_MAC: 'CLR_TP_MAC',
+  CHECK_ESPNOW: 'CHECK_ESPNOW',
+  PAIR_TP_START: 'PAIR_TP_START',
+  PAIR_TP_STOP: 'PAIR_TP_STOP',
+});
+
 let bleServer, bleServiceFound, sensorCharacteristicFound, batteryCharacteristicFound;
 // Estado extraído de CamerPacket v1 (último paquete recibido)
 let camerVersion    = 0;
@@ -693,6 +716,9 @@ let camerEventType  = 0;
 let camerAntennaId  = 0;
 let camerFlags      = 0;
 let camerSeq        = 0;
+let bleCurrentMode = BLE_MODES.BLE_ONLY;
+let teleprompterMac = 'NONE';
+let espNowReady = null;
 
 const isBookTestImposibleView = currentView === "bookTestImposible.html";
 const characteristicDeviceMap = new WeakMap();
@@ -758,9 +784,153 @@ function setPendingBookTestState(connectionInfo) {
   );
 }
 
+
 function onBookTestDisconnected(connectionInfo) {
   const role = connectionInfo?.role === "secondary" ? "secondary" : "primary";
   setBookTestLineState(role, "Desconectado", "#d13a30", "");
+}
+
+function buildSetModeCommand(mode) {
+  return `SET_MODE ${mode}`;
+}
+
+function parseBleStatusLine(statusLine) {
+  if (!statusLine || typeof statusLine !== 'string') return;
+
+  if (statusLine.startsWith('MODE=')) {
+    const mode = statusLine.slice(5).trim();
+    if (Object.values(BLE_MODES).includes(mode)) {
+      bleCurrentMode = mode;
+    }
+    return;
+  }
+
+  if (statusLine.startsWith('TP_MAC=')) {
+    teleprompterMac = statusLine.slice(7).trim() || 'NONE';
+    return;
+  }
+
+  if (statusLine.startsWith('READY=')) {
+    const readyValue = statusLine.slice(6).trim();
+    espNowReady = readyValue === '1';
+    return;
+  }
+
+  if (statusLine.startsWith('PAIR=OK')) {
+    const tpMacMatch = statusLine.match(/TP_MAC=([0-9A-Fa-f:]{17}|NONE)/);
+    if (tpMacMatch) {
+      teleprompterMac = tpMacMatch[1].toUpperCase();
+    }
+  }
+}
+
+async function writeControlCommand(command) {
+  if (!bleServiceFound) {
+    throw new Error('Servicio BLE no disponible para enviar CTRL');
+  }
+
+  const sensor = await bleServiceFound.getCharacteristic(sensorCharacteristic);
+  await sensor.writeValue(new TextEncoder().encode(`${command}
+`));
+  console.log('[BLE CTRL] TX:', command);
+}
+
+function sendControlCommand(command) {
+  if (!bleServer || !bleServer.connected) {
+    console.warn('[BLE CTRL] Dispositivo no conectado. No se puede enviar:', command);
+    return Promise.resolve(false);
+  }
+
+  return writeControlCommand(command)
+    .then(() => true)
+    .catch((error) => {
+      console.warn('[BLE CTRL] Error enviando comando:', command, error);
+      return false;
+    });
+}
+
+async function setDeviceMode(mode) {
+  if (!Object.values(BLE_MODES).includes(mode)) {
+    throw new Error(`Modo no soportado: ${mode}`);
+  }
+
+  if (!bleServer || !bleServer.connected) {
+    console.warn('[BLE MODE] No hay conexión BLE activa para configurar modo:', mode);
+    return false;
+  }
+
+  const applied = await sendControlCommand(buildSetModeCommand(mode));
+  if (applied) {
+    bleCurrentMode = mode;
+    console.log('[BLE MODE] Modo aplicado:', mode);
+  }
+  return applied;
+}
+
+async function applyDefaultBleMode() {
+  return setDeviceMode(BLE_MODES.BLE_ONLY);
+}
+
+async function activateStealthEspNowMode() {
+  if (!bleServer || !bleServer.connected) {
+    console.warn('[BLE MODE] No hay conexión BLE activa para Soñada');
+    return false;
+  }
+
+  const stealthApplied = await setDeviceMode(BLE_MODES.STEALTH_ESPNOW);
+  if (!stealthApplied) {
+    return false;
+  }
+
+  const checkSent = await sendControlCommand(BLE_CTRL_COMMANDS.CHECK_ESPNOW);
+  if (!checkSent) {
+    return false;
+  }
+
+  return true;
+}
+
+async function startTeleprompterPairing() {
+  return setDeviceMode(BLE_MODES.PAIR_TP);
+}
+
+async function stopTeleprompterPairing() {
+  return setDeviceMode(BLE_MODES.BLE_ONLY);
+}
+
+function registerBleAdminMenuActions() {
+  if (!menuDropdown) return;
+
+  menuDropdown.addEventListener('click', async (e) => {
+    const target = e.target;
+    if (!(target instanceof HTMLElement)) return;
+
+    const action = target.getAttribute('data-ble-admin-action');
+    if (!action) return;
+
+    e.preventDefault();
+    menuDropdown.classList.add('hidden');
+
+    switch (action) {
+      case 'pair-tp-start':
+        await startTeleprompterPairing();
+        break;
+      case 'pair-tp-stop':
+        await stopTeleprompterPairing();
+        break;
+      case 'get-tp-mac':
+        await sendControlCommand(BLE_CTRL_COMMANDS.GET_TP_MAC);
+        break;
+      case 'clear-tp-mac':
+        await sendControlCommand(BLE_CTRL_COMMANDS.CLR_TP_MAC);
+        break;
+      case 'check-espnow':
+        await sendControlCommand(BLE_CTRL_COMMANDS.CHECK_ESPNOW);
+        break;
+      default:
+        break;
+    }
+  });
 }
 
 // Función que limpia los TAGs y valores anteriores
@@ -876,6 +1046,12 @@ actualizarIconoConexionBLE("conectado");
         if (path.includes("elefantes.html")) actualizarAccion("Leer carta y REPETIR la lectura de la PRIMERA carta para finalizar la dada");
         if (path.includes("momias.html")) actualizarAccion("Acercar Sarcófago para descubrir el color");
         if (path.includes("dadoR.html")) actualizarAccion("Leer dado");
+        
+        if (isStealthRoutineView(currentView)) {
+          activateStealthEspNowMode();
+        } else {
+          applyDefaultBleMode();
+        }
       });
       
       if (battery) {
@@ -975,6 +1151,13 @@ function handleCharacteristicChange(event) {
   //const len = dataView.byteLength;
   const dataView = event.target.value;
   if (!dataView) {
+    return;
+  }
+  
+  const asciiStatus = new TextDecoder().decode(dataView).trim();
+  if (/^(MODE=|TP_MAC=|READY=|PAIR=|ERR=)/.test(asciiStatus)) {
+    parseBleStatusLine(asciiStatus);
+    console.log('[BLE STATUS] RX:', asciiStatus);
     return;
   }
   //let valor  = "";
