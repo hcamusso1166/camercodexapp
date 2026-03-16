@@ -435,6 +435,26 @@ button {
 .connectButton:hover {
   background-color: #d99c36;
 }
+
+@keyframes heartbeatGrow {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.06);
+  }
+  55% {
+    transform: scale(1);
+  }
+}
+
+.connectButton.connectButton--pulse {
+  animation: heartbeatGrow 1.1s ease-in-out infinite;
+  transform-origin: center;
+  will-change: transform;
+}
+
 .disconnectButton {
   background-color: #f3b13f;
   color: #ffffff;

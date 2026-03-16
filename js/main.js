@@ -56,6 +56,7 @@ function actualizarIconoBateria(voltaje) {
 window.addEventListener("DOMContentLoaded", function () {
 document.getElementById('appVersion').textContent = appVersion;
 actualizarIconoConexionBLE("desconectado");
+actualizarAnimacionBotonConexion(true);
 
   const connectButton = document.getElementById('connectBleButton');
   const disconnectButton = document.getElementById('disconnectBleButton');
@@ -778,6 +779,13 @@ function limpiarDatos() {
 }
 
 // Manejo de las acciones que se deben realizar
+function actualizarAnimacionBotonConexion(activo) {
+  const connectButton = document.getElementById('connectBleButton');
+  if (!connectButton) return;
+
+  connectButton.classList.toggle('connectButton--pulse', Boolean(activo));
+}
+
 function actualizarAccion(accion) {
   const accionMagoMensaje = document.getElementById('accionMagoMensaje');
   if (accionMagoMensaje) {
@@ -865,6 +873,7 @@ function connectToDevice() {
         console.log("Notificaciones de sensor iniciadas.");
 
 actualizarIconoConexionBLE("conectado");
+        actualizarAnimacionBotonConexion(false);
         if (!isBookTestImposibleView && bleStateContainer) {
           bleStateContainer.style.color = "#24af37";
         }
@@ -902,73 +911,10 @@ function onDisconnected(event) {
   }
   actualizarIconoConexionBLE("desconectado");
   actualizarAccion("Conectar el dispositivo BLE");
+  actualizarAnimacionBotonConexion(true);
 
 }
-//al recibir la informacion desde el MrCamerDev1.0, se ejecuta esta función
-/* Funcion sin CamerPacketv1
-function handleCharacteristicChange(event) {
-  const valor = new TextDecoder().decode(event.target.value).trim();
-  const mvalor = valor[0] + valor[1];
-  const color = valor[2];
-  const dorso = valor[3]; 
-  console.log("Valor recibido:", valor, "mvalor:", mvalor, "color:", color, "dorso:", dorso);
-  const path = window.location.pathname;
 
-  const accionesPorRuta = [
-    { match: "fueraDeEsteMundo.html",     accion: () => reproducirAudioColor(color) },
-    { match: "elefantes.html",            accion: () => guardarTag(mvalor) },
-    { match: "momias.html",               accion: () => reproducirColor(mvalor) },
-    { match: "pegriloso.html",            accion: () => guardarTagPegriloso(mvalor) },
-    { match: "theboss.html",              accion: () => guardarTagTheBoss(mvalor) },
-    { match: "pruebaDeFuego.html",        accion: () => guardarTagPruebaDeFuego(mvalor) },
-    { match: "oraculo.html",              accion: () => reproducirAudioParaTag(mvalor) },
-    { match: "manoPoker.html",            accion: () => guardarTagMano(mvalor) },
-    { match: "ojosVendados.html",         accion: () => reproducirOjosVendados(mvalor) },
-    { match: "dadaSimple.html",           accion: () => reproducirAudioParaTag(mvalor,color,dorso) },
-    { match: "dadoR.html",                accion: () => reproducirAudioParaTag(mvalor) },
-    { match: "coleccionista.html",        accion: () => guardarTag(mvalor) },
-    { match: "rapidoNumeroso.html",       accion: () => sumarTag(mvalor) },
-    { match: "voluntadPrestada.html",     accion: () => tagVoluntadPrestada(valor) },
-    { match: "tegMagico.html",            accion: () => guardarTagTeg(mvalor) },
-    { match: "perdonenMiInmodestia.html", accion: () => guardarTag(mvalor) },
-  ];
-
-  for (const entrada of accionesPorRuta) {
-    if (path.includes(entrada.match)) {
-      entrada.accion();
-      break; // solo una acción por rutina
-    }
-  }
-  // Si no me encuentro en la ruta momias.html, ejecuto lo siguente:
-  // hago una estructura switch para determinar qué hacer con el valor recibido de acuerdo a la ruta actual
-  if (path.includes("momias.html")) {
-    // Si estoy en momias.html, actualizo el valor recibido y el color
-    retrievedValue.innerHTML = 'Color: ' + mvalor ;
-    //timestampContainer.innerHTML = getDateTime();
-  } else if (path.includes("coleccionista.html")) {
-    // Si  estoy en coleccionista actualizo el valor recibido de acuerdo al coleccionistaTexto
-    const textCarta = cartasTexto[mvalor]; 
-    retrievedValue.innerHTML = textCarta;
-    //timestampContainer.innerHTML = getDateTime();
-      } else if (path.includes("dadoR.html")) {
-    // Si  estoy en dadoR actualizo el valor recibido de acuerdo al dado
-    const textCarta = mapaTexto[mvalor]; 
-    retrievedValue.innerHTML = textCarta;
-    //timestampContainer.innerHTML = getDateTime();
-    } else if (path.includes("tegMagico.html")) {
-    // Si  estoy en TEG Magico actualizo el valor recibido de acuerdo al TegTexto
-    const textCarta = mapaTEGTexto[mvalor]; 
-    retrievedValue.innerHTML = textCarta;
-    //timestampContainer.innerHTML = getDateTime();
-  } else {
-    // Actualizar el valor recibido en el contenedor
-    const textCarta = cartasPoker[mvalor]; 
-    retrievedValue.innerHTML = textCarta;
-    //timestampContainer.innerHTML = getDateTime(); 
-  }
-  timestampContainer.innerHTML = getDateTime(); 
-}
-*/
 // al recibir la informacion desde el MrCamerDev1.0, se ejecuta esta función
 function handleCharacteristicChange(event) {
   //const dataView = event.target.value;        // DataView de Web Bluetooth
