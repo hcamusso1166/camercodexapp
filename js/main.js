@@ -583,6 +583,7 @@ async function abrirPopup(popupId) {
     }
 
     popupBody.classList.remove('update-flow');
+    popupBody.classList.remove('routine-help-flow');
     popupBody.innerHTML = mainElement.innerHTML;
     menuDropdown.classList.add('hidden');
     popupModal.classList.remove("hidden");
@@ -609,6 +610,7 @@ async function abrirPopup(popupId) {
 }
   } catch (error) {
     popupBody.classList.remove('update-flow');
+    popupBody.classList.remove('routine-help-flow');
     popupBody.innerHTML = `<p>Error cargando contenido: ${error.message}</p>`;
     popupModal.classList.remove("hidden");
   }
@@ -621,6 +623,7 @@ if (popupCloseBtn && popupModal && popupBody && menuDropdown) {
   popupCloseBtn.addEventListener('click', () => {
     popupModal.classList.add('hidden');
     popupBody.classList.remove('update-flow');
+    popupBody.classList.remove('routine-help-flow');
     popupBody.innerHTML = '';          // Limpiar contenido del popup
     menuDropdown.classList.add('hidden');  // Cerrar menú
   });
@@ -641,6 +644,84 @@ const accionMagoMensaje = document.getElementById('accionMagoMensaje');
 const timestampContainer = document.getElementById('timestamp');
 // Determinar la vista actual una sola vez para evitar cálculos repetidos
 const currentView = window.location.pathname.split('/').pop() || "";
+const ROUTINE_HELP_CONTENT = Object.freeze({
+  "bookTestImposible.html": {
+    title: "Book Test Imposible",
+    file: "bookTestImposible.html"
+  },
+  "coleccionista.html": {
+    title: "Coleccionista",
+    file: "coleccionista.html"
+  },
+  "controlFrecuencia.html": {
+    title: "Control de Frecuencia",
+    file: "controlFrecuencia.html"
+  },
+  "dadaSimple.html": {
+    title: "Dada Simple",
+    file: "dadaSimple.html"
+  },
+  "dadoR.html": {
+    title: "Dado R",
+    file: "dadoR.html"
+  },
+  "elefantes.html": {
+    title: "Elefantes",
+    file: "elefantes.html"
+  },
+  "fueraDeEsteMundo.html": {
+    title: "Fuera de Este Mundo",
+    file: "fueraDeEsteMundo.html"
+  },
+  "lecturaQ.html": {
+    title: "Lectura Q",
+    file: "lecturaQ.html"
+  },
+  "manoPoker.html": {
+    title: "Mano de Póker",
+    file: "manoPoker.html"
+  },
+  "momias.html": {
+    title: "Momias",
+    file: "momias.html"
+  },
+  "ojosVendados.html": {
+    title: "Ojos Vendados",
+    file: "ojosVendados.html"
+  },
+  "oraculo.html": {
+    title: "Oráculo",
+    file: "oraculo.html"
+  },
+  "pegriloso.html": {
+    title: "Pégriloso",
+    file: "pegriloso.html"
+  },
+  "perdonenMiInmodestia.html": {
+    title: "Perdonen mi Inmodestia",
+    file: "perdonenMiInmodestia.html"
+  },
+  "pruebaDeFuego.html": {
+    title: "Prueba de Fuego",
+    file: "pruebaDeFuego.html"
+  },
+  "rapidoNumeroso.html": {
+    title: "Rápido Numeroso",
+    file: "rapidoNumeroso.html"
+  },
+  "tegMagico.html": {
+    title: "TEG Mágico",
+    file: "tegMagico.html"
+  },
+  "theboss.html": {
+    title: "The Boss",
+    file: "theboss.html"
+  },
+  "voluntadPrestada.html": {
+    title: "Voluntad Prestada",
+    file: "voluntadPrestada.html"
+  }
+});
 const ANTENNA_ID_MIN = 1;
 const ANTENNA_ID_MAX = 9;
 
@@ -659,6 +740,78 @@ const ROUTINE_ANTENNA_POLICIES = Object.freeze({
 function getAntennaPolicyForView(viewName) {
   return ROUTINE_ANTENNA_POLICIES[viewName] || ROUTINE_ANTENNA_TYPES.PRIMARY_ONLY;
 }
+
+function initRoutineHelpButton() {
+  const helpConfig = ROUTINE_HELP_CONTENT[currentView];
+  const routineTitle = document.querySelector('.rutina');
+
+  if (!helpConfig || !routineTitle || !popupBody || !popupModal) {
+    return;
+  }
+
+  routineTitle.classList.add('routine-title-with-help');
+
+  if (routineTitle.querySelector('.routine-help-btn')) {
+    return;
+  }
+
+  const routineTitleText = (routineTitle.textContent || '').trim();
+  routineTitle.textContent = '';
+
+  const leftSpacer = document.createElement('span');
+  leftSpacer.className = 'routine-title-spacer';
+  leftSpacer.setAttribute('aria-hidden', 'true');
+
+  const titleTextNode = document.createElement('span');
+  titleTextNode.className = 'routine-title-text';
+  titleTextNode.textContent = routineTitleText;
+
+  const helpButton = document.createElement('button');
+  helpButton.type = 'button';
+  helpButton.className = 'routine-help-btn';
+  helpButton.title = `Ayuda de rutina: ${helpConfig.title}`;
+  helpButton.setAttribute('aria-label', `Abrir ayuda de rutina: ${helpConfig.title}`);
+  helpButton.innerHTML = '<img src="../icons/help_16_D9D9D9.svg" alt="Ayuda">';
+
+  helpButton.addEventListener('click', () => {
+    abrirPopupRuta(`../info/rutinas/${helpConfig.file}`);
+  });
+
+  routineTitle.appendChild(leftSpacer);
+  routineTitle.appendChild(titleTextNode);
+  routineTitle.appendChild(helpButton);
+}
+
+async function abrirPopupRuta(filePath) {
+  if (!popupBody || !popupModal) return;
+
+  try {
+    const response = await fetch(filePath);
+    if (!response.ok) throw new Error("No se pudo cargar la ayuda de la rutina");
+
+    const text = await response.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, "text/html");
+    const mainElement = doc.querySelector("main");
+
+    if (!mainElement) {
+      throw new Error("No se encontró contenido principal <main> en la ayuda.");
+    }
+
+    popupBody.classList.remove('update-flow');
+    popupBody.classList.add('routine-help-flow');
+    popupBody.innerHTML = mainElement.innerHTML;
+    popupModal.classList.remove("hidden");
+  } catch (error) {
+    popupBody.classList.remove('update-flow');
+    popupBody.classList.remove('routine-help-flow');
+    popupBody.innerHTML = `<p>Error cargando ayuda: ${error.message}</p>`;
+    popupModal.classList.remove("hidden");
+  }
+}
+
+initRoutineHelpButton();
+
 
 function isAntennaIdInRange(antennaId) {
   return antennaId >= ANTENNA_ID_MIN && antennaId <= ANTENNA_ID_MAX;

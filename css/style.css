@@ -59,6 +59,51 @@ main h3 {
   height: 16px;
   opacity: 0.8;
 }
+
+.routine-title-with-help {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) 24px;
+  align-items: center;
+  column-gap: 4px;
+  width: 100%;
+}
+
+.routine-title-text {
+  text-align: center;
+}
+
+.routine-title-spacer {
+  width: 24px;
+  height: 16px;
+}
+
+.routine-help-btn {
+  -webkit-appearance: none;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 16px;
+  opacity: 0.55;
+  transition: opacity 0.2s ease;
+}
+
+.routine-help-btn img {
+  width: 16px;
+  height: 16px;
+  opacity: 1;
+}
+
+.routine-help-btn:hover,
+.routine-help-btn:focus-visible {
+  opacity: 0.9;
+}
 .slogan {
   font-size: 1em;
   color: #ccc;
@@ -820,14 +865,16 @@ text-align: center;
   font-size: 0.85em;
 }
 
-.card.dark-card:nth-child(1) button,
+.card.dark-card:nth-child(1) button {
+  font-size: 0.8em;
+
+}
 .card.dark-card:nth-child(4) button {
   font-size: 0.8em;
   padding: 6px 8px;
   max-width: 160px;
   margin: 4px auto;
 }
-
 /* Footer button */
 .card.dark-card:nth-child(5) {
   padding: 10px;
@@ -950,12 +997,37 @@ text-align: center;
   display: flex; justify-content: center; align-items: center;
   z-index: 9999;
 }
-
 .popup-content {
   background: #222; color: #d9d9d9;
   padding: 20px; border-radius: 8px;
   max-width: 90%; max-height: 80%;
   overflow-y: auto; position: relative;
+}
+#popupBody.routine-help-flow {
+  text-align: left;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1em;
+  line-height: 1.45;
+  color: #bebebe;
+  min-width: min(520px, 75vw);
+}
+
+#popupBody.routine-help-flow p {
+  margin: 0 0 10px;
+  font-size: 0.4em;
+  font-weight: 400;
+  color: #bebebe;
+}
+
+#popupBody.routine-help-flow p:last-child {
+  margin-bottom: 0;
+}
+
+#popupBody.routine-help-flow h3 {
+  color: #f3b13f;
+  font-size: 0.5em;
+  margin: 0 0 8px;
+  font-family: 'Georgia', serif;
 }
 
 #popupBody.update-flow {

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'camer-codex-cache-v6';
+const CACHE_NAME = 'camer-codex-cache-v7';
 const MANIFEST_URL = '/cache-files.json';
 //const CARTAS_URL = '/audios/cartas.json';
 
@@ -87,11 +87,17 @@ self.addEventListener('fetch', (event) => {
 const { request } = event;
   const rangeHeader = request.headers.get('range');
 
-    const url = new URL(request.url);
+  const url = new URL(request.url);
   const isSameOrigin = url.origin === self.location.origin;
+  const isInfoRoute = isSameOrigin && url.pathname.startsWith('/info/');
   const isHtmlRequest =
     request.mode === 'navigate' ||
     (request.headers.get('accept') || '').includes('text/html');
+
+    if (isInfoRoute) {
+    event.respondWith(fetch(request, { cache: 'no-store' }));
+    return;
+  }
 
   // Para HTML priorizamos red para evitar servir vistas obsoletas desde caché.
   if (isSameOrigin && isHtmlRequest) {
@@ -100,7 +106,9 @@ const { request } = event;
         const cache = await caches.open(CACHE_NAME);
         try {
           const networkResponse = await fetch(request);
-          cache.put(url.pathname, networkResponse.clone());
+          if (!url.pathname.startsWith('/info/')) {
+            cache.put(url.pathname, networkResponse.clone());
+          }
           return networkResponse;
         } catch (err) {
           return (await cache.match(url.pathname)) || cache.match('/index.html');
@@ -163,7 +171,7 @@ const { request } = event;
       }
       try {
         const networkResponse = await fetch(request);
-        if (url.origin === self.location.origin) {
+        if (url.origin === self.location.origin && !url.pathname.startsWith('/info/')) {
           cache.put(cacheKey, networkResponse.clone());
         }
         return networkResponse;
