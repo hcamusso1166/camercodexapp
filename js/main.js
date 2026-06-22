@@ -1272,7 +1272,14 @@ const len = dataView.byteLength;
       guardarTagTeg(mvalor);
       break;
     case "lecturaQ.html":
-      registrarLecturaQ({ mvalor, antennaId: camerAntennaId });
+      registrarLecturaQ({
+        mvalor,
+        valor,
+        antennaId: camerAntennaId,
+        eventType: camerEventType,
+        flags: camerFlags,
+        seq: camerSeq,
+      });
       break;
     case "bookTestImposible.html":
       registrarBookTestImposible({ mvalor, antennaId: camerAntennaId });

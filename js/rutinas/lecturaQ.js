@@ -8,12 +8,19 @@ const LECTURA_Q_ANTENNA_SLOT_MAP = {
   6: 5,
 };
 const LECTURA_Q_INACTIVITY_MS = 30000;
+const CAMER_EVENT_READ_NEW = 0;
+const CAMER_EVENT_READ_REPEAT = 1;
+const CAMER_EVENT_REMOVED = 2;
+const CAMER_FLAG_FULL_SNAPSHOT = 0x80;
 
 const lecturaQState = Array.from({ length: LECTURA_Q_SLOT_COUNT }, () => ({
   mvalor: null,
   code: null,
   description: null,
   lastUpdated: null,
+  lastSeq: null,
+  lastEventType: null,
+  lastFlags: 0,
 }));
 
 let lecturaQInactivityTimer = null;
@@ -187,23 +194,82 @@ function programarRecordatorioLecturaQ() {
   }, LECTURA_Q_INACTIVITY_MS);
 }
 
-function registrarLecturaQ({ mvalor, antennaId }) {
-if (!antennaId || !LECTURA_Q_ANTENNA_SLOT_MAP[antennaId]) {
+function limpiarSlotLecturaQ(slotIndex, metadata = {}) {
+  const estado = lecturaQState[slotIndex - 1];
+
+  estado.mvalor = null;
+  estado.code = null;
+  estado.description = null;
+  estado.lastUpdated = new Date();
+  estado.lastSeq = metadata.seq ?? null;
+  estado.lastEventType = metadata.eventType ?? null;
+  estado.lastFlags = metadata.flags ?? 0;
+
+  actualizarVistaSlotLecturaQ(slotIndex);
+}
+
+function registrarLecturaQ({
+  mvalor,
+  valor,
+  antennaId,
+  eventType = CAMER_EVENT_READ_NEW,
+  flags = 0,
+  seq = null,
+}) {
+  if (!antennaId || !LECTURA_Q_ANTENNA_SLOT_MAP[antennaId]) {
     console.warn("LecturaQ: antennaId fuera de rango", antennaId);
     return;
   }
 
   const slotIndex = LECTURA_Q_ANTENNA_SLOT_MAP[antennaId];
   const estado = lecturaQState[slotIndex - 1];
+  
+  const isSnapshot = (flags & CAMER_FLAG_FULL_SNAPSHOT) !== 0;
+  const isRepeat = eventType === CAMER_EVENT_READ_REPEAT;
+  const isRemoved = eventType === CAMER_EVENT_REMOVED;
+
+  if (isRemoved) {
+    limpiarSlotLecturaQ(slotIndex, { eventType, flags, seq });
+    programarRecordatorioLecturaQ();
+    return;
+  }
+
+  if (!mvalor || typeof mvalor !== "string" || !mvalor.trim()) {
+    if (isSnapshot) {
+      limpiarSlotLecturaQ(slotIndex, { eventType, flags, seq });
+    }
+    return;
+  }
+
+  const sameCardInSameSlot = estado.mvalor === mvalor;
   const { code, description } = obtenerDescripcionCartaLecturaQ(mvalor);
 
   estado.mvalor = mvalor;
   estado.code = code;
   estado.description = description;
   estado.lastUpdated = new Date();
+  estado.lastSeq = seq;
+  estado.lastEventType = eventType;
+  estado.lastFlags = flags;
 
   actualizarVistaSlotLecturaQ(slotIndex);
-  anunciarSlotsLecturaQ();
+  
+   /*
+    Regla show-time:
+    - READ_NEW debe anunciar.
+    - READ_REPEAT igual a la carta ya conocida no debe anunciar.
+    - FULL_SNAPSHOT no debe anunciar, porque es reconciliación silenciosa.
+    - Si un READ_REPEAT recupera un slot que estaba vacío, actualiza UI pero no repite audio.
+  */
+  const shouldAnnounce =
+    eventType === CAMER_EVENT_READ_NEW &&
+    !isSnapshot &&
+    !sameCardInSameSlot;
+
+  if (shouldAnnounce) {
+    anunciarSlotsLecturaQ();
+  }
+
   programarRecordatorioLecturaQ();
 }
 
@@ -223,6 +289,9 @@ function resetLecturaQSlots() {
       code: null,
       description: null,
       lastUpdated: null,
+      lastSeq: null,
+      lastEventType: null,
+      lastFlags: 0,
     };
     actualizarVistaSlotLecturaQ(i + 1);
   }
