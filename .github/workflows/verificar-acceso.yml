@@ -1,0 +1,97 @@
+name: Verificar acceso a CamerCodex
+
+on:
+  schedule:
+    # 09:17 en Buenos Aires (UTC-3).
+    - cron: '17 12 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: verificar-acceso-produccion
+  cancel-in-progress: false
+
+jobs:
+  acceso:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Instalar Playwright y Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.61.1
+          npx --no-install playwright install --with-deps chromium
+
+      - name: Verificar cinco accesos independientes
+        env:
+          TEST_EMAIL: ${{ secrets.CAMERCODEX_TEST_EMAIL }}
+          TEST_PASSWORD: ${{ secrets.CAMERCODEX_TEST_PASSWORD }}
+        run: |
+          node --input-type=module <<'JS'
+          import { chromium } from 'playwright';
+
+          const { TEST_EMAIL: email, TEST_PASSWORD: password } = process.env;
+          if (!email || !password) {
+            console.error('Faltan los secretos de la cuenta de prueba.');
+            process.exit(1);
+          }
+
+          const origin = 'https://www.camercodexapp.com.ar';
+          const browser = await chromium.launch();
+          try {
+            for (let attempt = 1; attempt <= 5; attempt++) {
+              const context = await browser.newContext();
+              let stage = 'apertura de la licencia';
+              try {
+                const page = await context.newPage();
+                page.setDefaultTimeout(15_000);
+                await page.goto(origin, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+                await page.waitForURL(origin + '/legal/licencia.html');
+                await page.locator('#scrollBox').evaluate(box => {
+                  box.scrollTop = box.scrollHeight;
+                });
+                await page.getByRole('checkbox', {
+                  name: 'He leído y acepto la Licencia de Uso y Confidencialidad.',
+                }).check();
+                await page.getByRole('button', { name: 'Aceptar y continuar' }).click();
+
+                stage = 'formulario de acceso';
+                await page.waitForURL(url =>
+                  url.origin === origin && url.pathname === '/js/auth/login.html');
+                await page.locator('#email').fill(email);
+                await page.locator('#btnLogin').click();
+                await page.locator('#password').fill(password);
+
+                stage = 'autenticación en Supabase';
+                const [response] = await Promise.all([
+                  page.waitForResponse(response => {
+                    const url = new URL(response.url());
+                    return url.origin === 'https://onnwazfektgbhwhprrnv.supabase.co' &&
+                      url.pathname === '/auth/v1/token' &&
+                      url.searchParams.get('grant_type') === 'password' &&
+                      response.request().method() === 'POST';
+                  }, { timeout: 20_000 }),
+                  page.locator('#btnLogin').click(),
+                ]);
+                if (!response.ok()) {
+                  console.error('Supabase respondió con HTTP ' + response.status() + '.');
+                  throw new Error('Falló la autenticación.');
+                }
+
+                stage = 'entrada a la aplicación';
+                await page.waitForURL(url =>
+                  url.origin === origin && ['/', '/index.html'].includes(url.pathname));
+                await page.locator('#licenseStatus.is-accepted').waitFor();
+                console.log('Acceso ' + attempt + '/5 correcto.');
+              } catch {
+                console.error('Falló el acceso ' + attempt + '/5 durante: ' + stage + '.');
+                process.exitCode = 1;
+                break;
+              } finally {
+                await context.close();
+              }
+            }
+          } finally {
+            await browser.close();
+          }
+          JS
